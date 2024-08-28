@@ -2,12 +2,12 @@ package org.confluence.terra_guns.common.item.bullet;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.confluence.terra_guns.api.IBullet;
+import org.confluence.terra_guns.common.entity.SimpleItemModelProjectile;
 
 public class BulletItem extends Item implements IBullet {
     private float projectileSpeed;
@@ -16,8 +16,12 @@ public class BulletItem extends Item implements IBullet {
     private float finalDamage;
     private float knockBack;
 
-    public BulletItem(float projectileSpeed, float inaccuracy, float baseDamage, float knockBack) {
+    public BulletItem(float baseDamage, float projectileSpeed, float knockBack, float inaccuracy) {
         super(new Properties().stacksTo(999));
+        this.projectileSpeed = projectileSpeed;
+        this.inaccuracy = inaccuracy;
+        this.baseDamage = baseDamage;
+        this.knockBack = knockBack;
     }
 
     @Override
@@ -29,8 +33,8 @@ public class BulletItem extends Item implements IBullet {
     }
 
     @Override
-    public Projectile createProjectile(Level world, Player shooter,ItemStack gunStack,ItemStack ammoStack) {
-        return new Arrow(world, shooter);
+    public Projectile createProjectile(Level level, Player shooter,ItemStack gunStack,ItemStack ammoStack) {
+        return new SimpleItemModelProjectile(level, shooter,ammoStack);
     }
 
     @Override
