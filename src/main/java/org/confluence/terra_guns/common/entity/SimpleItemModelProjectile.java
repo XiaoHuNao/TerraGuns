@@ -17,7 +17,7 @@ import org.confluence.terra_guns.common.component.BouncesComponent;
 import org.confluence.terra_guns.common.init.ModEntities;
 import org.jetbrains.annotations.NotNull;
 
-public class SimpleItemModelProjectile extends AbstractHurtingProjectile implements ItemSupplier {
+public class SimpleItemModelProjectile extends BaseAmmoEntity implements ItemSupplier {
     BouncesComponent bouncesComponent = new BouncesComponent(3);
 
     private static final EntityDataAccessor<ItemStack> DATA_ITEM_STACK = SynchedEntityData.defineId(SimpleItemModelProjectile.class, EntityDataSerializers.ITEM_STACK);
@@ -25,15 +25,11 @@ public class SimpleItemModelProjectile extends AbstractHurtingProjectile impleme
         super(type, level);
     }
 
-    public SimpleItemModelProjectile(Level level,ItemStack ammoStack,double x, double y, double z, double speedX, double speedY, double speedZ) {
-        super(ModEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), x, y, z, speedX, speedY, speedZ, level);
-        this.setItem(ammoStack);
-    }
-
     public SimpleItemModelProjectile(Level level, LivingEntity shooter,ItemStack ammoStack) {
         super(ModEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), shooter, 0, 0, 0, level);
         this.setItem(ammoStack);
     }
+
 
     public void setItem(ItemStack stack) {
         this.getEntityData().set(DATA_ITEM_STACK, stack);

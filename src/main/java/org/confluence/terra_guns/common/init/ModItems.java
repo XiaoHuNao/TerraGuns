@@ -20,8 +20,22 @@ public class ModItems {
 
     public static final RegistryObject<Item> GUN = ITEM_GUNS.register("gun", GunItem::new);
 
-    //MusketBullet
     public static final RegistryObject<Item> MUSKET_BULLET = ITEM_BULLETS.register("musket_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> METEOR_BULLET = ITEM_BULLETS.register("meteor_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> SILVER_BULLET = ITEM_BULLETS.register("silver_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> CRYSTAL_BULLET = ITEM_BULLETS.register("crystal_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> CURSED_BULLET = ITEM_BULLETS.register("cursed_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> CHLOROPHYTE_BULLET = ITEM_BULLETS.register("chlorophyte_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> HV_BULLET = ITEM_BULLETS.register("high_velocity_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> ICHOR_BULLET = ITEM_BULLETS.register("ichor_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> VENOM_BULLET = ITEM_BULLETS.register("venom_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> PARTY_BULLET = ITEM_BULLETS.register("party_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> NANO_BULLET = ITEM_BULLETS.register("nano_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> EXPLODING_BULLET = ITEM_BULLETS.register("exploding_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> GOLDEN_BULLET = ITEM_BULLETS.register("golden_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> ENDLESS_MUSKET_POUCH = ITEM_BULLETS.register("endless_musket_pouch", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> LUMINITE_BULLET = ITEM_BULLETS.register("luminite_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> TUNGSTEN_BULLET = ITEM_BULLETS.register("tungsten_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
 
 
     public static class Tab {

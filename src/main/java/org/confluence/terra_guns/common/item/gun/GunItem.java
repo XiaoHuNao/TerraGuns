@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.ForgeEventFactory;
 import org.confluence.terra_guns.api.IBullet;
 import org.confluence.terra_guns.api.IGun;
+import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
 import org.confluence.terra_guns.common.init.ModAttributes;
 import org.confluence.terra_guns.common.init.ModItems;
 import org.jetbrains.annotations.NotNull;
@@ -92,6 +93,10 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
         projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, bullet.getProjectileSpeed(player,projectile, gunStack), bullet.getInaccuracy(player,projectile, gunStack));
         bullet.setFinalDamage((bullet.getBaseDamage() + bullet.getBonusDamage(player,projectile, gunStack)) * bullet.getDamageMultiplier(player,projectile, gunStack));
         bullet.modifyFinalProjectile(projectile, player, gunStack);
+
+        if (projectile instanceof BaseAmmoEntity ammoEntity){
+            ammoEntity.damageAndKnockback(bullet.getFinalDamage(), bullet.getKnockBack());
+        }
 
         gun.consume(gunStack, player);
         if (bulletFree){

@@ -1,11 +1,13 @@
 package org.confluence.terra_guns.api;
 
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
 
 public interface IBullet {
     void consume(ItemStack stack, Player shooter);
@@ -30,7 +32,15 @@ public interface IBullet {
 
     void setFinalDamage(float finalDamage);
 
+    float getProjectileSpeed();
+
+    float getInaccuracy();
+
     void modifyFinalProjectile(Projectile projectile, Player player, ItemStack gunStack);
 
     void clientShoot(ClientLevel level, Player player, ItemStack gunStack, ItemStack ammoStack);
+
+    void doPostHurtEffects(BaseAmmoEntity baseAmmoEntity, Entity target);
+
+    float getFinalDamage();
 }

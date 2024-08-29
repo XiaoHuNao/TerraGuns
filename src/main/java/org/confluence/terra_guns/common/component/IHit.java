@@ -7,7 +7,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
 public interface IHit {
-    default void onHitEntity(EntityHitResult pResult){}
+    default void onHitEntity(Projectile entity, EntityHitResult pResult){}
 
     default void onHitBlock(Projectile entity, BlockHitResult pResult){
         BlockState blockstate = entity.level().getBlockState(pResult.getBlockPos());
