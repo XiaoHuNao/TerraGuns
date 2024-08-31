@@ -3,6 +3,7 @@ package org.confluence.terra_guns.api;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
@@ -17,4 +18,5 @@ public interface IGun {
     void clientShoot(ClientLevel level, Player player, ItemStack gunStack, ItemStack ammoStack);
 
     boolean shouldConsumeAmmo(Level level, Player player, ItemStack gunStack, ItemStack ammoStack);
+
 }

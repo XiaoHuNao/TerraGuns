@@ -24,6 +24,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Predicate;
 
 public class GunItem extends ProjectileWeaponItem implements IGun {
+    private float damage = 1.0F;
+    private float projectileSpeed = 1.0F;
+    private float inaccuracy = 4.0F;
+
+    public GunItem(float projectileSpeed, float inaccuracy) {
+        super(new Properties());
+        this.projectileSpeed = projectileSpeed;
+        this.inaccuracy = inaccuracy;
+    }
+
     public GunItem() {
         super(new Properties());
     }
@@ -41,13 +51,12 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
             return InteractionResultHolder.fail(gun);
         } else {
             player.startUsingItem(hand);
-//            player.getCooldowns().addCooldown(this, getUseDelay(gun,ammo, player));
             return InteractionResultHolder.consume(gun);
         }
     }
 
     private int getUseDelay(ItemStack gun, ItemStack ammo, Player player) {
-        return 5;
+        return 0;
     }
 
     public int getPower(ItemStack stack){
@@ -85,13 +94,47 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
         return gunStack;
     }
 
+    public float getProjectileSpeed(Player player,Projectile projectile,ItemStack gunStack, ItemStack ammoStack) {
+        float finalSpeed = projectileSpeed;
+        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun){
+            float ammoSpeed = bullet.getProjectileSpeed(player, projectile, gunStack);
+            finalSpeed = this.projectileSpeed + (projectileSpeed * getSpeedMultiplier(player, projectile, gunStack)) + ammoSpeed;
+        }
+        return finalSpeed;
+    }
 
+    public float getSpeedMultiplier(Player player, Projectile projectile, ItemStack gunStack) {
+        return 0.0F;
+    }
+
+    public float getInaccuracy(Player player, Projectile projectile, ItemStack gunStack, ItemStack ammoStack) {
+        float finalInaccuracy = inaccuracy;
+        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun){
+            float ammoInaccuracy = bullet.getInaccuracy(player, projectile, gunStack);
+            finalInaccuracy = this.inaccuracy + (inaccuracy * getInaccuracyMultiplier(player, projectile, gunStack)) + ammoInaccuracy;
+        }
+        return finalInaccuracy;
+    }
+
+
+    public float getInaccuracyMultiplier(Player player, Projectile projectile, ItemStack gunStack) {
+        return 0.0F;
+    }
+
+    public float getDamage(Player player, Projectile projectile, ItemStack gunStack, ItemStack ammoStack) {
+        float finalDamage = damage;
+        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun){
+            float ammoDamage = (bullet.getBaseDamage() + bullet.getBonusDamage(player,projectile, gunStack)) * bullet.getDamageMultiplier(player,projectile, gunStack);
+            finalDamage = this.damage + ammoDamage;
+        }
+        return finalDamage;
+    }
 
     @Override
     public void serverShoot(ServerLevel level, Player player, ItemStack gunStack, ItemStack ammoStack, IBullet bullet, IGun gun, boolean bulletFree) {
         Projectile projectile = bullet.createProjectile(level, player,gunStack, ammoStack);
-        projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, bullet.getProjectileSpeed(player,projectile, gunStack), bullet.getInaccuracy(player,projectile, gunStack));
-        bullet.setFinalDamage((bullet.getBaseDamage() + bullet.getBonusDamage(player,projectile, gunStack)) * bullet.getDamageMultiplier(player,projectile, gunStack));
+        projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, getProjectileSpeed(player,projectile, gunStack,ammoStack), getInaccuracy(player,projectile, gunStack,ammoStack));
+        bullet.setFinalDamage(getDamage(player, projectile, gunStack, ammoStack));
         bullet.modifyFinalProjectile(projectile, player, gunStack);
 
         if (projectile instanceof BaseAmmoEntity ammoEntity){
@@ -103,7 +146,10 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
             bullet.consume(ammoStack, player);
         }
 
-        level.addFreshEntity(projectile);
+
+        if (level.addFreshEntity(projectile)) {
+            player.getCooldowns().addCooldown(this, getUseDelay(gunStack,ammoStack, player));
+        }
     }
 
     @Override
@@ -137,5 +183,20 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
     @Override
     public int getDefaultProjectileRange() {
         return 15;
+    }
+
+    public GunItem setDamage(float damage) {
+        this.damage = damage;
+        return this;
+    }
+
+    public GunItem setProjectileSpeed(float projectileSpeed) {
+        this.projectileSpeed = projectileSpeed;
+        return this;
+    }
+
+    public GunItem setInaccuracy(float inaccuracy) {
+        this.inaccuracy = inaccuracy;
+        return this;
     }
 }

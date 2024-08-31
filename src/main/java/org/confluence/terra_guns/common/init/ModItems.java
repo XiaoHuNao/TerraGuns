@@ -10,7 +10,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.item.bullet.BulletItem;
+import org.confluence.terra_guns.common.item.gun.CustomGunItem;
 import org.confluence.terra_guns.common.item.gun.GunItem;
+import org.confluence.terra_guns.common.item.gun.ShotgunItem;
+import org.confluence.terra_guns.common.util.TrUtil;
 
 import java.util.function.Supplier;
 
@@ -19,9 +22,27 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEM_BULLETS = DeferredRegister.create(ForgeRegistries.ITEMS, TerraGuns.MODID);
 
 
-    public static final RegistryObject<Item> RED_RYDER = ITEM_GUNS.register("red_ryder", GunItem::new);
-
-
+    public static final RegistryObject<Item> RED_RYDER = ITEM_GUNS.register("red_ryder",
+            () -> new CustomGunItem().setUseDuration(stack -> TrUtil.trToMcTick(38))
+    );
+    public static final RegistryObject<Item> FLINTLOCK_PISTOL = ITEM_GUNS.register("flintlock_pistol",
+            () -> new CustomGunItem().setUseDuration(stack -> TrUtil.trToMcTick(16))
+    );
+    public static final RegistryObject<Item> MUSKET = ITEM_GUNS.register("musket",
+            () -> new CustomGunItem().setUseDuration(stack -> TrUtil.trToMcTick(32))
+    );
+    public static final RegistryObject<Item> THE_UNDERTAKER = ITEM_GUNS.register("the_undertaker",
+            () -> new CustomGunItem().setUseDuration(stack -> TrUtil.trToMcTick(20))
+    );
+    public static final RegistryObject<Item> REVOLVER = ITEM_GUNS.register("revolver",
+            () -> new CustomGunItem().setUseDuration(stack -> TrUtil.trToMcTick(22))
+    );
+    public static final RegistryObject<Item> MINISHARK = ITEM_GUNS.register("mini_shark",
+            () -> new CustomGunItem().setUseDuration(stack -> TrUtil.trToMcTick(8))
+    );
+    public static final RegistryObject<Item> BOOMSTICK = ITEM_GUNS.register("boom_stick",
+            () -> new ShotgunItem(3, 10.0F)
+    );
 
 
     public static final RegistryObject<Item> MUSKET_BULLET = ITEM_BULLETS.register("musket_bullet", () -> new BulletItem(7.0F, 2.0F, 2.0F, 2.0F));

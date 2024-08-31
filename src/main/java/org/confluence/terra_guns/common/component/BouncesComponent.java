@@ -46,7 +46,10 @@ public class BouncesComponent implements IHit {
     }
 
     @Override
-    public void onHitEntity(Projectile projectile, EntityHitResult pResult) {
+    public void onHitEntity(Projectile projectile, EntityHitResult result) {
+        if (projectile.getType() == result.getEntity().getType()) {
+            return;
+        }
         if (projectile.isInWater() || this.curBounces >= this.maxBounces) {
             return;
         }

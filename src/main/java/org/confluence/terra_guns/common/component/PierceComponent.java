@@ -33,6 +33,10 @@ public class PierceComponent implements IHit {
         Entity attack = projectile.getOwner();
         Entity target = pResult.getEntity();
         if (projectile instanceof BaseAmmoEntity ammoEntity) {
+            if (projectile.getType() == target.getType()) {
+                return;
+            }
+
             if (curPierce < maxPierce) {
                 curPierce++;
             }
