@@ -1,72 +1,21 @@
 package org.confluence.terra_guns;
 
-import com.mojang.logging.LogUtils;
-import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.confluence.terra_guns.common.init.ModAttributes;
-import org.confluence.terra_guns.common.init.ModEntities;
-import org.confluence.terra_guns.common.init.ModItems;
-import org.confluence.terra_guns.common.network.NetworkHandler;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Mod(TerraGuns.MODID)
+@Mod(TerraGuns.MOD_ID)
 public class TerraGuns {
-    public static final String MODID = "terra_guns";
-    public static final Logger LOGGER = LogUtils.getLogger();
-
-    public TerraGuns() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        modEventBus.addListener(this::onEntityAttributeModification);
-        modEventBus.addListener(this::commonSetup);
-
-        ModItems.ITEM_GUNS.register(modEventBus);
-        ModItems.ITEM_BULLETS.register(modEventBus);
-        ModItems.Tab.CREATIVE_MODE_TAB.register(modEventBus);
-        ModEntities.ENTITIES.register(modEventBus);
-        ModAttributes.ATTRIBUTES.register(modEventBus);
-
-
-        MinecraftForge.EVENT_BUS.register(this);
+    public static final String MOD_ID = "terra_guns";
+    public static final Logger LOGGER = LoggerFactory.getLogger("Confluence");
+    public TerraGuns(IEventBus modEventBus, ModContainer modContainer) {
+//        NeoForge.EVENT_BUS.register(this);
     }
 
     public static ResourceLocation asResource(String path) {
-        return new ResourceLocation(MODID, path);
-    }
-
-    @SubscribeEvent
-    public void onEntityAttributeModification(EntityAttributeModificationEvent event) {
-        if (!event.has(EntityType.PLAYER,ModAttributes.AMMO_CONSUME_RATE.get())){
-            event.add(EntityType.PLAYER,ModAttributes.AMMO_CONSUME_RATE.get());
-        }
-    }
-
-    @SubscribeEvent
-    public void commonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            NetworkHandler.register();
-        });
-    }
-
-    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents {
-        @SubscribeEvent
-        public static void registerEntityRenders(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(ModEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), ThrownItemRenderer::new);
-        }
-
-        @SubscribeEvent
-        public static void registerEntityLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        }
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 }
