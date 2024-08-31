@@ -18,7 +18,11 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEM_GUNS = DeferredRegister.create(ForgeRegistries.ITEMS, TerraGuns.MODID);
     public static final DeferredRegister<Item> ITEM_BULLETS = DeferredRegister.create(ForgeRegistries.ITEMS, TerraGuns.MODID);
 
-    public static final RegistryObject<Item> GUN = ITEM_GUNS.register("gun", GunItem::new);
+
+    public static final RegistryObject<Item> RED_RYDER = ITEM_GUNS.register("red_ryder", GunItem::new);
+
+
+
 
     public static final RegistryObject<Item> MUSKET_BULLET = ITEM_BULLETS.register("musket_bullet", () -> new BulletItem(7.0F, 2.0F, 2.0F, 2.0F));
     public static final RegistryObject<Item> METEOR_BULLET = ITEM_BULLETS.register("meteor_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));

@@ -13,8 +13,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.confluence.terra_guns.client.model.entity.AmmoModel;
-import org.confluence.terra_guns.client.renderer.entity.AmmoRenderer;
 import org.confluence.terra_guns.common.init.ModAttributes;
 import org.confluence.terra_guns.common.init.ModEntities;
 import org.confluence.terra_guns.common.init.ModItems;
@@ -64,13 +62,11 @@ public class TerraGuns {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void registerEntityRenders(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(ModEntities.AMMO.get(), AmmoRenderer::new);
             event.registerEntityRenderer(ModEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), ThrownItemRenderer::new);
         }
 
         @SubscribeEvent
         public static void registerEntityLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-            event.registerLayerDefinition(AmmoModel.LAYER_LOCATION, AmmoModel::createBodyLayer);
         }
     }
 }
