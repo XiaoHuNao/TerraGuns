@@ -9,7 +9,6 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import org.confluence.terra_guns.TerraGuns;
-import org.confluence.terra_guns.common.entity.AmmoEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class AmmoModel extends EntityModel<AmmoEntity> {

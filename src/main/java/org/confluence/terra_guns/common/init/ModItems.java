@@ -20,7 +20,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> GUN = ITEM_GUNS.register("gun", GunItem::new);
 
-    public static final RegistryObject<Item> MUSKET_BULLET = ITEM_BULLETS.register("musket_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final RegistryObject<Item> MUSKET_BULLET = ITEM_BULLETS.register("musket_bullet", () -> new BulletItem(7.0F, 2.0F, 2.0F, 2.0F));
     public static final RegistryObject<Item> METEOR_BULLET = ITEM_BULLETS.register("meteor_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final RegistryObject<Item> SILVER_BULLET = ITEM_BULLETS.register("silver_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final RegistryObject<Item> CRYSTAL_BULLET = ITEM_BULLETS.register("crystal_bullet", () -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));

@@ -14,12 +14,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.component.BouncesComponent;
+import org.confluence.terra_guns.common.component.PierceComponent;
 import org.confluence.terra_guns.common.init.ModEntities;
 import org.jetbrains.annotations.NotNull;
 
 public class SimpleItemModelProjectile extends BaseAmmoEntity implements ItemSupplier {
-    BouncesComponent bouncesComponent = new BouncesComponent(3);
-
     private static final EntityDataAccessor<ItemStack> DATA_ITEM_STACK = SynchedEntityData.defineId(SimpleItemModelProjectile.class, EntityDataSerializers.ITEM_STACK);
     public SimpleItemModelProjectile(EntityType<SimpleItemModelProjectile> type, Level level) {
         super(type, level);
@@ -60,7 +59,10 @@ public class SimpleItemModelProjectile extends BaseAmmoEntity implements ItemSup
     }
 
     @Override
-    protected void onHitBlock(BlockHitResult pResult) {
-        bouncesComponent.onHitBlock(this,pResult);
+    public void registerHits() {
+        super.registerHits();
+//        addHit(1,new BouncesComponent(1));
+//        setPiece(10,true);
+//        setCanBreakBlock(true);
     }
 }

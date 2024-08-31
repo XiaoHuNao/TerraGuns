@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.client.model.entity.AmmoModel;
-import org.confluence.terra_guns.common.entity.AmmoEntity;
 
 public class AmmoRenderer extends EntityRenderer<AmmoEntity> {
     private static final ResourceLocation TEXTURES = TerraGuns.asResource("textures/entity/ammo/ammo.png");

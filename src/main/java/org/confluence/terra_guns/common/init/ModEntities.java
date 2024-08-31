@@ -6,7 +6,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.confluence.terra_guns.TerraGuns;
-import org.confluence.terra_guns.common.entity.AmmoEntity;
 import org.confluence.terra_guns.common.entity.SimpleItemModelProjectile;
 
 public final class ModEntities {

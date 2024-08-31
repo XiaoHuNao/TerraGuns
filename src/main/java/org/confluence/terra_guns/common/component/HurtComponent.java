@@ -1,18 +1,28 @@
 package org.confluence.terra_guns.common.component;
 
+import com.google.common.collect.BiMap;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
-import org.confluence.terra_guns.common.init.ModDamageTypes;
 
 public class HurtComponent implements IHit {
-    //攻击实体
+    public static final ResourceLocation REGISTRY_NAME = TerraGuns.asResource("hurt");
+    private boolean canBreakBlock = false;
+
+    public HurtComponent(boolean canBreakBlock) {
+        this.canBreakBlock = canBreakBlock;
+    }
+
     @Override
     public void onHitEntity(Projectile projectile, EntityHitResult pResult) {
         Entity attack = projectile.getOwner();
@@ -38,8 +48,18 @@ public class HurtComponent implements IHit {
 
     //挖掘方块
     @Override
-    public void onHitBlock(Projectile entity, BlockHitResult pResult) {
-        IHit.super.onHitBlock(entity, pResult);
+    public void onHitBlock(Projectile projectile, BlockHitResult pResult) {
+        if (canBreakBlock) {
+            projectile.level().destroyBlock(pResult.getBlockPos(), true);
+        }else {
+            BlockState blockstate = projectile.level().getBlockState(pResult.getBlockPos());
+            blockstate.onProjectileHit(projectile.level(), blockstate, pResult, projectile);
+        }
+    }
+
+    @Override
+    public ResourceLocation getRegistryName() {
+        return REGISTRY_NAME;
     }
 
     private DamageSource getDamageSource(Projectile projectile) {
@@ -58,5 +78,8 @@ public class HurtComponent implements IHit {
         return damagesource;
     }
 
-
+    public HurtComponent setCanBreakBlock(boolean canBreakBlock) {
+        this.canBreakBlock = canBreakBlock;
+        return this;
+    }
 }

@@ -1,6 +1,8 @@
 package org.confluence.terra_guns.common.component;
 
-import net.minecraft.world.entity.Entity;
+import com.google.common.collect.BiMap;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -13,4 +15,10 @@ public interface IHit {
         BlockState blockstate = entity.level().getBlockState(pResult.getBlockPos());
         blockstate.onProjectileHit(entity.level(), blockstate, pResult, entity);
     }
+
+    default boolean hasConflict(BiMap<ResourceLocation, Pair<Integer,IHit>> map,Pair<Integer,IHit> hitPair){
+        return true;
+    }
+
+    ResourceLocation getRegistryName();
 }

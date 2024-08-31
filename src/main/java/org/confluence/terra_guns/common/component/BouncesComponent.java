@@ -1,11 +1,20 @@
 package org.confluence.terra_guns.common.component;
 
+import com.google.common.collect.BiMap;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.terra_guns.TerraGuns;
+
+import java.util.List;
 
 public class BouncesComponent implements IHit {
+    public static final ResourceLocation REGISTRY_NAME = TerraGuns.asResource("bounces");
+
     private int curBounces;
     private int maxBounces;
 
@@ -19,6 +28,29 @@ public class BouncesComponent implements IHit {
             return;
         }
         bounce(projectile, result.getDirection());
+        ++this.curBounces;
+    }
+
+    @Override
+    public boolean hasConflict(BiMap<ResourceLocation, Pair<Integer,IHit>> map,Pair<Integer,IHit> hitPair) {
+        Pair<Integer, IHit> integerIHitPair = map.get(PierceComponent.REGISTRY_NAME);
+        if (integerIHitPair != null) {
+            return hitPair.getFirst() >= integerIHitPair.getFirst();
+        }
+        return true;
+    }
+
+    @Override
+    public ResourceLocation getRegistryName() {
+        return REGISTRY_NAME;
+    }
+
+    @Override
+    public void onHitEntity(Projectile projectile, EntityHitResult pResult) {
+        if (projectile.isInWater() || this.curBounces >= this.maxBounces) {
+            return;
+        }
+        bounce(projectile, projectile.getDirection());
         ++this.curBounces;
     }
 
