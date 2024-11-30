@@ -11,7 +11,6 @@ import net.minecraftforge.registries.RegistryObject;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.item.bullet.BulletItem;
 import org.confluence.terra_guns.common.item.gun.CustomGunItem;
-import org.confluence.terra_guns.common.item.gun.GunItem;
 import org.confluence.terra_guns.common.item.gun.ShotgunItem;
 import org.confluence.terra_guns.common.util.TrUtil;
 

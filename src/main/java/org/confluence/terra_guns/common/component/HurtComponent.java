@@ -1,7 +1,5 @@
 package org.confluence.terra_guns.common.component;
 
-import com.google.common.collect.BiMap;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -15,6 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
 
+// 伤害组件
 public class HurtComponent implements IHit {
     public static final ResourceLocation REGISTRY_NAME = TerraGuns.asResource("hurt");
     private boolean canBreakBlock = false;

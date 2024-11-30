@@ -1,6 +1,5 @@
 package org.confluence.terra_guns.common.item.gun;
 
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Function;

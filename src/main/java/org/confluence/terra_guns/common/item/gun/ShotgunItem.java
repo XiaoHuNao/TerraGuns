@@ -6,6 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import org.confluence.terra_guns.api.IBullet;
 import org.confluence.terra_guns.api.IGun;
 
+// 散弹枪
 public class ShotgunItem extends GunItem {
      private int bulletCount;
 

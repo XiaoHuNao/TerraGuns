@@ -10,8 +10,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terra_guns.TerraGuns;
 
-import java.util.List;
-
+// 反弹组件
 public class BouncesComponent implements IHit {
     public static final ResourceLocation REGISTRY_NAME = TerraGuns.asResource("bounces");
 

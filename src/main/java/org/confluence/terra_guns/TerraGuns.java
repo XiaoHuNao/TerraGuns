@@ -1,7 +1,7 @@
 package org.confluence.terra_guns;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -11,12 +11,10 @@ import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.confluence.terra_guns.common.init.ModAttributes;
 import org.confluence.terra_guns.common.init.ModEntities;
 import org.confluence.terra_guns.common.init.ModItems;
-import org.confluence.terra_guns.common.network.NetworkHandler;
 import org.slf4j.Logger;
 
 @Mod(TerraGuns.MODID)
@@ -28,7 +26,6 @@ public class TerraGuns {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         modEventBus.addListener(this::onEntityAttributeModification);
-        modEventBus.addListener(this::commonSetup);
 
         ModItems.ITEM_GUNS.register(modEventBus);
         ModItems.ITEM_BULLETS.register(modEventBus);
@@ -51,18 +48,12 @@ public class TerraGuns {
         }
     }
 
-    @SubscribeEvent
-    public void commonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            NetworkHandler.register();
-        });
-    }
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void registerEntityRenders(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(ModEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), ThrownItemRenderer::new);
+            event.registerEntityRenderer(ModEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), NoopRenderer::new);
         }
 
         @SubscribeEvent

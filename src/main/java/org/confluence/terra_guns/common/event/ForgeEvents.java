@@ -1,22 +1,11 @@
 package org.confluence.terra_guns.common.event;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.confluence.terra_guns.TerraGuns;
-import org.confluence.terra_guns.api.IGun;
-import org.confluence.terra_guns.common.network.NetworkHandler;
-import org.confluence.terra_guns.common.network.c2s.GunShootingPacketC2S;
-import org.lwjgl.glfw.GLFW;
 
 @Mod.EventBusSubscriber(modid = TerraGuns.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-public class ClientForgeEventSubscriber {
+public class ForgeEvents {
 //    @SubscribeEvent
 //    public static void leftClick(InputEvent.InteractionKeyMappingTriggered event) {
 //        LocalPlayer localPlayer = Minecraft.getInstance().player;

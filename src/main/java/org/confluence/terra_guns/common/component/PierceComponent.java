@@ -15,7 +15,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
 
-
+// 穿透组件
 public class PierceComponent implements IHit {
     public static final ResourceLocation REGISTRY_NAME = TerraGuns.asResource("pierce");
 
