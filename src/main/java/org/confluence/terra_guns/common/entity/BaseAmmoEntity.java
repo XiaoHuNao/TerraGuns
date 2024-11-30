@@ -4,6 +4,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -13,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.confluence.terra_guns.api.IBullet;
 import org.confluence.terra_guns.common.component.HurtComponent;
 import org.confluence.terra_guns.common.component.IHit;
@@ -25,7 +29,7 @@ import java.util.function.Consumer;
 
 public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
     private ItemStack ammoStack = ItemStack.EMPTY;
-    private final BiMap<ResourceLocation, Pair<Integer,IHit>> hits = HashBiMap.create();
+    private final BiMap<ResourceLocation, Pair<Integer, IHit>> hits = HashBiMap.create();
     private float damage;
     private float knockback;
 
@@ -34,8 +38,8 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
         registerHits();
     }
 
-    public BaseAmmoEntity(EntityType<? extends AbstractHurtingProjectile> pEntityType, LivingEntity pShooter, double pOffsetX, double pOffsetY, double pOffsetZ, Level pLevel) {
-        super(pEntityType, pShooter, pOffsetX, pOffsetY, pOffsetZ, pLevel);
+    public BaseAmmoEntity(EntityType<? extends AbstractHurtingProjectile> pEntityType, LivingEntity pShooter, Vec3 movement, Level pLevel) {
+        super(pEntityType, pShooter, movement, pLevel);
         setPos(pShooter.getX(), pShooter.getEyeY() - 0.1, pShooter.getZ());
         registerHits();
     }
@@ -82,8 +86,8 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
     }
 
     public void registerHits() {
-        addHit(0,new HurtComponent(false));
-        addHit(1,new PierceComponent(1, false));
+        addHit(0, new HurtComponent(false));
+        addHit(1, new PierceComponent(1, false));
     }
 
     public void doPostHurtEffects(Entity target) {
@@ -103,13 +107,13 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
     }
 
     private void processHits(Consumer<IHit> hitAction) {
-        List<Pair<Integer,IHit>> hitList = Lists.newArrayList(hits.values());
+        List<Pair<Integer, IHit>> hitList = Lists.newArrayList(hits.values());
 //        hitList.sort(Comparator.comparingInt(Pair::getFirst));
         hitList.sort(Collections.reverseOrder(Comparator.comparingInt(Pair::getFirst)));
 
-        for (Pair<Integer,IHit> hit : hitList) {
+        for (Pair<Integer, IHit> hit : hitList) {
             IHit hit1 = hit.getSecond();
-            if (hit1.hasConflict(hits,hit)) {
+            if (hit1.hasConflict(hits, hit)) {
                 hitAction.accept(hit1);
             }
         }
@@ -121,6 +125,7 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
             pierceComponent.setMaxPierce(piece).setCanPierceBlock(canPierceBlock);
         }
     }
+
     public void setCanBreakBlock(boolean canBreakBlock) {
         IHit second = hits.get(HurtComponent.REGISTRY_NAME).getSecond();
         if (second instanceof HurtComponent hurtComponent) {

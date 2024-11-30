@@ -1,12 +1,11 @@
 package org.confluence.terra_guns.common.data.gen;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.init.ModItems;
 
@@ -25,8 +24,8 @@ public class ModItemModelProvider extends ItemModelProvider {
     }
 
     private void simpleItem(Item item) {
-        String path = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item)).getPath();
-        this.withExistingParent(path, new ResourceLocation("item/generated"))
-                .texture("layer0", new ResourceLocation(TerraGuns.MODID, "item/" + path));
+        String path = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)).getPath();
+        this.withExistingParent(path, ResourceLocation.withDefaultNamespace("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(TerraGuns.MODID, "item/" + path));
     }
 }

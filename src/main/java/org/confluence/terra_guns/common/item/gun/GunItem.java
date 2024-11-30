@@ -19,6 +19,7 @@ import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
 import org.confluence.terra_guns.common.init.ModAttributes;
 import org.confluence.terra_guns.common.init.ModItems;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
@@ -158,15 +159,13 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
 
     @Override
     public void consume(ItemStack gunStack, Player player) {
-        gunStack.hurtAndBreak(1, player, (p_289501_) -> {
-            p_289501_.broadcastBreakEvent(player.getUsedItemHand());
-        });
+        gunStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
     }
 
     @Override
     public boolean shouldConsumeAmmo(Level level, Player player, ItemStack gunStack, ItemStack ammoStack) {
         boolean isInfinite = (ammoStack.getItem() instanceof IBullet bullet && bullet.isInfinite(player,gunStack));
-        boolean consumeRate = player.getAttribute(ModAttributes.AMMO_CONSUME_RATE.get()).getValue() > level.random.nextDouble();
+        boolean consumeRate = player.getAttribute(ModAttributes.AMMO_CONSUME_RATE).getValue() > level.random.nextDouble();
         boolean instabuild = player.getAbilities().instabuild;
         return consumeRate || instabuild;
     }
@@ -182,6 +181,10 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
     @Override
     public int getDefaultProjectileRange() {
         return 15;
+    }
+
+    @Override
+    protected void shootProjectile(LivingEntity livingEntity, Projectile projectile, int i, float v, float v1, float v2, @Nullable LivingEntity livingEntity1) {
     }
 
     public GunItem setDamage(float damage) {
