@@ -19,11 +19,16 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-//        ModItems.ITEM_BULLETS.getEntries().stream().map(RegistryObject::get).forEach(this::simpleItem);
-        simpleItem(ModItems.MUSKET_BULLET.get());
+        bulletsItem(ModItems.MUSKET_BULLET.get());
     }
 
-    private void simpleItem(Item item) {
+    private void gunsItem(Item item) {
+        String path = "guns/" + Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)).getPath();
+        this.withExistingParent(path, ResourceLocation.withDefaultNamespace("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(TerraGuns.MODID, "item/" + path));
+    }
+
+    private void bulletsItem(Item item) {
         String path = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)).getPath();
         this.withExistingParent(path, ResourceLocation.withDefaultNamespace("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(TerraGuns.MODID, "item/" + path));

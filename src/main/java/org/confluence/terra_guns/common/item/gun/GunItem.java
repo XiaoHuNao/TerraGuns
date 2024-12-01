@@ -29,13 +29,13 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
     private float inaccuracy = 4.0F;
 
     public GunItem(float projectileSpeed, float inaccuracy) {
-        super(new Properties());
+        super(new Properties().stacksTo(1));
         this.projectileSpeed = projectileSpeed;
         this.inaccuracy = inaccuracy;
     }
 
     public GunItem() {
-        super(new Properties());
+        super(new Properties().stacksTo(1));
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {

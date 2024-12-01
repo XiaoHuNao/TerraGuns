@@ -19,7 +19,7 @@ public class BulletItem extends Item implements IBullet {
     private float knockBack;
 
     public BulletItem(float baseDamage, float projectileSpeed, float knockBack, float inaccuracy) {
-        super(new Properties().stacksTo(999));
+        super(new Properties().stacksTo(99));
         this.projectileSpeed = projectileSpeed;
         this.inaccuracy = inaccuracy;
         this.baseDamage = baseDamage;
