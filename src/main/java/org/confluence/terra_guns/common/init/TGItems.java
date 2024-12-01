@@ -15,7 +15,7 @@ import org.confluence.terra_guns.common.util.TrUtil;
 
 import java.util.function.Supplier;
 
-public class ModItems {
+public class TGItems {
     public static final DeferredRegister.Items ITEM_GUNS = DeferredRegister.createItems(TerraGuns.MODID);
     public static final DeferredRegister.Items ITEM_BULLETS = DeferredRegister.createItems(TerraGuns.MODID);
 

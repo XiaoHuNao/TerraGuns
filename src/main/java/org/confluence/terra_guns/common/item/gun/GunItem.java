@@ -16,8 +16,8 @@ import net.minecraft.world.level.Level;
 import org.confluence.terra_guns.api.IBullet;
 import org.confluence.terra_guns.api.IGun;
 import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
-import org.confluence.terra_guns.common.init.ModAttributes;
-import org.confluence.terra_guns.common.init.ModItems;
+import org.confluence.terra_guns.common.init.TGAttributes;
+import org.confluence.terra_guns.common.init.TGItems;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,7 +78,7 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
 
             if (!ammoStack.isEmpty() || bulletFree) {
                 if (ammoStack.isEmpty()) {
-                    ammoStack = ModItems.MUSKET_BULLET.get().getDefaultInstance();
+                    ammoStack = TGItems.MUSKET_BULLET.get().getDefaultInstance();
                 }
 
                 if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun) {
@@ -165,7 +165,7 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
     @Override
     public boolean shouldConsumeAmmo(Level level, Player player, ItemStack gunStack, ItemStack ammoStack) {
         boolean isInfinite = (ammoStack.getItem() instanceof IBullet bullet && bullet.isInfinite(player,gunStack));
-        boolean consumeRate = player.getAttribute(ModAttributes.AMMO_CONSUME_RATE).getValue() > level.random.nextDouble();
+        boolean consumeRate = player.getAttribute(TGAttributes.AMMO_CONSUME_RATE).getValue() > level.random.nextDouble();
         boolean instabuild = player.getAbilities().instabuild;
         return consumeRate || instabuild;
     }

@@ -9,18 +9,18 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.client.model.item.GunItemModel;
 import org.confluence.terra_guns.client.renderer.item.SimpleGeoItemRenderer;
-import org.confluence.terra_guns.common.init.ModEntities;
-import org.confluence.terra_guns.common.init.ModItems;
+import org.confluence.terra_guns.common.init.TGEntities;
+import org.confluence.terra_guns.common.init.TGItems;
 
 @EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModEvent {
     @SubscribeEvent
     public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-        event.registerItem(new SimpleGeoItemRenderer<>(new GunItemModel("revolver", true)), ModItems.REVOLVER.asItem());
+        event.registerItem(new SimpleGeoItemRenderer<>(new GunItemModel("revolver", true)), TGItems.REVOLVER.asItem());
     }
     @SubscribeEvent
     public static void registerEntityRenders(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ModEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), NoopRenderer::new);
+        event.registerEntityRenderer(TGEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), NoopRenderer::new);
     }
 
     @SubscribeEvent

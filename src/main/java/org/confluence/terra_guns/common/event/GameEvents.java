@@ -1,7 +1,7 @@
 package org.confluence.terra_guns.common.event;
 
 //@EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
-public class ForgeEvent {
+public class GameEvents {
 //    @SubscribeEvent
 //    public static void leftClick(InputEvent.InteractionKeyMappingTriggered event) {
 //        LocalPlayer localPlayer = Minecraft.getInstance().player;

@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terra_guns.TerraGuns;
-import org.confluence.terra_guns.common.init.ModEntities;
+import org.confluence.terra_guns.common.init.TGEntities;
 import org.jetbrains.annotations.NotNull;
 
 public class SimpleItemModelProjectile extends BaseAmmoEntity implements ItemSupplier {
@@ -23,7 +23,7 @@ public class SimpleItemModelProjectile extends BaseAmmoEntity implements ItemSup
     }
 
     public SimpleItemModelProjectile(Level level, LivingEntity shooter, ItemStack ammoStack) {
-        super(ModEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), shooter, Vec3.ZERO, level);
+        super(TGEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), shooter, Vec3.ZERO, level);
         this.setItem(ammoStack);
     }
 

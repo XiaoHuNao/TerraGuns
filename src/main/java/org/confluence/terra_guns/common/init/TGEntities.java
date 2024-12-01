@@ -8,7 +8,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.entity.SimpleItemModelProjectile;
 
-public final class ModEntities {
+public final class TGEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, TerraGuns.MODID);
 
 //    public static final RegistryObject<EntityType<AmmoEntity>> AMMO = ENTITIES.register("ammo", () -> EntityType.Builder.<AmmoEntity>of(AmmoEntity::new, MobCategory.MISC)

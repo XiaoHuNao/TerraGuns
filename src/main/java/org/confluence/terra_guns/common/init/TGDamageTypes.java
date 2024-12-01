@@ -8,7 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.confluence.terra_guns.TerraGuns;
 
-public class ModDamageTypes {
+public class TGDamageTypes {
     public static final ResourceKey<DamageType> RANGED_ATTACK = register("ranged_attack");
 
     private static ResourceKey<DamageType> register(String id) {

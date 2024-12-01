@@ -7,7 +7,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.confluence.terra_guns.TerraGuns;
-import org.confluence.terra_guns.common.init.ModItems;
+import org.confluence.terra_guns.common.init.TGItems;
 
 import java.util.Objects;
 
@@ -19,7 +19,7 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        bulletsItem(ModItems.MUSKET_BULLET.get());
+        bulletsItem(TGItems.MUSKET_BULLET.get());
     }
 
     private void gunsItem(Item item) {

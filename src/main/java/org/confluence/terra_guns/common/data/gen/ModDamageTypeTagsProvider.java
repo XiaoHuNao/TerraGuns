@@ -6,8 +6,8 @@ import net.minecraft.data.tags.DamageTypeTagsProvider;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.confluence.terra_guns.TerraGuns;
-import org.confluence.terra_guns.common.init.ModDamageTypes;
-import org.confluence.terra_guns.common.init.ModTags;
+import org.confluence.terra_guns.common.init.TGDamageTypes;
+import org.confluence.terra_guns.common.init.TGTags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ public class ModDamageTypeTagsProvider extends DamageTypeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        tag(ModTags.DamageTypes.RANGED_ATTACK).add(ModDamageTypes.RANGED_ATTACK,
+        tag(TGTags.DamageTypes.RANGED_ATTACK).add(TGDamageTypes.RANGED_ATTACK,
                 DamageTypes.ARROW,
                 DamageTypes.FIREBALL,
                 DamageTypes.THROWN,
