@@ -59,22 +59,23 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
         return 0;
     }
 
-    public int getPower(ItemStack stack){
+    public int getPower(ItemStack stack) {
         return 0;
     }
 
     public int getUseDuration(ItemStack stack) {
         return getPower(stack) == 0 ? 1 : getPower(stack);
     }
+
     public UseAnim getUseAnimation(ItemStack pStack) {
         return UseAnim.NONE;
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack gunStack, Level level, LivingEntity livingEntity) {
-        if (livingEntity instanceof Player player){
+        if (livingEntity instanceof Player player) {
             ItemStack ammoStack = player.getProjectile(gunStack);
-            boolean bulletFree = shouldConsumeAmmo(level, player,gunStack,ammoStack);
+            boolean bulletFree = shouldConsumeAmmo(level, player, gunStack, ammoStack);
 
             if (!ammoStack.isEmpty() || bulletFree) {
                 if (ammoStack.isEmpty()) {
@@ -83,8 +84,8 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
 
                 if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun) {
                     if (!level.isClientSide) {
-                        serverShoot((ServerLevel)level, player,gunStack,ammoStack,bullet, gun, bulletFree);
-                    }else {
+                        serverShoot((ServerLevel) level, player, gunStack, ammoStack, bullet, gun, bulletFree);
+                    } else {
                         gun.clientShoot((ClientLevel) level, player, gunStack, ammoStack);
                         bullet.clientShoot((ClientLevel) level, player, gunStack, ammoStack);
                     }
@@ -94,9 +95,9 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
         return gunStack;
     }
 
-    public float getProjectileSpeed(Player player,Projectile projectile,ItemStack gunStack, ItemStack ammoStack) {
+    public float getProjectileSpeed(Player player, Projectile projectile, ItemStack gunStack, ItemStack ammoStack) {
         float finalSpeed = projectileSpeed;
-        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun){
+        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun) {
             float ammoSpeed = bullet.getProjectileSpeed(player, projectile, gunStack);
             finalSpeed = this.projectileSpeed + (projectileSpeed * getSpeedMultiplier(player, projectile, gunStack)) + ammoSpeed;
         }
@@ -109,7 +110,7 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
 
     public float getInaccuracy(Player player, Projectile projectile, ItemStack gunStack, ItemStack ammoStack) {
         float finalInaccuracy = inaccuracy;
-        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun){
+        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun) {
             float ammoInaccuracy = bullet.getInaccuracy(player, projectile, gunStack);
             finalInaccuracy = this.inaccuracy + (inaccuracy * getInaccuracyMultiplier(player, projectile, gunStack)) + ammoInaccuracy;
         }
@@ -123,8 +124,8 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
 
     public float getDamage(Player player, Projectile projectile, ItemStack gunStack, ItemStack ammoStack) {
         float finalDamage = damage;
-        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun){
-            float ammoDamage = (bullet.getBaseDamage() + bullet.getBonusDamage(player,projectile, gunStack)) * bullet.getDamageMultiplier(player,projectile, gunStack);
+        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun) {
+            float ammoDamage = (bullet.getBaseDamage() + bullet.getBonusDamage(player, projectile, gunStack)) * bullet.getDamageMultiplier(player, projectile, gunStack);
             finalDamage = this.damage + ammoDamage;
         }
         return finalDamage;
@@ -132,29 +133,29 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
 
     @Override
     public void serverShoot(ServerLevel level, Player player, ItemStack gunStack, ItemStack ammoStack, IBullet bullet, IGun gun, boolean bulletFree) {
-        Projectile projectile = bullet.createProjectile(level, player,gunStack, ammoStack);
-        projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, getProjectileSpeed(player,projectile, gunStack,ammoStack), getInaccuracy(player,projectile, gunStack,ammoStack));
+        Projectile projectile = bullet.createProjectile(level, player, gunStack, ammoStack);
+        projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, getProjectileSpeed(player, projectile, gunStack, ammoStack), getInaccuracy(player, projectile, gunStack, ammoStack));
         bullet.setFinalDamage(getDamage(player, projectile, gunStack, ammoStack));
         bullet.modifyFinalProjectile(projectile, player, gunStack);
 
-        if (projectile instanceof BaseAmmoEntity ammoEntity){
+        if (projectile instanceof BaseAmmoEntity ammoEntity) {
             ammoEntity.damageAndKnockback(bullet.getFinalDamage(), bullet.getKnockBack());
         }
 
         gun.consume(gunStack, player);
-        if (bulletFree){
+        if (bulletFree) {
             bullet.consume(ammoStack, player);
         }
 
 
         if (level.addFreshEntity(projectile)) {
-            player.getCooldowns().addCooldown(this, getUseDelay(gunStack,ammoStack, player));
+            player.getCooldowns().addCooldown(this, getUseDelay(gunStack, ammoStack, player));
         }
     }
 
     @Override
     public void clientShoot(ClientLevel level, Player player, ItemStack gunStack, ItemStack ammoStack) {
-        level.playSound((Player)null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) * 0.5F);
+        level.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) * 0.5F);
     }
 
     @Override
@@ -164,18 +165,17 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
 
     @Override
     public boolean shouldConsumeAmmo(Level level, Player player, ItemStack gunStack, ItemStack ammoStack) {
-        boolean isInfinite = (ammoStack.getItem() instanceof IBullet bullet && bullet.isInfinite(player,gunStack));
+        boolean isInfinite = (ammoStack.getItem() instanceof IBullet bullet && bullet.isInfinite(player, gunStack));
         boolean consumeRate = player.getAttribute(TGAttributes.AMMO_CONSUME_RATE).getValue() > level.random.nextDouble();
         boolean instabuild = player.getAbilities().instabuild;
         return consumeRate || instabuild;
     }
 
 
-
     @Override
     @NotNull
     public Predicate<ItemStack> getAllSupportedProjectiles() {
-        return stack -> stack.getItem() instanceof IBullet && ((IBullet)stack.getItem()).hasAmmo(stack);
+        return stack -> stack.getItem() instanceof IBullet && ((IBullet) stack.getItem()).hasAmmo(stack);
     }
 
     @Override

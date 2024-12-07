@@ -1,5 +1,6 @@
 package org.confluence.terra_guns.common.data.gen;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -19,17 +20,17 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        bulletsItem(TGItems.MUSKET_BULLET.get());
+        bulletsItem(TGItems.MUSKET_BULLET);
     }
 
-    private void gunsItem(Item item) {
-        String path = "guns/" + Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)).getPath();
+    private void gunsItem(Holder<Item> item) {
+        String path = item.getKey().location().getPath();
         this.withExistingParent(path, ResourceLocation.withDefaultNamespace("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(TerraGuns.MODID, "item/" + path));
     }
 
-    private void bulletsItem(Item item) {
-        String path = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)).getPath();
+    private void bulletsItem(Holder<Item> item) {
+        String path = item.getKey().location().getPath();
         this.withExistingParent(path, ResourceLocation.withDefaultNamespace("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(TerraGuns.MODID, "item/" + path));
     }
