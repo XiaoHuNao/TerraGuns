@@ -4,9 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -21,9 +19,11 @@ import org.confluence.terra_guns.api.IBullet;
 import org.confluence.terra_guns.common.component.HurtComponent;
 import org.confluence.terra_guns.common.component.IHit;
 import org.confluence.terra_guns.common.component.PierceComponent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -32,6 +32,8 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
     private final BiMap<ResourceLocation, Pair<Integer, IHit>> hits = HashBiMap.create();
     private float damage;
     private float knockback;
+    private List<Vec3> trails = new LinkedList<>();
+    protected Vec3 posO = Vec3.ZERO;
 
     public BaseAmmoEntity(EntityType<? extends AbstractHurtingProjectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -42,6 +44,30 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
         super(pEntityType, pShooter, movement, pLevel);
         setPos(pShooter.getX(), pShooter.getEyeY() - 0.1, pShooter.getZ());
         registerHits();
+    }
+
+    @Override
+    public void tick() {
+        if (this.level().isClientSide) {
+            if (trails.isEmpty()) {
+                trails.add(this.position());
+            }
+            trails.add(this.position());
+            if (trails.size() > 3 || posO == this.position()) {
+                trails.remove(0);
+            }
+            posO = this.position();
+        } else {
+            Entity owner = this.getOwner();
+            if (owner != null && owner.position().distanceTo(this.position()) > 256) {
+                this.discard();
+            }
+        }
+        super.tick();
+    }
+
+    public List<Vec3> getTrails() {
+        return trails;
     }
 
     public ItemStack getAmmoStack() {
@@ -131,5 +157,11 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
         if (second instanceof HurtComponent hurtComponent) {
             hurtComponent.setCanBreakBlock(canBreakBlock);
         }
+    }
+
+    @Nullable
+    @Override
+    protected ParticleOptions getTrailParticle() {
+        return null;
     }
 }

@@ -10,14 +10,6 @@ import org.confluence.terra_guns.common.entity.SimpleItemModelProjectile;
 
 public final class TGEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, TerraGuns.MODID);
-
-//    public static final RegistryObject<EntityType<AmmoEntity>> AMMO = ENTITIES.register("ammo", () -> EntityType.Builder.<AmmoEntity>of(AmmoEntity::new, MobCategory.MISC)
-//            .sized(0.25F, 0.25F).setUpdateInterval(2).setTrackingRange(64).setShouldReceiveVelocityUpdates(true)
-//            .build(TerraGuns.asResource("ammo").toString()));
-//    public static final RegistryObject<EntityType<SimpleItemModelProjectile>> AMMO = ENTITIES.register("ammo", () -> EntityType.Builder.<SimpleItemModelProjectile>of(SimpleItemModelProjectile::new, MobCategory.MISC)
-//            .sized(0.25F, 0.25F).setUpdateInterval(2).setTrackingRange(64).setShouldReceiveVelocityUpdates(true)
-//            .build(TerraGuns.asResource("ammo").toString()));
-    //SimpleItemModelProjectile
     public static final DeferredHolder<EntityType<?>, EntityType<SimpleItemModelProjectile>> SIMPLE_ITEM_MODEL_PROJECTILE = ENTITIES.register("simple_item_model_projectile", () -> EntityType.Builder.<SimpleItemModelProjectile>of(SimpleItemModelProjectile::new, MobCategory.MISC)
             .sized(0.25F, 0.25F).setUpdateInterval(2).setTrackingRange(64).setShouldReceiveVelocityUpdates(true)
             .build(TerraGuns.asResource("simple_item_model_projectile").toString()));
