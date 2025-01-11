@@ -11,6 +11,7 @@ import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
+@SuppressWarnings("removal")
 public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IClientItemExtensions {
     private final ResourceLocation model;
     private final ResourceLocation texture;
