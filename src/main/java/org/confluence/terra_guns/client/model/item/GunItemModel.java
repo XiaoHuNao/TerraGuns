@@ -5,6 +5,7 @@ import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.item.gun.CustomGunItem;
 import software.bernie.geckolib.model.GeoModel;
 
+@SuppressWarnings("removal")
 public class GunItemModel extends GeoModel<CustomGunItem> {
     public static ResourceLocation MODEL = null;
     public static ResourceLocation TEXTURE = null;
