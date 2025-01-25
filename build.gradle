@@ -3,7 +3,7 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.43-beta'
+    id 'net.neoforged.moddev' version '2.0.76'
 }
 
 version = "${minecraft_version}-${mod_version}"
