@@ -1,12 +1,8 @@
 package org.confluence.terra_guns.common.component;
 
 import com.google.common.collect.BiMap;
-import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.block.state.BlockState;
