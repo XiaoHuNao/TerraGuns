@@ -84,6 +84,6 @@
     }
   },
   "textures": {
-    "particle": "item/Debug Gun"
+    "particle": "item/debug_gun"
   }
 }
