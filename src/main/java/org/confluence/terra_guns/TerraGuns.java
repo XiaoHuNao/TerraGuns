@@ -18,7 +18,7 @@ public class TerraGuns {
     public TerraGuns(IEventBus modEventBus, ModContainer modContainer) {
         TGItems.ITEM_GUNS.register(modEventBus);
         TGItems.ITEM_BULLETS.register(modEventBus);
-        TGItems.Tab.CREATIVE_MODE_TAB.register(modEventBus);
+        TGItems.Tab.register(modEventBus);
         TGEntities.ENTITIES.register(modEventBus);
         TGAttributes.ATTRIBUTES.register(modEventBus);
     }

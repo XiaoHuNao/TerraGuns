@@ -4,15 +4,14 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.item.bullet.BulletItem;
 import org.confluence.terra_guns.common.item.gun.CustomGunItem;
 import org.confluence.terra_guns.common.item.gun.ShotgunItem;
-
-import java.util.function.Supplier;
 
 public class TGItems {
     public static final DeferredRegister.Items ITEM_GUNS = DeferredRegister.createItems(TerraGuns.MODID);
@@ -63,15 +62,18 @@ public class TGItems {
     public static class Tab {
         public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TerraGuns.MODID);
 
-        public static final Supplier<CreativeModeTab> TAB = CREATIVE_MODE_TAB.register("terra_guns_tab",
-                () -> CreativeModeTab.builder().icon(Items.DIAMOND::getDefaultInstance)
-                        .title(Component.translatable("creativetab.terra_guns"))
-                        .displayItems((parameters, output) -> {
-                            ITEM_GUNS.getEntries().forEach(itemDeferredHolder -> output.accept(itemDeferredHolder.get().getDefaultInstance()));
-                            ITEM_BULLETS.getEntries().forEach(itemDeferredHolder -> output.accept(itemDeferredHolder.get().getDefaultInstance()));
-                        })
-                        .build()
-        );
+        public static void register(IEventBus eventBus) {
+            if (!ModList.get().isLoaded("confluence")) {
+                CREATIVE_MODE_TAB.register(eventBus);
+                CREATIVE_MODE_TAB.register("terra_guns_tab",
+                        () -> CreativeModeTab.builder().icon(STAR_CANNON.get()::getDefaultInstance)
+                                .title(Component.translatable("creativetab.terra_guns"))
+                                .displayItems((parameters, output) -> {
+                                    ITEM_GUNS.getEntries().forEach(itemDeferredHolder -> output.accept(itemDeferredHolder.get()));
+                                    ITEM_BULLETS.getEntries().forEach(itemDeferredHolder -> output.accept(itemDeferredHolder.get()));
+                                }).build());
+            }
+        }
     }
 
     public static DeferredItem<Item> registerNormalGun(String name, int duration) {
