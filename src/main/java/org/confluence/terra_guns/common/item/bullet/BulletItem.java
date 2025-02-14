@@ -7,19 +7,20 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.IBullet;
 import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
 import org.confluence.terra_guns.common.entity.SimpleItemModelProjectile;
 
 public class BulletItem extends Item implements IBullet {
-    private float projectileSpeed;
-    private float inaccuracy;
-    private float baseDamage;
+    private final float projectileSpeed;
+    private final float inaccuracy;
+    private final float baseDamage;
     private float finalDamage;
-    private float knockBack;
+    private final float knockBack;
 
     public BulletItem(float baseDamage, float projectileSpeed, float knockBack, float inaccuracy) {
-        super(new Properties().stacksTo(99));
+        super(new Properties().stacksTo(TerraGuns.IS_CONFLUENCE_LOADED ? 9999 : 99));
         this.projectileSpeed = projectileSpeed;
         this.inaccuracy = inaccuracy;
         this.baseDamage = baseDamage;

@@ -5,7 +5,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.confluence.terra_guns.TerraGuns;
@@ -63,7 +62,7 @@ public class TGItems {
         public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TerraGuns.MODID);
 
         public static void register(IEventBus eventBus) {
-            if (!ModList.get().isLoaded("confluence")) {
+            if (!TerraGuns.IS_CONFLUENCE_LOADED) {
                 CREATIVE_MODE_TAB.register(eventBus);
                 CREATIVE_MODE_TAB.register("terra_guns_tab",
                         () -> CreativeModeTab.builder().icon(STAR_CANNON.get()::getDefaultInstance)
