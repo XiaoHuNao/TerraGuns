@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+@SuppressWarnings("unused")
 public class GunItem extends ProjectileWeaponItem implements IGun {
     private float damage = 1.0F;
     private float projectileSpeed = 1.0F;
@@ -155,7 +156,7 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
 
     @Override
     public void clientShoot(ClientLevel level, Player player, ItemStack gunStack, ItemStack ammoStack) {
-        level.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) * 0.5F);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) * 0.5F);
     }
 
     @Override
@@ -165,10 +166,9 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
 
     @Override
     public boolean shouldConsumeAmmo(Level level, Player player, ItemStack gunStack, ItemStack ammoStack) {
-        boolean isInfinite = (ammoStack.getItem() instanceof IBullet bullet && bullet.isInfinite(player, gunStack));
-        boolean consumeRate = player.getAttribute(TGAttributes.AMMO_CONSUME_RATE).getValue() > level.random.nextDouble();
-        boolean instabuild = player.getAbilities().instabuild;
-        return consumeRate || instabuild;
+        if (player.getAbilities().instabuild) return false;
+        if (ammoStack.getItem() instanceof IBullet bullet && bullet.isInfinite(player, gunStack)) return false;
+        return player.getAttributeValue(TGAttributes.AMMO_CONSUME_RATE) > level.random.nextDouble();
     }
 
 
@@ -200,5 +200,10 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
     public GunItem setInaccuracy(float inaccuracy) {
         this.inaccuracy = inaccuracy;
         return this;
+    }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
     }
 }

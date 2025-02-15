@@ -32,7 +32,7 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
     private final BiMap<ResourceLocation, Pair<Integer, IHit>> hits = HashBiMap.create();
     private float damage;
     private float knockback;
-    private List<Vec3> trails = new LinkedList<>();
+    private final List<Vec3> trails = new LinkedList<>();
     protected Vec3 posO = Vec3.ZERO;
 
     public BaseAmmoEntity(EntityType<? extends AbstractHurtingProjectile> pEntityType, Level pLevel) {
@@ -54,7 +54,7 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
             }
             trails.add(this.position());
             if (trails.size() > 3 || posO == this.position()) {
-                trails.remove(0);
+                trails.removeFirst();
             }
             posO = this.position();
         } else {
@@ -103,7 +103,7 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
         return this;
     }
 
-    public IHit getHits(String registryName) {
+    public IHit getHits(ResourceLocation registryName) {
         return hits.get(registryName).getSecond();
     }
 
@@ -163,5 +163,10 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
     @Override
     protected ParticleOptions getTrailParticle() {
         return null;
+    }
+
+    @Override
+    protected boolean shouldBurn() {
+        return false;
     }
 }
