@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "terra_guns.refmap.json",
   "mixins": [
+    "ClientboundSetEntityMotionPacketMixin"
   ],
   "client": [
   ],
