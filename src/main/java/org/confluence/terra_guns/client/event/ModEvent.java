@@ -1,6 +1,5 @@
 package org.confluence.terra_guns.client.event;
 
-import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -8,6 +7,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.client.model.item.GunItemModel;
+import org.confluence.terra_guns.client.renderer.entity.SimpleItemModelProjectileRenderer;
 import org.confluence.terra_guns.client.renderer.item.SimpleGeoItemRenderer;
 import org.confluence.terra_guns.common.init.TGEntities;
 import org.confluence.terra_guns.common.init.TGItems;
@@ -42,7 +42,7 @@ public class ModEvent {
 
     @SubscribeEvent
     public static void registerEntityRenders(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(TGEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), NoopRenderer::new);
+        event.registerEntityRenderer(TGEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), SimpleItemModelProjectileRenderer::new);
     }
 
     @SubscribeEvent
