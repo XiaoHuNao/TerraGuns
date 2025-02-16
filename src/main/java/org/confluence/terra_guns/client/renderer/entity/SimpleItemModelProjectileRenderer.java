@@ -48,12 +48,12 @@ public class SimpleItemModelProjectileRenderer extends EntityRenderer<SimpleItem
             float width1 = 0.1f / trails.size() * i;
 
             bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width0).setColor(1, 1, 1, 0.8f);
-            bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width1).setColor(1, 1, 1, 0.8f);
+            bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width0).setColor(1, 1, 1, 0.8f);
             bufferbuilder.addVertex(matrix4f, x2, y2, z2 + width1).setColor(1, 1, 1, 0.8f);
             bufferbuilder.addVertex(matrix4f, x2, y2, z2 - width1).setColor(1, 1, 1, 0.8f);
 
             bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width0).setColor(1, 1, 1, 0.8f);
-            bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width1).setColor(1, 1, 1, 0.8f);
+            bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width0).setColor(1, 1, 1, 0.8f);
             bufferbuilder.addVertex(matrix4f, x2, y2, z2 - width1).setColor(1, 1, 1, 0.8f);
             bufferbuilder.addVertex(matrix4f, x2, y2, z2 + width1).setColor(1, 1, 1, 0.8f);
         }
