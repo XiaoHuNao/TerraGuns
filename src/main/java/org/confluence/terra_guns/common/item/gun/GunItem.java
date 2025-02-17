@@ -144,7 +144,7 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
         }
 
         gun.consume(gunStack, player);
-        if (bulletFree) {
+        if (!bulletFree) {
             bullet.consume(ammoStack, player);
         }
 
@@ -205,5 +205,10 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
+    }
+
+    @Override
+    public ItemStack getDefaultCreativeAmmo(@Nullable Player player, ItemStack projectileWeaponItem) {
+        return TGItems.CHLOROPHYTE_BULLET.toStack();
     }
 }
