@@ -10,11 +10,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.item.bullet.BulletItem;
 import org.confluence.terra_guns.common.item.gun.CustomGunItem;
+import org.confluence.terra_guns.common.item.gun.ManaGunItem;
 import org.confluence.terra_guns.common.item.gun.ShotgunItem;
 
 public class TGItems {
     public static final DeferredRegister.Items ITEM_GUNS = DeferredRegister.createItems(TerraGuns.MODID);
     public static final DeferredRegister.Items ITEM_BULLETS = DeferredRegister.createItems(TerraGuns.MODID);
+    private static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TerraGuns.MODID);
 
 
     public static final DeferredItem<Item> FLINTLOCK_PISTOL = registerNormalGun("flintlock_pistol", 16);
@@ -23,7 +25,7 @@ public class TGItems {
     public static final DeferredItem<Item> REVOLVER = registerNormalGun("revolver", 22);
     public static final DeferredItem<Item> MINISHARK = registerNormalGun("minishark", 8);
     public static final DeferredItem<Item> FLARE_GUN = registerNormalGun("flare_gun", 18);
-    public static final DeferredItem<Item> BEE_GUN = registerNormalGun("bee_gun", 12);
+    public static final DeferredItem<Item> BEE_GUN = ITEM_GUNS.register("bee_gun", () -> new ManaGunItem(5));
     public static final DeferredItem<Item> BLOWGUN = registerNormalGun("blowgun", 35);
     public static final DeferredItem<Item> BLOWPIPE = registerNormalGun("blowpipe", 8);
     public static final DeferredItem<Item> HANGGUN = registerNormalGun("handgun", 15);
@@ -46,7 +48,7 @@ public class TGItems {
     public static final DeferredItem<Item> CRYSTAL_BULLET = ITEM_BULLETS.registerItem("crystal_bullet", (properties) -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final DeferredItem<Item> CURSED_BULLET = ITEM_BULLETS.registerItem("cursed_bullet", (properties) -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final DeferredItem<Item> CHLOROPHYTE_BULLET = ITEM_BULLETS.registerItem("chlorophyte_bullet", (properties) -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
-    public static final DeferredItem<Item> HV_BULLET = ITEM_BULLETS.registerItem("high_velocity_bullet", (properties) -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final DeferredItem<Item> HIGH_VELOCITY_BULLET = ITEM_BULLETS.registerItem("high_velocity_bullet", (properties) -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final DeferredItem<Item> ICHOR_BULLET = ITEM_BULLETS.registerItem("ichor_bullet", (properties) -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final DeferredItem<Item> VENOM_BULLET = ITEM_BULLETS.registerItem("venom_bullet", (properties) -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final DeferredItem<Item> PARTY_BULLET = ITEM_BULLETS.registerItem("party_bullet", (properties) -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
@@ -57,21 +59,18 @@ public class TGItems {
     public static final DeferredItem<Item> LUMINITE_BULLET = ITEM_BULLETS.registerItem("luminite_bullet", (properties) -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final DeferredItem<Item> TUNGSTEN_BULLET = ITEM_BULLETS.registerItem("tungsten_bullet", (properties) -> new BulletItem(7.0F, 4.0F, 2.0F, 2.0F));
 
-
-    public static class Tab {
-        public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TerraGuns.MODID);
-
-        public static void register(IEventBus eventBus) {
-            if (!TerraGuns.IS_CONFLUENCE_LOADED) {
-                CREATIVE_MODE_TAB.register(eventBus);
-                CREATIVE_MODE_TAB.register("terra_guns_tab",
-                        () -> CreativeModeTab.builder().icon(STAR_CANNON.get()::getDefaultInstance)
-                                .title(Component.translatable("creativetab.terra_guns"))
-                                .displayItems((parameters, output) -> {
-                                    ITEM_GUNS.getEntries().forEach(itemDeferredHolder -> output.accept(itemDeferredHolder.get()));
-                                    ITEM_BULLETS.getEntries().forEach(itemDeferredHolder -> output.accept(itemDeferredHolder.get()));
-                                }).build());
-            }
+    public static void register(IEventBus eventBus) {
+        ITEM_GUNS.register(eventBus);
+        ITEM_BULLETS.register(eventBus);
+        if (!TerraGuns.IS_CONFLUENCE_LOADED) {
+            CREATIVE_MODE_TAB.register(eventBus);
+            CREATIVE_MODE_TAB.register("terra_guns_tab",
+                    () -> CreativeModeTab.builder().icon(STAR_CANNON.get()::getDefaultInstance)
+                            .title(Component.translatable("creativetab.terra_guns"))
+                            .displayItems((parameters, output) -> {
+                                ITEM_GUNS.getEntries().forEach(itemDeferredHolder -> output.accept(itemDeferredHolder.get()));
+                                ITEM_BULLETS.getEntries().forEach(itemDeferredHolder -> output.accept(itemDeferredHolder.get()));
+                            }).build());
         }
     }
 
@@ -84,12 +83,6 @@ public class TGItems {
     public static DeferredItem<Item> registerShotGun(String name, int bulletCount, float inaccuracy) {
         return ITEM_GUNS.registerItem(name,
                 (properties) -> new ShotgunItem(bulletCount, inaccuracy)
-        );
-    }
-
-    public static DeferredItem<Item> registerShotGun(String name, float projectileSpeed, int bulletCount, float inaccuracy) {
-        return ITEM_GUNS.registerItem(name,
-                (properties) -> new ShotgunItem(projectileSpeed, bulletCount, inaccuracy)
         );
     }
 }

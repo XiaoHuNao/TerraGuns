@@ -18,9 +18,7 @@ public class TerraGuns {
     public static final boolean IS_CONFLUENCE_LOADED = ModList.get().isLoaded("confluence");
 
     public TerraGuns(IEventBus modEventBus, ModContainer modContainer) {
-        TGItems.ITEM_GUNS.register(modEventBus);
-        TGItems.ITEM_BULLETS.register(modEventBus);
-        TGItems.Tab.register(modEventBus);
+        TGItems.register(modEventBus);
         TGEntities.ENTITIES.register(modEventBus);
         TGAttributes.ATTRIBUTES.register(modEventBus);
     }

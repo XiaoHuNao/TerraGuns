@@ -24,20 +24,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+// todo 重构
 @SuppressWarnings("unused")
 public class GunItem extends ProjectileWeaponItem implements IGun {
-    private float damage = 1.0F;
-    private float projectileSpeed = 1.0F;
-    private float inaccuracy = 4.0F;
+    protected float damage = 1.0F;
+    protected float projectileSpeed = 1.0F;
+    protected float inaccuracy = 4.0F;
 
-    public GunItem(float projectileSpeed, float inaccuracy) {
-        super(new Properties().stacksTo(1));
-        this.projectileSpeed = projectileSpeed;
-        this.inaccuracy = inaccuracy;
+    public GunItem(Properties properties) {
+        super(properties.stacksTo(1));
     }
 
     public GunItem() {
-        super(new Properties().stacksTo(1));
+        this(new Properties());
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {

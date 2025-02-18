@@ -13,12 +13,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 // 散弹枪
 public class ShotgunItem extends GunItem implements GeoItem {
     private final AnimatableInstanceCache CACHE = GeckoLibUtil.createInstanceCache(this);
-     private int bulletCount;
-
-    public ShotgunItem(float projectileSpeed, int bulletCount, float inaccuracy) {
-        super(projectileSpeed, inaccuracy);
-        this.bulletCount = bulletCount;
-    }
+     private final int bulletCount;
 
     public ShotgunItem(int bulletCount,float inaccuracy) {
         this.bulletCount = bulletCount;
