@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.terra_guns.api.IBullet;
+import org.confluence.terra_guns.api.IAmmo;
 import org.confluence.terra_guns.common.component.HurtComponent;
 import org.confluence.terra_guns.common.component.IHit;
 import org.confluence.terra_guns.common.component.PierceComponent;
@@ -122,7 +122,7 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
     }
 
     public void doPostHurtEffects(Entity target) {
-        if (ammoStack.getItem() instanceof IBullet bullet) {
+        if (ammoStack.getItem() instanceof IAmmo bullet) {
             bullet.doPostHurtEffects(this, target);
         }
     }

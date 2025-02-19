@@ -18,7 +18,6 @@ public class TGChineseProvider extends LanguageProvider {
         add(TGItems.REVOLVER.get(), "左轮手枪");
         add(TGItems.MINISHARK.get(), "迷你鲨");
         add(TGItems.FLARE_GUN.get(), "信号枪");
-        add(TGItems.BEE_GUN.get(), "蜜蜂枪");
         add(TGItems.BLOWGUN.get(), "吹箭枪");
         add(TGItems.BLOWPIPE.get(), "吹管");
         add(TGItems.HANGGUN.get(), "手枪");

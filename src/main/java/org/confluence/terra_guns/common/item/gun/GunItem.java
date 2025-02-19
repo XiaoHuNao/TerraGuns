@@ -11,24 +11,22 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import org.confluence.terra_guns.api.IBullet;
+import org.confluence.terra_guns.api.IAmmo;
 import org.confluence.terra_guns.api.IGun;
-import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
 import org.confluence.terra_guns.common.init.TGAttributes;
 import org.confluence.terra_guns.common.init.TGItems;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-// todo 重构
-@SuppressWarnings("unused")
-public class GunItem extends ProjectileWeaponItem implements IGun {
+@SuppressWarnings({"unused", "unchecked"})
+public class GunItem<T extends Projectile> extends ProjectileWeaponItem implements IGun<T> {
     protected float damage = 1.0F;
-    protected float projectileSpeed = 1.0F;
+    protected float weaponSpeed = 1.0F;
     protected float inaccuracy = 4.0F;
 
     public GunItem(Properties properties) {
@@ -46,29 +44,22 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
         if (hand != InteractionHand.MAIN_HAND) {
             return InteractionResultHolder.pass(gun);
         }
-        boolean flag = !ammo.isEmpty();
-
-        if (!player.getAbilities().instabuild && !flag) {
+        if (!player.getAbilities().instabuild && ammo.isEmpty()) {
             return InteractionResultHolder.fail(gun);
-        } else {
-            player.startUsingItem(hand);
-            return InteractionResultHolder.consume(gun);
         }
+        return ItemUtils.startUsingInstantly(level, player, hand);
     }
 
-    private int getUseDelay(ItemStack gun, ItemStack ammo, Player player) {
+    protected int getUseDelay(Player shooter, ItemStack gunStack, ItemStack ammoStack) {
+        return 1;
+    }
+
+    @Override
+    public final int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 0;
     }
 
-    public int getPower(ItemStack stack) {
-        return 0;
-    }
-
-    public int getUseDuration(ItemStack stack) {
-        return getPower(stack) == 0 ? 1 : getPower(stack);
-    }
-
-    public UseAnim getUseAnimation(ItemStack pStack) {
+    public UseAnim getUseAnimation(ItemStack gunStack) {
         return UseAnim.NONE;
     }
 
@@ -76,106 +67,82 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
     public ItemStack finishUsingItem(ItemStack gunStack, Level level, LivingEntity livingEntity) {
         if (livingEntity instanceof Player player) {
             ItemStack ammoStack = player.getProjectile(gunStack);
-            boolean bulletFree = shouldConsumeAmmo(level, player, gunStack, ammoStack);
+            boolean infiniteAmmo = isAmmoInfinite(level, player, gunStack, ammoStack);
 
-            if (!ammoStack.isEmpty() || bulletFree) {
+            if (!ammoStack.isEmpty() || infiniteAmmo) {
                 if (ammoStack.isEmpty()) {
                     ammoStack = TGItems.MUSKET_BULLET.get().getDefaultInstance();
                 }
 
-                if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun) {
-                    if (!level.isClientSide) {
-                        serverShoot((ServerLevel) level, player, gunStack, ammoStack, bullet, gun, bulletFree);
-                    } else {
-                        gun.clientShoot((ClientLevel) level, player, gunStack, ammoStack);
-                        bullet.clientShoot((ClientLevel) level, player, gunStack, ammoStack);
-                    }
+                IGun<T> gun = (IGun<T>) gunStack.getItem();
+                IAmmo<T> ammo = (IAmmo<T>) ammoStack.getItem();
+                if (level.isClientSide) {
+                    gun.clientShoot((ClientLevel) level, player, gunStack, ammoStack);
+                    ammo.clientShoot((ClientLevel) level, player, gunStack, ammoStack);
+                } else {
+                    serverShoot((ServerLevel) level, player, gunStack, ammoStack, ammo, gun, infiniteAmmo);
                 }
             }
         }
         return gunStack;
     }
 
-    public float getProjectileSpeed(Player player, Projectile projectile, ItemStack gunStack, ItemStack ammoStack) {
-        float finalSpeed = projectileSpeed;
-        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun) {
-            float ammoSpeed = bullet.getProjectileSpeed(player, projectile, gunStack);
-            finalSpeed = this.projectileSpeed + (projectileSpeed * getSpeedMultiplier(player, projectile, gunStack)) + ammoSpeed;
-        }
-        return finalSpeed;
+    public float getRealAmmoSpeed(Player player, T projectile, ItemStack gunStack, ItemStack ammoStack) {
+        float ammoSpeed = ((IAmmo<T>) ammoStack.getItem()).getAmmoSpeed(player, projectile, gunStack);
+        return (weaponSpeed + ammoSpeed) * (getExtraUpdates(player, projectile, gunStack) + 1);
     }
 
-    public float getSpeedMultiplier(Player player, Projectile projectile, ItemStack gunStack) {
+    public float getExtraUpdates(Player player, T projectile, ItemStack gunStack) {
         return 0.0F;
     }
 
-    public float getInaccuracy(Player player, Projectile projectile, ItemStack gunStack, ItemStack ammoStack) {
-        float finalInaccuracy = inaccuracy;
-        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun) {
-            float ammoInaccuracy = bullet.getInaccuracy(player, projectile, gunStack);
-            finalInaccuracy = this.inaccuracy + (inaccuracy * getInaccuracyMultiplier(player, projectile, gunStack)) + ammoInaccuracy;
-        }
-        return finalInaccuracy;
+    public float getInaccuracy(Player player, T projectile, ItemStack gunStack, ItemStack ammoStack) {
+        float ammoInaccuracy = ((IAmmo<T>) ammoStack.getItem()).getInaccuracy(player, projectile, gunStack);
+        return this.inaccuracy + (inaccuracy * getInaccuracyMultiplier(player, projectile, gunStack)) + ammoInaccuracy;
     }
 
 
-    public float getInaccuracyMultiplier(Player player, Projectile projectile, ItemStack gunStack) {
+    public float getInaccuracyMultiplier(Player player, T projectile, ItemStack gunStack) {
         return 0.0F;
-    }
-
-    public float getDamage(Player player, Projectile projectile, ItemStack gunStack, ItemStack ammoStack) {
-        float finalDamage = damage;
-        if (ammoStack.getItem() instanceof IBullet bullet && gunStack.getItem() instanceof IGun gun) {
-            float ammoDamage = (bullet.getBaseDamage() + bullet.getBonusDamage(player, projectile, gunStack)) * bullet.getDamageMultiplier(player, projectile, gunStack);
-            finalDamage = this.damage + ammoDamage;
-        }
-        return finalDamage;
     }
 
     @Override
-    public void serverShoot(ServerLevel level, Player player, ItemStack gunStack, ItemStack ammoStack, IBullet bullet, IGun gun, boolean bulletFree) {
-        Projectile projectile = bullet.createProjectile(level, player, gunStack, ammoStack);
-        projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, getProjectileSpeed(player, projectile, gunStack, ammoStack), getInaccuracy(player, projectile, gunStack, ammoStack));
-        bullet.setFinalDamage(getDamage(player, projectile, gunStack, ammoStack));
-        bullet.modifyFinalProjectile(projectile, player, gunStack);
+    public float getGunDamage(Player player, T projectile, ItemStack gunStack, ItemStack ammoStack) {
+        IAmmo<T> ammo = (IAmmo<T>) ammoStack.getItem();
+        float ammoDamage = ammo.getBaseDamage(player, projectile, gunStack) * ammo.getDamageMultiplier(player, projectile, gunStack);
+        return this.damage + ammoDamage;
+    }
 
-        if (projectile instanceof BaseAmmoEntity ammoEntity) {
-            ammoEntity.damageAndKnockback(bullet.getFinalDamage(), bullet.getKnockBack());
-        }
+    @Override
+    public void serverShoot(ServerLevel level, Player player, ItemStack gunStack, ItemStack ammoStack, IAmmo<T> ammo, IGun<T> gun, boolean infiniteAmmo) {
+        T projectile = ammo.createAmmo(level, player, gunStack, ammoStack);
+        projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, getRealAmmoSpeed(player, projectile, gunStack, ammoStack), getInaccuracy(player, projectile, gunStack, ammoStack));
 
-        gun.consume(gunStack, player);
-        if (!bulletFree) {
-            bullet.consume(ammoStack, player);
-        }
-
-
+        ammo.beforeAmmoShoot(player, projectile, gunStack, ammoStack);
         if (level.addFreshEntity(projectile)) {
-            player.getCooldowns().addCooldown(this, getUseDelay(gunStack, ammoStack, player));
+            gun.afterGunShoot(gunStack, player);
+            if (!infiniteAmmo) {
+                ammo.afterAmmoShoot(ammoStack, player);
+            }
+            player.getCooldowns().addCooldown(this, getUseDelay(player, gunStack, ammoStack));
         }
     }
 
     @Override
-    public void clientShoot(ClientLevel level, Player player, ItemStack gunStack, ItemStack ammoStack) {
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) * 0.5F);
+    public void clientShoot(ClientLevel level, Player shooter, ItemStack gunStack, ItemStack ammoStack) {
+        level.playSound(shooter, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (shooter.getRandom().nextFloat() * 0.4F + 1.2F) * 0.5F);
     }
 
     @Override
-    public void consume(ItemStack gunStack, Player player) {
-        gunStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
+    public boolean isAmmoInfinite(Level level, Player player, ItemStack gunStack, ItemStack ammoStack) {
+        if (player.hasInfiniteMaterials()) return true;
+        if (((IAmmo<T>) ammoStack.getItem()).isInfinite(player, ammoStack, gunStack)) return true;
+        return !(player.getRandom().nextDouble() < player.getAttributeValue(TGAttributes.AMMO_CONSUME_CHANCE));
     }
 
     @Override
-    public boolean shouldConsumeAmmo(Level level, Player player, ItemStack gunStack, ItemStack ammoStack) {
-        if (player.getAbilities().instabuild) return false;
-        if (ammoStack.getItem() instanceof IBullet bullet && bullet.isInfinite(player, gunStack)) return false;
-        return player.getAttributeValue(TGAttributes.AMMO_CONSUME_RATE) > level.random.nextDouble();
-    }
-
-
-    @Override
-    @NotNull
     public Predicate<ItemStack> getAllSupportedProjectiles() {
-        return stack -> stack.getItem() instanceof IBullet && ((IBullet) stack.getItem()).hasAmmo(stack);
+        return itemStack -> itemStack.getItem() instanceof IAmmo<?> ammo && ammo.isValidAmmo(itemStack);
     }
 
     @Override
@@ -184,23 +151,7 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
     }
 
     @Override
-    protected void shootProjectile(LivingEntity livingEntity, Projectile projectile, int i, float v, float v1, float v2, @Nullable LivingEntity livingEntity1) {
-    }
-
-    public GunItem setDamage(float damage) {
-        this.damage = damage;
-        return this;
-    }
-
-    public GunItem setProjectileSpeed(float projectileSpeed) {
-        this.projectileSpeed = projectileSpeed;
-        return this;
-    }
-
-    public GunItem setInaccuracy(float inaccuracy) {
-        this.inaccuracy = inaccuracy;
-        return this;
-    }
+    protected void shootProjectile(LivingEntity livingEntity, Projectile projectile, int i, float v, float v1, float v2, @Nullable LivingEntity livingEntity1) {}
 
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
@@ -214,6 +165,6 @@ public class GunItem extends ProjectileWeaponItem implements IGun {
 
     @Override
     public Component getName(ItemStack stack) {
-        return Component.translatable(getDescriptionId(stack)).withColor(0xFFFFFF);
+        return Component.translatable(getDescriptionId(stack)).withColor(0xFFFFFF); // Confluence mixin here
     }
 }

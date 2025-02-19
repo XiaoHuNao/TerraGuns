@@ -22,20 +22,20 @@ public class SimpleItemModelProjectile extends BaseAmmoEntity implements ItemSup
         super(type, level);
     }
 
-    public SimpleItemModelProjectile(Level level, LivingEntity shooter, ItemStack ammoStack) {
-        super(TGEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), shooter, Vec3.ZERO, level);
-        this.setItem(ammoStack);
+    public SimpleItemModelProjectile(LivingEntity shooter, ItemStack ammoStack) {
+        super(TGEntities.SIMPLE_ITEM_MODEL_PROJECTILE.get(), shooter, Vec3.ZERO, shooter.level());
+        setItem(ammoStack);
     }
 
 
     public void setItem(ItemStack stack) {
-        this.getEntityData().set(DATA_ITEM_STACK, stack);
+        entityData.set(DATA_ITEM_STACK, stack);
     }
 
     @Override
     @NotNull
     public ItemStack getItem() {
-        return this.getEntityData().get(DATA_ITEM_STACK);
+        return entityData.get(DATA_ITEM_STACK);
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {

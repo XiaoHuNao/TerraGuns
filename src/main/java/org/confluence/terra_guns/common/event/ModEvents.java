@@ -11,8 +11,6 @@ import org.confluence.terra_guns.common.init.TGAttributes;
 public class ModEvents {
     @SubscribeEvent
     public static void onEntityAttributeModification(EntityAttributeModificationEvent event) {
-        if (!event.has(EntityType.PLAYER, TGAttributes.AMMO_CONSUME_RATE)){
-            event.add(EntityType.PLAYER, TGAttributes.AMMO_CONSUME_RATE);
-        }
+        event.add(EntityType.PLAYER, TGAttributes.AMMO_CONSUME_CHANCE);
     }
 }
