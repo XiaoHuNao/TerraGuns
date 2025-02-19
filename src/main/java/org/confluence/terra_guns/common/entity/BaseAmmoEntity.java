@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
+// todo 重构IHit
 public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
     private ItemStack ammoStack = ItemStack.EMPTY;
     private final BiMap<ResourceLocation, Pair<Integer, IHit>> hits = HashBiMap.create();

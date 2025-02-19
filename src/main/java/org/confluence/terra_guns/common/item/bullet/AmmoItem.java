@@ -10,7 +10,7 @@ import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.IAmmo;
 import org.confluence.terra_guns.api.IGun;
 import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
-import org.confluence.terra_guns.common.entity.SimpleItemModelProjectile;
+import org.confluence.terra_guns.common.entity.SimpleTrailProjectile;
 
 public class AmmoItem extends Item implements IAmmo<BaseAmmoEntity> {
     private final float baseDamage;
@@ -28,7 +28,7 @@ public class AmmoItem extends Item implements IAmmo<BaseAmmoEntity> {
 
     @Override
     public BaseAmmoEntity createAmmo(Level level, Player shooter, ItemStack gunStack, ItemStack ammoStack) {
-        return new SimpleItemModelProjectile(shooter, ammoStack);
+        return new SimpleTrailProjectile(shooter, 0xFFFFFF);
     }
 
     @Override

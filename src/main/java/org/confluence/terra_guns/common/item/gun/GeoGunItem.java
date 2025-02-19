@@ -4,7 +4,7 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.projectile.Projectile;
 import org.confluence.terra_guns.TerraGuns;
-import org.confluence.terra_guns.common.entity.SimpleItemModelProjectile;
+import org.confluence.terra_guns.common.entity.SimpleTrailProjectile;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -37,7 +37,7 @@ public class GeoGunItem<T extends Projectile> extends GunItem<T> implements GeoI
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
         consumer.accept(new GeoRenderProvider() {
-            private GeoItemRenderer<GeoGunItem<SimpleItemModelProjectile>> renderer;
+            private GeoItemRenderer<GeoGunItem<SimpleTrailProjectile>> renderer;
 
             @Override
             public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {

@@ -37,7 +37,6 @@ public class TGItems {
     public static final DeferredItem<Item> SLIME_GUN = registerNormalGun("slime_gun", 12);
     public static final DeferredItem<Item> SNIPER_RIFLE = registerNormalGun("sniper_rifle", 36);
     public static final DeferredItem<Item> SNOWBALL_CANNON = registerNormalGun("snowball_cannon", 19);
-    public static final DeferredItem<Item> SPACE_GUN = registerNormalGun("space_gun", 17);
     public static final DeferredItem<Item> STAR_CANNON = registerNormalGun("star_cannon", 14);
     public static final DeferredItem<Item> TACTICAL_SHOTGUN = registerNormalGun("tactical_shotgun", 34);
     public static final DeferredItem<Item> UZI = registerNormalGun("uzi", 9);

@@ -27,7 +27,6 @@ public class TGChineseProvider extends LanguageProvider {
         add(TGItems.SLIME_GUN.get(), "史莱姆枪");
         add(TGItems.SNIPER_RIFLE.get(), "狙击步枪");
         add(TGItems.SNOWBALL_CANNON.get(), "雪球炮");
-        add(TGItems.SPACE_GUN.get(), "太空枪");
         add(TGItems.STAR_CANNON.get(), "星星炮");
         add(TGItems.TACTICAL_SHOTGUN.get(), "战术霰弹枪");
         add(TGItems.UZI.get(), "乌兹冲锋枪");

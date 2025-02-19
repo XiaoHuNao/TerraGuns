@@ -9,25 +9,29 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.terra_guns.common.entity.SimpleItemModelProjectile;
+import org.confluence.terra_guns.common.entity.SimpleTrailProjectile;
 import org.joml.Matrix4f;
 
 import java.util.List;
 
-public class SimpleItemModelProjectileRenderer extends EntityRenderer<SimpleItemModelProjectile> {
+public class SimpleItemModelProjectileRenderer extends EntityRenderer<SimpleTrailProjectile> {
     public SimpleItemModelProjectileRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
-    public ResourceLocation getTextureLocation(SimpleItemModelProjectile entity) {
+    public ResourceLocation getTextureLocation(SimpleTrailProjectile entity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 
     @Override
-    public void render(SimpleItemModelProjectile entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    public void render(SimpleTrailProjectile entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         List<Vec3> trails = entity.getTrails();
         if (trails.isEmpty()) return;
+        int trailColor = entity.getTrailColor();
+        float r = (trailColor & 255) / 255.0F;
+        float g = (trailColor >> 8 & 255) / 255.0F;
+        float b = (trailColor >> 16 & 255) / 255.0F;
         Vec3 pos0;
         Vec3 pos1;
         poseStack.pushPose();
@@ -47,15 +51,15 @@ public class SimpleItemModelProjectileRenderer extends EntityRenderer<SimpleItem
             float width0 = 0.1f / trails.size() * (i - 1);
             float width1 = 0.1f / trails.size() * i;
 
-            bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width0).setColor(1, 1, 1, 0.8f);
-            bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width0).setColor(1, 1, 1, 0.8f);
-            bufferbuilder.addVertex(matrix4f, x2, y2, z2 + width1).setColor(1, 1, 1, 0.8f);
-            bufferbuilder.addVertex(matrix4f, x2, y2, z2 - width1).setColor(1, 1, 1, 0.8f);
+            bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width0).setColor(r, g, b, 0.8f);
+            bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width0).setColor(r, g, b, 0.8f);
+            bufferbuilder.addVertex(matrix4f, x2, y2, z2 + width1).setColor(r, g, b, 0.8f);
+            bufferbuilder.addVertex(matrix4f, x2, y2, z2 - width1).setColor(r, g, b, 0.8f);
 
-            bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width0).setColor(1, 1, 1, 0.8f);
-            bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width0).setColor(1, 1, 1, 0.8f);
-            bufferbuilder.addVertex(matrix4f, x2, y2, z2 - width1).setColor(1, 1, 1, 0.8f);
-            bufferbuilder.addVertex(matrix4f, x2, y2, z2 + width1).setColor(1, 1, 1, 0.8f);
+            bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width0).setColor(r, g, b, 0.8f);
+            bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width0).setColor(r, g, b, 0.8f);
+            bufferbuilder.addVertex(matrix4f, x2, y2, z2 - width1).setColor(r, g, b, 0.8f);
+            bufferbuilder.addVertex(matrix4f, x2, y2, z2 + width1).setColor(r, g, b, 0.8f);
         }
         poseStack.popPose();
     }
