@@ -1,7 +1,6 @@
 package org.confluence.terra_guns.common.item.gun;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -161,10 +160,5 @@ public class GunItem<T extends Projectile> extends ProjectileWeaponItem implemen
     @Override
     public ItemStack getDefaultCreativeAmmo(@Nullable Player player, ItemStack projectileWeaponItem) {
         return TGItems.CHLOROPHYTE_BULLET.toStack();
-    }
-
-    @Override
-    public Component getName(ItemStack stack) {
-        return Component.translatable(getDescriptionId(stack)).withColor(0xFFFFFF); // Confluence mixin here
     }
 }
