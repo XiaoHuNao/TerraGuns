@@ -56,7 +56,12 @@ public class TGItems {
     public static final DeferredItem<Item> NANO_BULLET = ITEM_BULLETS.registerItem("nano_bullet", properties -> new AmmoItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final DeferredItem<Item> EXPLODING_BULLET = ITEM_BULLETS.registerItem("exploding_bullet", properties -> new AmmoItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final DeferredItem<Item> GOLDEN_BULLET = ITEM_BULLETS.registerItem("golden_bullet", properties -> new AmmoItem(7.0F, 4.0F, 2.0F, 2.0F));
-    public static final DeferredItem<Item> ENDLESS_MUSKET_POUCH = ITEM_BULLETS.registerItem("endless_musket_pouch", properties -> new AmmoItem(7.0F, 4.0F, 2.0F, 2.0F));
+    public static final DeferredItem<Item> ENDLESS_MUSKET_POUCH = ITEM_BULLETS.registerItem("endless_musket_pouch", properties -> new AmmoItem(7.0F, 4.0F, 2.0F, 2.0F) {
+        @Override
+        public boolean isInfinite(Player shooter, ItemStack ammoStack, ItemStack gunStack) {
+            return true;
+        }
+    });
     public static final DeferredItem<Item> LUMINITE_BULLET = ITEM_BULLETS.registerItem("luminite_bullet", properties -> new AmmoItem(7.0F, 4.0F, 2.0F, 2.0F));
     public static final DeferredItem<Item> TUNGSTEN_BULLET = ITEM_BULLETS.registerItem("tungsten_bullet", properties -> new AmmoItem(7.0F, 4.0F, 2.0F, 2.0F));
 
