@@ -2,7 +2,7 @@ package org.confluence.terra_guns.common.item.gun;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -18,6 +18,7 @@ import org.confluence.terra_guns.api.IAmmo;
 import org.confluence.terra_guns.api.IGun;
 import org.confluence.terra_guns.common.init.TGAttributes;
 import org.confluence.terra_guns.common.init.TGItems;
+import org.confluence.terra_guns.common.init.TGSoundEvents;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -127,9 +128,13 @@ public class GunItem<T extends Projectile> extends ProjectileWeaponItem implemen
         }
     }
 
+    protected SoundEvent getShotSound() {
+        return TGSoundEvents.SHOOT.get();
+    }
+
     @Override
     public void clientShoot(ClientLevel level, Player shooter, ItemStack gunStack, ItemStack ammoStack) {
-        level.playSound(shooter, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (shooter.getRandom().nextFloat() * 0.4F + 1.2F) * 0.5F);
+        level.playSound(shooter, shooter.getX(), shooter.getY(), shooter.getZ(), getShotSound(), SoundSource.PLAYERS, 1.0F, 1.0F / (shooter.getRandom().nextFloat() * 0.4F + 1.2F) * 0.5F);
     }
 
     @Override
