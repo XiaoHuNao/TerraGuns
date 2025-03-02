@@ -69,7 +69,7 @@ public class GunItem<T extends Projectile> extends ProjectileWeaponItem implemen
             ItemStack ammoStack = player.getProjectile(gunStack);
             boolean infiniteAmmo = isAmmoInfinite(level, player, gunStack, ammoStack);
 
-            if (!ammoStack.isEmpty() || infiniteAmmo) {
+            if (infiniteAmmo || !ammoStack.isEmpty()) {
                 if (ammoStack.isEmpty()) {
                     ammoStack = TGItems.MUSKET_BULLET.get().getDefaultInstance();
                 }
@@ -139,7 +139,7 @@ public class GunItem<T extends Projectile> extends ProjectileWeaponItem implemen
 
     @Override
     public boolean isAmmoInfinite(Level level, Player player, ItemStack gunStack, ItemStack ammoStack) {
-        if (player.hasInfiniteMaterials()) return true;
+        if (ammoStack.isEmpty()) return player.hasInfiniteMaterials();
         if (((IAmmo<T>) ammoStack.getItem()).isInfinite(player, ammoStack, gunStack)) return true;
         return !(player.getRandom().nextDouble() < player.getAttributeValue(TGAttributes.AMMO_CONSUME_CHANCE));
     }
