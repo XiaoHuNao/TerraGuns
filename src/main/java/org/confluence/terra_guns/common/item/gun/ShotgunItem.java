@@ -18,7 +18,7 @@ public class ShotgunItem extends GeoGunItem<BaseAmmoEntity> {
 
     @Override
     public void serverShoot(ServerLevel level, Player player, ItemStack gunStack, ItemStack ammoStack, IAmmo<BaseAmmoEntity> ammo, IGun<BaseAmmoEntity> gun, boolean infiniteAmmo) {
-        for (int i = 0; i < bulletCount; i++) {
+        for (int i = 0; i < bulletCount && !ammoStack.isEmpty(); i++) {
             super.serverShoot(level, player, gunStack, ammoStack, ammo, gun, infiniteAmmo || i > 0);
         }
     }
