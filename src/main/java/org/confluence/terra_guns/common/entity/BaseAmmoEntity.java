@@ -69,7 +69,9 @@ public abstract class BaseAmmoEntity extends AbstractHurtingProjectile {
 
     @Override
     protected boolean canHitEntity(Entity target) {
-        return target.canBeHitByProjectile() && target != getOwner();
+        if (!target.canBeHitByProjectile()) return false;
+        Entity entity = getOwner();
+        return entity == null || (entity != target && !entity.isPassengerOfSameVehicle(target));
     }
 
     public List<Vec3> getTrails() {
