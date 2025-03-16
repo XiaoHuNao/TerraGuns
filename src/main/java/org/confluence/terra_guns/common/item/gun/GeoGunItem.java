@@ -18,14 +18,16 @@ import java.util.function.Consumer;
 public class GeoGunItem<T extends Projectile> extends GunItem<T> implements GeoItem {
     private final AnimatableInstanceCache CACHE = GeckoLibUtil.createInstanceCache(this);
 
-    public GeoGunItem() {
-        super();
+    public GeoGunItem(float baseDamage, float ammoSpeed, int useDelay, float knockBack, float inaccuracy) {
+        super(baseDamage, ammoSpeed, useDelay, knockBack, inaccuracy);
     }
-
     public GeoGunItem(Properties properties) {
         super(properties);
     }
 
+    public GeoGunItem(Properties properties, float baseDamage, float ammoSpeed, int useDelay, float knockBack, float inaccuracy) {
+        super(properties, baseDamage, ammoSpeed, useDelay, knockBack, inaccuracy);
+    }
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {}
 

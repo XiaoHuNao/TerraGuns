@@ -2,6 +2,7 @@ package org.confluence.terra_guns.common.item.gun;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.confluence.terra_guns.api.IAmmo;
 import org.confluence.terra_guns.api.IGun;
@@ -11,14 +12,13 @@ import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
 public class ShotgunItem extends GeoGunItem<BaseAmmoEntity> {
     private final int bulletCount;
 
-    public ShotgunItem(int bulletCount, float inaccuracy) {
+    public ShotgunItem(int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float inaccuracy) {
+        super(new Item.Properties(), damage, weaponSpeed, useDelay, knockBack, inaccuracy);
         this.bulletCount = bulletCount;
-        this.inaccuracy = inaccuracy;
     }
-    public ShotgunItem(Properties properties, int bulletCount, float inaccuracy) {
-        super(properties);
+    public ShotgunItem(Properties properties, int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float inaccuracy) {
+        super(properties, damage, weaponSpeed, useDelay, knockBack, inaccuracy);
         this.bulletCount = bulletCount;
-        this.inaccuracy = inaccuracy;
     }
 
     @Override

@@ -24,17 +24,28 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "unchecked"})
-public class GunItem<T extends Projectile> extends ProjectileWeaponItem implements IGun<T> {
+public abstract class GunItem<T extends Projectile> extends ProjectileWeaponItem implements IGun<T>{
+
     protected float damage = 1.0F;
     protected float weaponSpeed = 1.0F;
+    protected int useDelay = 1;
+    protected float knockBack = 1.0F;
     protected float inaccuracy = 4.0F;
 
+    public GunItem(Properties properties, float damage, float weaponSpeed, int useDelay, float knockBack, float inaccuracy) {
+        super(properties);
+        this.damage = damage;
+        this.weaponSpeed = weaponSpeed;
+        this.useDelay = useDelay;
+        this.knockBack = knockBack;
+        this.inaccuracy = Math.max(0, inaccuracy);
+    }
     public GunItem(Properties properties) {
-        super(properties.stacksTo(1));
+        super(properties);
     }
 
-    public GunItem() {
-        this(new Properties());
+    public GunItem(float damage, float weaponSpeed, int useDelay, float knockBack, float inaccuracy) {
+        this(new Properties(), damage, weaponSpeed, useDelay, knockBack, inaccuracy);
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
@@ -51,7 +62,7 @@ public class GunItem<T extends Projectile> extends ProjectileWeaponItem implemen
     }
 
     protected int getUseDelay(Player shooter, ItemStack gunStack, ItemStack ammoStack) {
-        return 1;
+        return useDelay;
     }
 
     @Override
