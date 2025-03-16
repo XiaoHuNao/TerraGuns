@@ -25,6 +25,13 @@ public class AmmoItem extends Item implements IAmmo<BaseAmmoEntity> {
         this.knockBack = knockBack;
         this.inaccuracy = Math.max(0, inaccuracy);
     }
+    public AmmoItem(Properties properties, float baseDamage, float ammoVelocity, float knockBack, float inaccuracy) {
+        super(properties);
+        this.baseDamage = baseDamage;
+        this.ammoVelocity = ammoVelocity;
+        this.knockBack = knockBack;
+        this.inaccuracy = Math.max(0, inaccuracy);
+    }
 
     @Override
     public BaseAmmoEntity createAmmo(Level level, Player shooter, ItemStack gunStack, ItemStack ammoStack) {
