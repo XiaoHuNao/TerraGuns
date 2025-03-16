@@ -15,6 +15,11 @@ public class ShotgunItem extends GeoGunItem<BaseAmmoEntity> {
         this.bulletCount = bulletCount;
         this.inaccuracy = inaccuracy;
     }
+    public ShotgunItem(Properties properties, int bulletCount, float inaccuracy) {
+        super(properties);
+        this.bulletCount = bulletCount;
+        this.inaccuracy = inaccuracy;
+    }
 
     @Override
     public void serverShoot(ServerLevel level, Player player, ItemStack gunStack, ItemStack ammoStack, IAmmo<BaseAmmoEntity> ammo, IGun<BaseAmmoEntity> gun, boolean infiniteAmmo) {
