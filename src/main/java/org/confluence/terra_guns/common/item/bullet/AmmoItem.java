@@ -26,7 +26,7 @@ public class AmmoItem extends Item implements IAmmo<BaseAmmoEntity> {
         this.inaccuracy = Math.max(0, inaccuracy);
     }
     public AmmoItem(Properties properties, float baseDamage, float ammoVelocity, float knockBack, float inaccuracy) {
-        super(properties);
+        super(properties.stacksTo(TerraGuns.IS_CONFLUENCE_LOADED ? 9999 : 99));
         this.baseDamage = baseDamage;
         this.ammoVelocity = ammoVelocity;
         this.knockBack = knockBack;
