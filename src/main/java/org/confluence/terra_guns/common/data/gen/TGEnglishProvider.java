@@ -21,6 +21,12 @@ public class TGEnglishProvider extends LanguageProvider {
         Consumer<DeferredHolder<Item, ? extends Item>> action = item -> add(item.get(), toTitleCase(item.getId().getPath()));
         TGItems.ITEM_GUNS.getEntries().forEach(action);
         TGItems.ITEM_BULLETS.getEntries().forEach(action);
+
+        add("terra_guns.attribute.weapon_damage","Range Damage");
+        add("terra_guns.attribute.weapon_speed","Velocity");
+        add("terra_guns.attribute.use_delay","Use Time");
+        add("terra_guns.attribute.knock_back","Knockback");
+        add("terra_guns.attribute.crit","Crit");
     }
 
     private static String toTitleCase(String raw) {

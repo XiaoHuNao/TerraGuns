@@ -1,6 +1,9 @@
 package org.confluence.terra_guns.common.item.gun;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -9,10 +12,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.ProjectileWeaponItem;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.confluence.terra_guns.api.IAmmo;
 import org.confluence.terra_guns.api.IGun;
@@ -21,20 +21,41 @@ import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.init.TGSoundEvents;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "unchecked"})
-public class GunItem<T extends Projectile> extends ProjectileWeaponItem implements IGun<T> {
+public abstract class GunItem<T extends Projectile> extends ProjectileWeaponItem implements IGun<T>{
+
     protected float damage = 1.0F;
     protected float weaponSpeed = 1.0F;
+    protected int useDelay = 1;
+    protected float knockBack = 1.0F;
+    protected float crit = 0;
     protected float inaccuracy = 4.0F;
 
+    public GunItem(Properties properties, float damage, float weaponSpeed, int useDelay, float knockBack, float crit, float inaccuracy) {
+        super(properties);
+        this.damage = damage;
+        this.weaponSpeed = weaponSpeed;
+        this.useDelay = useDelay;
+        this.knockBack = knockBack;
+        this.inaccuracy = Math.max(0, inaccuracy);
+        this.crit = Math.max(0, crit);
+    }
     public GunItem(Properties properties) {
-        super(properties.stacksTo(1));
+        super(properties);
     }
 
-    public GunItem() {
-        this(new Properties());
+    public GunItem(float damage, float weaponSpeed, int useDelay, float knockBack, float crit, float inaccuracy) {
+        this(new Properties(), damage, weaponSpeed, useDelay, knockBack, crit, inaccuracy);
+    }
+
+    public GunItem(Properties properties, float damage, float weaponSpeed, int useDelay, float knockBack, float crit) {
+        this(new Properties(), damage, weaponSpeed, useDelay, knockBack, crit, 0);
+    }
+    public GunItem(float damage, float weaponSpeed, int useDelay, float knockBack, float crit) {
+        this(new Properties(), damage, weaponSpeed, useDelay, knockBack, crit, 0);
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
@@ -51,7 +72,7 @@ public class GunItem<T extends Projectile> extends ProjectileWeaponItem implemen
     }
 
     protected int getUseDelay(Player shooter, ItemStack gunStack, ItemStack ammoStack) {
-        return 1;
+        return useDelay;
     }
 
     @Override
@@ -89,7 +110,8 @@ public class GunItem<T extends Projectile> extends ProjectileWeaponItem implemen
 
     public float getRealAmmoSpeed(Player player, T projectile, ItemStack gunStack, ItemStack ammoStack) {
         float ammoSpeed = ((IAmmo<T>) ammoStack.getItem()).getAmmoSpeed(player, projectile, gunStack);
-        return (weaponSpeed + ammoSpeed) * (getExtraUpdates(player, projectile, gunStack) + 1);
+        float velocityMultiplier = ((IAmmo<T>) ammoStack.getItem()).getVelocityMultiplier(player, projectile, gunStack);
+        return (weaponSpeed + ammoSpeed) * (getExtraUpdates(player, projectile, gunStack) + velocityMultiplier) / 10;
     }
 
     public float getExtraUpdates(Player player, T projectile, ItemStack gunStack) {
@@ -160,6 +182,16 @@ public class GunItem<T extends Projectile> extends ProjectileWeaponItem implemen
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.empty());
+        tooltipComponents.add(Component.empty().append(String.format("%.1f ", this.damage)).append(Component.translatable("terra_guns.attribute.weapon_damage")).withStyle(ChatFormatting.DARK_GREEN));
+        tooltipComponents.add(Component.empty().append(String.format("%.1f ", this.weaponSpeed)).append(Component.translatable("terra_guns.attribute.weapon_speed")).withStyle(ChatFormatting.DARK_GREEN));
+        tooltipComponents.add(Component.empty().append(String.valueOf(this.useDelay)).append(" ").append(Component.translatable("terra_guns.attribute.use_delay")).withStyle(ChatFormatting.DARK_GREEN));
+        tooltipComponents.add(Component.empty().append(String.format("%.1f ", this.knockBack)).append(Component.translatable("terra_guns.attribute.knock_back")).withStyle(ChatFormatting.DARK_GREEN));
+        tooltipComponents.add(Component.empty().append(String.format("%.1f", this.crit * 100)).append("% ").append(Component.translatable("terra_guns.attribute.crit")).append(" WIP").withColor(0x3f3f3f));
     }
 
     @Override

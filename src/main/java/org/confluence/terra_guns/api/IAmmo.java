@@ -21,6 +21,7 @@ public interface IAmmo<T extends Projectile> {
     boolean isValidAmmo(ItemStack ammoStack);
 
     float getAmmoSpeed(Player shooter, T ammoEntity, ItemStack gunStack);
+    float getVelocityMultiplier(Player shooter, T ammoEntity, ItemStack gunStack);
 
     float getInaccuracy(Player shooter, T ammoEntity, ItemStack gunStack);
 

@@ -50,5 +50,10 @@ public class TGChineseProvider extends LanguageProvider {
         add(TGItems.LUMINITE_BULLET.get(), "夜明子弹");
         add(TGItems.TUNGSTEN_BULLET.get(), "钨子弹");
 
+        add("terra_guns.attribute.weapon_damage","远程伤害");
+        add("terra_guns.attribute.weapon_speed","射弹速度");
+        add("terra_guns.attribute.use_delay","使用时间");
+        add("terra_guns.attribute.knock_back","击退");
+        add("terra_guns.attribute.crit","暴击率");
     }
 }
