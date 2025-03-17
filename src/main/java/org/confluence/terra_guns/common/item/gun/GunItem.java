@@ -1,6 +1,8 @@
 package org.confluence.terra_guns.common.item.gun;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -12,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.terra_guns.api.IAmmo;
 import org.confluence.terra_guns.api.IGun;
 import org.confluence.terra_guns.common.init.TGAttributes;
@@ -109,7 +110,8 @@ public abstract class GunItem<T extends Projectile> extends ProjectileWeaponItem
 
     public float getRealAmmoSpeed(Player player, T projectile, ItemStack gunStack, ItemStack ammoStack) {
         float ammoSpeed = ((IAmmo<T>) ammoStack.getItem()).getAmmoSpeed(player, projectile, gunStack);
-        return (weaponSpeed + ammoSpeed) * (getExtraUpdates(player, projectile, gunStack) + 1);
+        float velocityMultiplier = ((IAmmo<T>) ammoStack.getItem()).getVelocityMultiplier(player, projectile, gunStack);
+        return (weaponSpeed + ammoSpeed) * (getExtraUpdates(player, projectile, gunStack) + velocityMultiplier) / 10;
     }
 
     public float getExtraUpdates(Player player, T projectile, ItemStack gunStack) {
@@ -184,11 +186,12 @@ public abstract class GunItem<T extends Projectile> extends ProjectileWeaponItem
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("terra_guns.attribute.weapon_damage").append(": ").append(String.format("%.1f", this.damage)).withColor(0x00FF00));
-        tooltipComponents.add(Component.translatable("terra_guns.attribute.weapon_speed").append(": ").append(String.format("%.1f", this.weaponSpeed)).withColor(0x00FF00));
-        tooltipComponents.add(Component.translatable("terra_guns.attribute.use_delay").append(": ").append(String.valueOf(this.useDelay)).withColor(0x00FF00));
-        tooltipComponents.add(Component.translatable("terra_guns.attribute.knock_back").append(": ").append(String.format("%.1f", this.knockBack)).withColor(0x00FF00));
-        tooltipComponents.add(Component.translatable("terra_guns.attribute.crit").append(": ").append(String.format("%.1f", this.crit * 100)).append("% WIP").withColor(0x3f3f3f));
+        tooltipComponents.add(Component.empty());
+        tooltipComponents.add(Component.empty().append(String.format("%.1f ", this.damage)).append(Component.translatable("terra_guns.attribute.weapon_damage")).withStyle(ChatFormatting.DARK_GREEN));
+        tooltipComponents.add(Component.empty().append(String.format("%.1f ", this.weaponSpeed)).append(Component.translatable("terra_guns.attribute.weapon_speed")).withStyle(ChatFormatting.DARK_GREEN));
+        tooltipComponents.add(Component.empty().append(String.valueOf(this.useDelay)).append(" ").append(Component.translatable("terra_guns.attribute.use_delay")).withStyle(ChatFormatting.DARK_GREEN));
+        tooltipComponents.add(Component.empty().append(String.format("%.1f ", this.knockBack)).append(Component.translatable("terra_guns.attribute.knock_back")).withStyle(ChatFormatting.DARK_GREEN));
+        tooltipComponents.add(Component.empty().append(String.format("%.1f", this.crit * 100)).append("% ").append(Component.translatable("terra_guns.attribute.crit")).append(" WIP").withColor(0x3f3f3f));
     }
 
     @Override

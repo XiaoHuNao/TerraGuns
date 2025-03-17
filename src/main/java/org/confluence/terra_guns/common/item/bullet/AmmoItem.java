@@ -1,6 +1,8 @@
 package org.confluence.terra_guns.common.item.bullet;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -19,20 +21,23 @@ import java.util.List;
 public class AmmoItem extends Item implements IAmmo<BaseAmmoEntity> {
     private final float baseDamage;
     private final float ammoVelocity;
+    private final int velocityMultiplier;
     private final float knockBack;
     private final float inaccuracy;
 
-    public AmmoItem(float baseDamage, float ammoVelocity, float knockBack, float inaccuracy) {
+    public AmmoItem(float baseDamage, float ammoVelocity, int velocityMultiplier, float knockBack, float inaccuracy) {
         super(new Properties().stacksTo(TerraGuns.IS_CONFLUENCE_LOADED ? 9999 : 99));
         this.baseDamage = baseDamage;
         this.ammoVelocity = ammoVelocity;
+        this.velocityMultiplier = velocityMultiplier;
         this.knockBack = knockBack;
         this.inaccuracy = Math.max(0, inaccuracy);
     }
-    public AmmoItem(Properties properties, float baseDamage, float ammoVelocity, float knockBack, float inaccuracy) {
+    public AmmoItem(Properties properties, float baseDamage, float ammoVelocity, int velocityMultiplier, float knockBack, float inaccuracy) {
         super(properties.stacksTo(TerraGuns.IS_CONFLUENCE_LOADED ? 9999 : 99));
         this.baseDamage = baseDamage;
         this.ammoVelocity = ammoVelocity;
+        this.velocityMultiplier = velocityMultiplier;
         this.knockBack = knockBack;
         this.inaccuracy = Math.max(0, inaccuracy);
     }
@@ -55,6 +60,10 @@ public class AmmoItem extends Item implements IAmmo<BaseAmmoEntity> {
     @Override
     public float getAmmoSpeed(Player shooter, BaseAmmoEntity projectile, ItemStack gunStack) {
         return ammoVelocity;
+    }
+    @Override
+    public float getVelocityMultiplier(Player shooter, BaseAmmoEntity projectile, ItemStack gunStack) {
+        return velocityMultiplier;
     }
 
     @Override
@@ -95,8 +104,8 @@ public class AmmoItem extends Item implements IAmmo<BaseAmmoEntity> {
     }
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("terra_guns.attribute.weapon_damage").append(": ").append(String.format("%.1f", this.baseDamage)).withColor(0x00FF00));
-        tooltipComponents.add(Component.translatable("terra_guns.attribute.weapon_speed").append(": ").append(String.format("%.1f", this.ammoVelocity)).withColor(0x00FF00));
-        tooltipComponents.add(Component.translatable("terra_guns.attribute.knock_back").append(": ").append(String.format("%.1f", this.knockBack)).withColor(0x00FF00));
+        tooltipComponents.add(Component.empty().append(String.format("+%.1f ", this.baseDamage)).append(Component.translatable("terra_guns.attribute.weapon_damage")).withStyle(ChatFormatting.BLUE));
+        tooltipComponents.add(Component.empty().append(String.format("+%.1f ", this.ammoVelocity)).append(Component.translatable("terra_guns.attribute.weapon_speed")).withStyle(ChatFormatting.BLUE));
+        tooltipComponents.add(Component.empty().append(String.format("+%.1f ", this.knockBack)).append(Component.translatable("terra_guns.attribute.knock_back")).withStyle(ChatFormatting.BLUE));
     }
 }

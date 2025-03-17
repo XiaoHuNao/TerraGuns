@@ -43,27 +43,27 @@ public final class TGItems {
     public static final DeferredItem<Item> BOOMSTICK = registerShotGun("boomstick", 3, /*14*/ 9.3f, 5.35f, 40, 5.75f, 0.04f, 10);
     public static final DeferredItem<Item> SHOTGUN = registerShotGun("shotgun", 3, /*24*/ 16, 7, 45, 6.5f ,0.04f, 10);
 
-    public static final DeferredItem<Item> MUSKET_BULLET = ITEM_BULLETS.registerItem("musket_bullet", properties -> new AmmoItem(/*7*/ 4.6F, 4.0F, 2.0F, 0));
-    public static final DeferredItem<Item> METEOR_BULLET = ITEM_BULLETS.registerItem("meteor_bullet", properties -> new AmmoItem(/*8*/ 5.3F, 3.0F, 2.0F, 0));
-    public static final DeferredItem<Item> SILVER_BULLET = ITEM_BULLETS.registerItem("silver_bullet", properties -> new AmmoItem(/*9*/ 6.0F, 4.5F, 3.0F, 0));
-    public static final DeferredItem<Item> CRYSTAL_BULLET = ITEM_BULLETS.registerItem("crystal_bullet", properties -> new AmmoItem(/*9*/ 6.0F, 5.0F, 1.0F, 0));
-    public static final DeferredItem<Item> CURSED_BULLET = ITEM_BULLETS.registerItem("cursed_bullet", properties -> new AmmoItem(/*12*/ 8.0F, 5.0F, 4.0F, 0));
-    public static final DeferredItem<Item> CHLOROPHYTE_BULLET = ITEM_BULLETS.registerItem("chlorophyte_bullet", properties -> new AmmoItem(/*9*/ 6.0F, 5.0F, 4.5F, 0));
-    public static final DeferredItem<Item> HIGH_VELOCITY_BULLET = ITEM_BULLETS.registerItem("high_velocity_bullet", properties -> new AmmoItem(/*11*/ 7.3F, 4.0F, 8.0F, 0));
-    public static final DeferredItem<Item> ICHOR_BULLET = ITEM_BULLETS.registerItem("ichor_bullet", properties -> new AmmoItem(/*13*/ 8.7F, 5.25F, 4.0F, 0));
-    public static final DeferredItem<Item> VENOM_BULLET = ITEM_BULLETS.registerItem("venom_bullet", properties -> new AmmoItem(/*15*/ 10.0F, 5.3F, 4.1F, 0));
-    public static final DeferredItem<Item> PARTY_BULLET = ITEM_BULLETS.registerItem("party_bullet", properties -> new AmmoItem(/*10*/ 6.7F, 5.1F, 5.0F, 0));
-    public static final DeferredItem<Item> NANO_BULLET = ITEM_BULLETS.registerItem("nano_bullet", properties -> new AmmoItem(/*15*/ 10.0F, 4.6F, 3.6F, 0));
-    public static final DeferredItem<Item> EXPLODING_BULLET = ITEM_BULLETS.registerItem("exploding_bullet", properties -> new AmmoItem(/*10*/ 6.7F, 4.7F, 6.6F, 0));
-    public static final DeferredItem<Item> GOLDEN_BULLET = ITEM_BULLETS.registerItem("golden_bullet", properties -> new AmmoItem(/*10*/ 6.7F, 4.6F, 3.6F, 0));
-    public static final DeferredItem<Item> ENDLESS_MUSKET_POUCH = ITEM_BULLETS.registerItem("endless_musket_pouch", properties -> new AmmoItem(/*7*/ 4.7F, 4.0F, 2.0F, 0) {
+    public static final DeferredItem<Item> MUSKET_BULLET = ITEM_BULLETS.registerItem("musket_bullet", properties -> new AmmoItem(/*7*/ 4.6F, 4.0F, 2, 2.0F, 0));
+    public static final DeferredItem<Item> METEOR_BULLET = ITEM_BULLETS.registerItem("meteor_bullet", properties -> new AmmoItem(/*8*/ 5.3F, 3.0F, 2, 2.0F, 0));
+    public static final DeferredItem<Item> SILVER_BULLET = ITEM_BULLETS.registerItem("silver_bullet", properties -> new AmmoItem(/*9*/ 6.0F, 4.5F, 2, 3.0F, 0));
+    public static final DeferredItem<Item> CRYSTAL_BULLET = ITEM_BULLETS.registerItem("crystal_bullet", properties -> new AmmoItem(/*9*/ 6.0F, 5.0F, 2, 1.0F, 0));
+    public static final DeferredItem<Item> CURSED_BULLET = ITEM_BULLETS.registerItem("cursed_bullet", properties -> new AmmoItem(/*12*/ 8.0F, 5.0F, 3, 4.0F, 0));
+    public static final DeferredItem<Item> CHLOROPHYTE_BULLET = ITEM_BULLETS.registerItem("chlorophyte_bullet", properties -> new AmmoItem(/*9*/ 6.0F, 5.0F, 3, 4.5F, 0));
+    public static final DeferredItem<Item> HIGH_VELOCITY_BULLET = ITEM_BULLETS.registerItem("high_velocity_bullet", properties -> new AmmoItem(/*11*/ 7.3F, 4.0F, 8, 8.0F, 0));
+    public static final DeferredItem<Item> ICHOR_BULLET = ITEM_BULLETS.registerItem("ichor_bullet", properties -> new AmmoItem(/*13*/ 8.7F, 5.25F, 3, 4.0F, 0));
+    public static final DeferredItem<Item> VENOM_BULLET = ITEM_BULLETS.registerItem("venom_bullet", properties -> new AmmoItem(/*15*/ 10.0F, 5.3F, 3, 4.1F, 0));
+    public static final DeferredItem<Item> PARTY_BULLET = ITEM_BULLETS.registerItem("party_bullet", properties -> new AmmoItem(/*10*/ 6.7F, 5.1F, 3, 5.0F, 0));
+    public static final DeferredItem<Item> NANO_BULLET = ITEM_BULLETS.registerItem("nano_bullet", properties -> new AmmoItem(/*15*/ 10.0F, 4.6F, 3, 3.6F, 0));
+    public static final DeferredItem<Item> EXPLODING_BULLET = ITEM_BULLETS.registerItem("exploding_bullet", properties -> new AmmoItem(/*10*/ 6.7F, 4.7F, 3, 6.6F, 0));
+    public static final DeferredItem<Item> GOLDEN_BULLET = ITEM_BULLETS.registerItem("golden_bullet", properties -> new AmmoItem(/*10*/ 6.7F, 4.6F, 3, 3.6F, 0));
+    public static final DeferredItem<Item> ENDLESS_MUSKET_POUCH = ITEM_BULLETS.registerItem("endless_musket_pouch", properties -> new AmmoItem(/*7*/ 4.7F, 4.0F, 2, 2.0F, 0) {
         @Override
         public boolean isInfinite(Player shooter, ItemStack ammoStack, ItemStack gunStack) {
             return true;
         }
     });
-    public static final DeferredItem<Item> LUMINITE_BULLET = ITEM_BULLETS.registerItem("luminite_bullet", properties -> new AmmoItem(/*20*/ 13.3F, 2.0F, 3.0F, 0));
-    public static final DeferredItem<Item> TUNGSTEN_BULLET = ITEM_BULLETS.registerItem("tungsten_bullet", properties -> new AmmoItem(/*9*/ 6.0F, 4.5F, 4.0F, 0));
+    public static final DeferredItem<Item> LUMINITE_BULLET = ITEM_BULLETS.registerItem("luminite_bullet", properties -> new AmmoItem(/*20*/ 13.3F, 2.0F , 6, 3.0F, 0));
+    public static final DeferredItem<Item> TUNGSTEN_BULLET = ITEM_BULLETS.registerItem("tungsten_bullet", properties -> new AmmoItem(/*9*/ 6.0F, 4.5F, 2, 4.0F, 0));
 
     public static void register(IEventBus eventBus) {
         ITEM_GUNS.register(eventBus);
