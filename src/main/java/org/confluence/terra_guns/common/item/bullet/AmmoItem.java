@@ -1,16 +1,20 @@
 package org.confluence.terra_guns.common.item.bullet;
 
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.IAmmo;
 import org.confluence.terra_guns.api.IGun;
 import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
 import org.confluence.terra_guns.common.entity.SimpleTrailProjectile;
+
+import java.util.List;
 
 public class AmmoItem extends Item implements IAmmo<BaseAmmoEntity> {
     private final float baseDamage;
@@ -88,5 +92,11 @@ public class AmmoItem extends Item implements IAmmo<BaseAmmoEntity> {
     @Override
     public float getFinalDamage(float damage, Player shooter, BaseAmmoEntity projectile, ItemStack gunStack, ItemStack ammoStack) {
         return damage;
+    }
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("terra_guns.attribute.weapon_damage").append(": ").append(String.format("%.1f", this.baseDamage)).withColor(0x00FF00));
+        tooltipComponents.add(Component.translatable("terra_guns.attribute.weapon_speed").append(": ").append(String.format("%.1f", this.ammoVelocity)).withColor(0x00FF00));
+        tooltipComponents.add(Component.translatable("terra_guns.attribute.knock_back").append(": ").append(String.format("%.1f", this.knockBack)).withColor(0x00FF00));
     }
 }

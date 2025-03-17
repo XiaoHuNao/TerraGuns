@@ -1,6 +1,7 @@
 package org.confluence.terra_guns.common.item.gun;
 
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -9,11 +10,9 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.ProjectileWeaponItem;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.terra_guns.api.IAmmo;
 import org.confluence.terra_guns.api.IGun;
 import org.confluence.terra_guns.common.init.TGAttributes;
@@ -21,6 +20,7 @@ import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.init.TGSoundEvents;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "unchecked"})
@@ -30,22 +30,31 @@ public abstract class GunItem<T extends Projectile> extends ProjectileWeaponItem
     protected float weaponSpeed = 1.0F;
     protected int useDelay = 1;
     protected float knockBack = 1.0F;
+    protected float crit = 0;
     protected float inaccuracy = 4.0F;
 
-    public GunItem(Properties properties, float damage, float weaponSpeed, int useDelay, float knockBack, float inaccuracy) {
+    public GunItem(Properties properties, float damage, float weaponSpeed, int useDelay, float knockBack, float crit, float inaccuracy) {
         super(properties);
         this.damage = damage;
         this.weaponSpeed = weaponSpeed;
         this.useDelay = useDelay;
         this.knockBack = knockBack;
         this.inaccuracy = Math.max(0, inaccuracy);
+        this.crit = Math.max(0, crit);
     }
     public GunItem(Properties properties) {
         super(properties);
     }
 
-    public GunItem(float damage, float weaponSpeed, int useDelay, float knockBack, float inaccuracy) {
-        this(new Properties(), damage, weaponSpeed, useDelay, knockBack, inaccuracy);
+    public GunItem(float damage, float weaponSpeed, int useDelay, float knockBack, float crit, float inaccuracy) {
+        this(new Properties(), damage, weaponSpeed, useDelay, knockBack, crit, inaccuracy);
+    }
+
+    public GunItem(Properties properties, float damage, float weaponSpeed, int useDelay, float knockBack, float crit) {
+        this(new Properties(), damage, weaponSpeed, useDelay, knockBack, crit, 0);
+    }
+    public GunItem(float damage, float weaponSpeed, int useDelay, float knockBack, float crit) {
+        this(new Properties(), damage, weaponSpeed, useDelay, knockBack, crit, 0);
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
@@ -171,6 +180,15 @@ public abstract class GunItem<T extends Projectile> extends ProjectileWeaponItem
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("terra_guns.attribute.weapon_damage").append(": ").append(String.format("%.1f", this.damage)).withColor(0x00FF00));
+        tooltipComponents.add(Component.translatable("terra_guns.attribute.weapon_speed").append(": ").append(String.format("%.1f", this.weaponSpeed)).withColor(0x00FF00));
+        tooltipComponents.add(Component.translatable("terra_guns.attribute.use_delay").append(": ").append(String.valueOf(this.useDelay)).withColor(0x00FF00));
+        tooltipComponents.add(Component.translatable("terra_guns.attribute.knock_back").append(": ").append(String.format("%.1f", this.knockBack)).withColor(0x00FF00));
+        tooltipComponents.add(Component.translatable("terra_guns.attribute.crit").append(": ").append(String.format("%.1f", this.crit * 100)).append("% WIP").withColor(0x3f3f3f));
     }
 
     @Override

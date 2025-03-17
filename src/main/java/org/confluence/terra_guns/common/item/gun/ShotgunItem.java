@@ -12,12 +12,20 @@ import org.confluence.terra_guns.common.entity.BaseAmmoEntity;
 public class ShotgunItem extends GeoGunItem<BaseAmmoEntity> {
     private final int bulletCount;
 
-    public ShotgunItem(int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float inaccuracy) {
-        super(new Item.Properties(), damage, weaponSpeed, useDelay, knockBack, inaccuracy);
+    public ShotgunItem(int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float crit, float inaccuracy) {
+        super(new Item.Properties(), damage, weaponSpeed, useDelay, knockBack, crit, inaccuracy);
         this.bulletCount = bulletCount;
     }
-    public ShotgunItem(Properties properties, int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float inaccuracy) {
-        super(properties, damage, weaponSpeed, useDelay, knockBack, inaccuracy);
+    public ShotgunItem(Properties properties, int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float crit, float inaccuracy) {
+        super(properties, damage, weaponSpeed, useDelay, knockBack, crit, inaccuracy);
+        this.bulletCount = bulletCount;
+    }
+    public ShotgunItem(int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float crit) {
+        super(new Item.Properties(), damage, weaponSpeed, useDelay, knockBack, crit);
+        this.bulletCount = bulletCount;
+    }
+    public ShotgunItem(Properties properties, int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float crit) {
+        super(properties, damage, weaponSpeed, useDelay, knockBack, crit);
         this.bulletCount = bulletCount;
     }
 

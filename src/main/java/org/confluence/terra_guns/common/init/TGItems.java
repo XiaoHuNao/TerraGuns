@@ -40,8 +40,8 @@ public final class TGItems {
     public static final DeferredItem<Item> STAR_CANNON = registerNormalGun("star_cannon", /*55*/ 36.7f, 14, 14, 3, 0.04f);
     public static final DeferredItem<Item> TACTICAL_SHOTGUN = registerNormalGun("tactical_shotgun", /*29*/ 19.3f, 6, 34, 7, 0.04f);
     public static final DeferredItem<Item> UZI = registerNormalGun("uzi", /*30*/ 20, 13, 9, 3.5f, 0.04f);
-    public static final DeferredItem<Item> BOOMSTICK = registerShotGun("boomstick", 3, /*14*/ 9.3f, 5.35f, 40, 5.75f, 0.04f);
-    public static final DeferredItem<Item> SHOTGUN = registerShotGun("shotgun", 3, /*24*/ 16, 7, 45, 6.5f ,0.04f);
+    public static final DeferredItem<Item> BOOMSTICK = registerShotGun("boomstick", 3, /*14*/ 9.3f, 5.35f, 40, 5.75f, 0.04f, 10);
+    public static final DeferredItem<Item> SHOTGUN = registerShotGun("shotgun", 3, /*24*/ 16, 7, 45, 6.5f ,0.04f, 10);
 
     public static final DeferredItem<Item> MUSKET_BULLET = ITEM_BULLETS.registerItem("musket_bullet", properties -> new AmmoItem(/*7*/ 4.6F, 4.0F, 2.0F, 0));
     public static final DeferredItem<Item> METEOR_BULLET = ITEM_BULLETS.registerItem("meteor_bullet", properties -> new AmmoItem(/*8*/ 5.3F, 3.0F, 2.0F, 0));
@@ -80,11 +80,17 @@ public final class TGItems {
         }
     }
 
-    public static DeferredItem<Item> registerNormalGun(String name, float baseDamage, float weaponSpeed, int useDelay, float knockBack, float inaccuracy) {
-        return ITEM_GUNS.registerItem(name, properties -> new GeoGunItem<>(baseDamage, weaponSpeed, useDelay, knockBack, inaccuracy));
+    public static DeferredItem<Item> registerNormalGun(String name, float baseDamage, float weaponSpeed, int useDelay, float knockBack, float crit, float inaccuracy) {
+        return ITEM_GUNS.registerItem(name, properties -> new GeoGunItem<>(baseDamage, weaponSpeed, useDelay, knockBack, crit, inaccuracy));
+    }
+    public static DeferredItem<Item> registerNormalGun(String name, float baseDamage, float weaponSpeed, int useDelay, float knockBack, float crit) {
+        return ITEM_GUNS.registerItem(name, properties -> new GeoGunItem<>(baseDamage, weaponSpeed, useDelay, knockBack, crit));
     }
 
-    public static DeferredItem<Item> registerShotGun(String name, int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float inaccuracy) {
-        return ITEM_GUNS.registerItem(name, properties -> new ShotgunItem(bulletCount, damage, weaponSpeed, useDelay, knockBack, inaccuracy));
+    public static DeferredItem<Item> registerShotGun(String name, int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float crit) {
+        return ITEM_GUNS.registerItem(name, properties -> new ShotgunItem(bulletCount, damage, weaponSpeed, useDelay, knockBack, crit));
+    }
+    public static DeferredItem<Item> registerShotGun(String name, int bulletCount, float damage, float weaponSpeed, int useDelay, float knockBack, float crit, float inaccuracy) {
+        return ITEM_GUNS.registerItem(name, properties -> new ShotgunItem(bulletCount, damage, weaponSpeed, useDelay, knockBack, crit, inaccuracy));
     }
 }

@@ -18,15 +18,21 @@ import java.util.function.Consumer;
 public class GeoGunItem<T extends Projectile> extends GunItem<T> implements GeoItem {
     private final AnimatableInstanceCache CACHE = GeckoLibUtil.createInstanceCache(this);
 
-    public GeoGunItem(float baseDamage, float ammoSpeed, int useDelay, float knockBack, float inaccuracy) {
-        super(baseDamage, ammoSpeed, useDelay, knockBack, inaccuracy);
+    public GeoGunItem(float baseDamage, float ammoSpeed, int useDelay, float knockBack, float crit, float inaccuracy) {
+        super(baseDamage, ammoSpeed, useDelay, knockBack, crit, inaccuracy);
+    }
+    public GeoGunItem(float baseDamage, float ammoSpeed, int useDelay, float knockBack, float crit) {
+        super(baseDamage, ammoSpeed, useDelay, knockBack, crit);
     }
     public GeoGunItem(Properties properties) {
         super(properties);
     }
 
-    public GeoGunItem(Properties properties, float baseDamage, float ammoSpeed, int useDelay, float knockBack, float inaccuracy) {
-        super(properties, baseDamage, ammoSpeed, useDelay, knockBack, inaccuracy);
+    public GeoGunItem(Properties properties, float baseDamage, float ammoSpeed, int useDelay, float knockBack, float crit, float inaccuracy) {
+        super(properties, baseDamage, ammoSpeed, useDelay, knockBack, crit, inaccuracy);
+    }
+    public GeoGunItem(Properties properties, float baseDamage, float ammoSpeed, int useDelay, float knockBack, float crit) {
+        super(properties, baseDamage, ammoSpeed, useDelay, knockBack, crit);
     }
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {}
