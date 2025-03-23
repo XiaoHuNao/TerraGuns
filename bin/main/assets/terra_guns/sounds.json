@@ -1,0 +1,12 @@
+{
+    "laser": {
+        "sounds": [
+            "terra_guns:laser"
+        ]
+    },
+    "shoot": {
+        "sounds": [
+            "terra_guns:shoot"
+        ]
+    }
+}
