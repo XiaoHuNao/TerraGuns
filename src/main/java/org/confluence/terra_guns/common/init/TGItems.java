@@ -31,12 +31,12 @@ public final class TGItems {
     public static final DeferredItem<Item> MINISHARK = registerNormalGun("minishark", ModRarity.GREEN, /*6*/ 4, 7, 8, 0, 0.04f);
     public static final DeferredItem<Item> FLARE_GUN = registerNormalGun("flare_gun", ModRarity.BLUE, 0, 6, 18, 0, 0);
     public static final DeferredItem<Item> BLOWGUN = registerNormalGun("blowgun", ModRarity.ORANGE, /*27*/ 18, 13, 35,4, 4);
-    public static final DeferredItem<Item> BLOWPIPE = registerNormalGun("blowpipe", /*9*/ 6, 11, 8, 3.5f, 0.04f);
+    public static final DeferredItem<Item> BLOWPIPE = registerNormalGun("blowpipe", ModRarity.WHITE, /*9*/ 6, 11, 8, 3.5f, 0.04f);
     public static final DeferredItem<Item> HANGGUN = registerNormalGun("handgun", ModRarity.GREEN, /*25*/ 16.7f, 10, 15, 1, 0.04f);
     public static final DeferredItem<Item> ONYX_BLASTER = registerNormalGun("onyx_blaster", ModRarity.LIGHT_RED, /*24*/ 16, 14, 48, 6.5f, 0.04f);
     public static final DeferredItem<Item> PHOENIX_BLASTER = registerNormalGun("phoenix_blaster", ModRarity.ORANGE, /*30*/ 20, 13, 14, 2, 0.04f);
     public static final DeferredItem<Item> SANDGUN = registerNormalGun("sandgun", ModRarity.GREEN, /*30*/ 20, 24, 14, 5, 0.04f);
-    public static final DeferredItem<Item> SLIME_GUN = registerNormalGun("slime_gun", 0, 24, 12, 0, 0);
+    public static final DeferredItem<Item> SLIME_GUN = registerNormalGun("slime_gun", ModRarity.WHITE, 0, 24, 12, 0, 0);
     public static final DeferredItem<Item> SNIPER_RIFLE = registerNormalGun("sniper_rifle", ModRarity.YELLOW, /*185*/ 123.3f, 16, 36, 8, 0.29f);
     public static final DeferredItem<Item> SNOWBALL_CANNON = registerNormalGun("snowball_cannon", ModRarity.BLUE, /*10*/ 6.5f, 11, 19, 1, 0.04f);
     public static final DeferredItem<Item> STAR_CANNON = registerNormalGun("star_cannon", ModRarity.GREEN, /*55*/ 36.7f, 14, 14, 3, 0.04f);
