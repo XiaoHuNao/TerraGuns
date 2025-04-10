@@ -5,10 +5,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
-import org.confluence.terra_guns.common.init.TGAttributes;
-import org.confluence.terra_guns.common.init.TGEntities;
-import org.confluence.terra_guns.common.init.TGItems;
-import org.confluence.terra_guns.common.init.TGSoundEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +15,6 @@ public class TerraGuns {
     public static final boolean IS_CONFLUENCE_LOADED = ModList.get().isLoaded("confluence");
 
     public TerraGuns(IEventBus modEventBus, ModContainer modContainer) {
-        TGItems.register(modEventBus);
-        TGEntities.ENTITIES.register(modEventBus);
-        TGAttributes.ATTRIBUTES.register(modEventBus);
-        TGSoundEvents.EVENTS.register(modEventBus);
     }
 
     public static ResourceLocation asResource(String path) {
