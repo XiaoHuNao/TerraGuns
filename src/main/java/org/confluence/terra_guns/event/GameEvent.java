@@ -1,6 +1,7 @@
 package org.confluence.terra_guns.event;
 
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import org.confluence.terra_guns.TerraGuns;
 
