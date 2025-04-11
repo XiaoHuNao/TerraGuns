@@ -15,6 +15,7 @@ public class TerraGuns {
     public static final boolean IS_CONFLUENCE_LOADED = ModList.get().isLoaded("confluence");
 
     public TerraGuns(IEventBus modEventBus, ModContainer modContainer) {
+
     }
 
     public static ResourceLocation asResource(String path) {
