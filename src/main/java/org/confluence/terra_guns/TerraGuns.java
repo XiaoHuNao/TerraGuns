@@ -8,6 +8,14 @@ import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.confluence.terra_guns.common.init.TGAttributes.*;
+import static org.confluence.terra_guns.common.init.TGDataComponents.*;
+import static org.confluence.terra_guns.common.init.TGEntities.*;
+import static org.confluence.terra_guns.common.init.TGItems.*;
+import static org.confluence.terra_guns.common.init.TGMobEffects.*;
+import static org.confluence.terra_guns.common.init.TGSoundEvents.*;
+import static org.confluence.terra_guns.common.init.TGTabs.*;
+
 @Mod(TerraGuns.MODID)
 public class TerraGuns {
     public static final String MODID = "terra_guns";
@@ -15,10 +23,20 @@ public class TerraGuns {
     public static final boolean IS_CONFLUENCE_LOADED = ModList.get().isLoaded("confluence");
 
     public TerraGuns(IEventBus modEventBus, ModContainer modContainer) {
-
+        ATTRIBUTES.register(modEventBus);
+        TABS.register(modEventBus);
+        DATA_COMPONENTS.register(modEventBus);
+        ENTITY_TYPES.register(modEventBus);
+        ITEMS.register(modEventBus);
+        MOB_EFFECTS.register(modEventBus);
+        SOUNDS.register(modEventBus);
     }
 
     public static ResourceLocation asResource(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    }
+
+    public static String asResourceString(String path) {
+        return asResource(path).toString();
     }
 }

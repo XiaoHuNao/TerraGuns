@@ -13,6 +13,6 @@ public class TGDataComponents {
     public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, TerraGuns.MODID);
 
     public static final Supplier<DataComponentType<GunPropertyComponent>> GUN_PROPERTY_COMPONENT = DATA_COMPONENTS.registerComponentType("gun_property", GunPropertyComponent::fastBuilder);
-    public static final Supplier<DataComponentType<BulletPropertyComponent>> BULLET_PROPERTY_COMPONENT = DATA_COMPONENTS.registerComponentType("gun_property", BulletPropertyComponent::fastBuilder);
+    public static final Supplier<DataComponentType<BulletPropertyComponent>> BULLET_PROPERTY_COMPONENT = DATA_COMPONENTS.registerComponentType("bullet_property", BulletPropertyComponent::fastBuilder);
 }
 
