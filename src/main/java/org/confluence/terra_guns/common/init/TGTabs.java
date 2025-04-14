@@ -15,6 +15,7 @@ public class TGTabs {
                     .title(Component.translatable("creative_tab.terra_guns.gun_tab"))
                     .displayItems((parameters, output) -> {
                         output.accept(Items.STONE);
+                        TGItems.ITEMS.getEntries().forEach(holder -> output.accept(holder.get()));
                     })
                     .build()
     );
