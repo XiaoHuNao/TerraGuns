@@ -23,8 +23,8 @@ public class DataGenerator {
         CompletableFuture<HolderLookup.Provider> lookup = event.getLookupProvider();
 
         boolean client = event.includeClient();
-        generator.addProvider(client, new TGEnglishProvider(output));
-        generator.addProvider(client, new TGChineseProvider(output));
+//        generator.addProvider(client, new TGEnglishProvider(output));
+//        generator.addProvider(client, new TGChineseProvider(output));
 //        generator.addProvider(client, new ModItemModelProvider(output, helper));
 
         boolean server = event.includeServer();
