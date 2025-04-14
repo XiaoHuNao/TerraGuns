@@ -9,13 +9,22 @@ import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.impl.SimpleStreamCodec;
 import org.jetbrains.annotations.Nullable;
 
-public record BulletPropertyComponent(int damage, float velocity, float velocityMultiplier, float repulsed, ModRarity rarity) implements DataComponentType<BulletPropertyComponent>{
+/**
+ * @param damage 子弹伤害
+ * @param velocity 射弹速度
+ * @param velocityMultiplier 总射弹速度乘数
+ * @param knockback 击退
+ * @param rarity 稀有度
+ * @param infinity 无限使用
+ */
+public record BulletPropertyComponent(int damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, boolean infinity) implements DataComponentType<BulletPropertyComponent>{
     public static final Codec<BulletPropertyComponent> CODEC = RecordCodecBuilder.create(ins -> ins.group(
             Codec.INT.fieldOf("damage").forGetter(BulletPropertyComponent::damage),
             Codec.FLOAT.fieldOf("velocity").forGetter(BulletPropertyComponent::velocity),
             Codec.FLOAT.fieldOf("velocityMultiplier").forGetter(BulletPropertyComponent::velocityMultiplier),
-            Codec.FLOAT.fieldOf("repulsed").forGetter(BulletPropertyComponent::repulsed),
-            ModRarity.CODEC.fieldOf("rarity").forGetter(BulletPropertyComponent::rarity)
+            Codec.FLOAT.fieldOf("knockback").forGetter(BulletPropertyComponent::knockback),
+            ModRarity.CODEC.fieldOf("rarity").forGetter(BulletPropertyComponent::rarity),
+            Codec.BOOL.fieldOf("infinity").forGetter(BulletPropertyComponent::infinity)
     ).apply(ins, BulletPropertyComponent::new));
 
     public static final StreamCodec<FriendlyByteBuf, BulletPropertyComponent> STREAM_CODEC = new SimpleStreamCodec<>(CODEC);
