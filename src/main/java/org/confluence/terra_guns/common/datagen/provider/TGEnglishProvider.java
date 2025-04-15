@@ -22,7 +22,8 @@ public class TGEnglishProvider extends LanguageProvider {
         add("tooltip.terra_guns.damage", "Ranged Damage: %s");
         add("tooltip.terra_guns.critical", "Critical Strike Chance: %s%%");
         add("tooltip.terra_guns.knockback", "Knockback: %s");
-        TGItems.ITEMS.getEntries().forEach(itemAction);
+        TGItems.GUNS.getEntries().forEach(itemAction);
+        TGItems.BULLETS.getEntries().forEach(itemAction);
 
         add("key.terra_guns.shoot", "Shoot");
         add("key.terra_guns.aim", "Aim");

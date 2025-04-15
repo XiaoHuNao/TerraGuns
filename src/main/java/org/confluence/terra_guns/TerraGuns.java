@@ -27,7 +27,8 @@ public class TerraGuns {
         TABS.register(modEventBus);
         DATA_COMPONENTS.register(modEventBus);
         ENTITY_TYPES.register(modEventBus);
-        ITEMS.register(modEventBus);
+        GUNS.register(modEventBus);
+        BULLETS.register(modEventBus);
         MOB_EFFECTS.register(modEventBus);
         SOUNDS.register(modEventBus);
     }

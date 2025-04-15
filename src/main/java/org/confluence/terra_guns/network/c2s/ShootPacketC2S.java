@@ -13,12 +13,9 @@ import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletManager;
 
-public record ShootPacketC2S(int penetrate) implements CustomPacketPayload {
+public record ShootPacketC2S() implements CustomPacketPayload {
     public static final Type<ShootPacketC2S> TYPE = new Type<>(TerraGuns.asResource("shoot"));
-    public static final StreamCodec<ByteBuf, ShootPacketC2S> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT, p -> p.penetrate,
-            ShootPacketC2S::new
-    );
+    public static final StreamCodec<ByteBuf, ShootPacketC2S> STREAM_CODEC = StreamCodec.unit(new ShootPacketC2S());
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
@@ -27,11 +24,11 @@ public record ShootPacketC2S(int penetrate) implements CustomPacketPayload {
 
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            if (context.player() instanceof ServerPlayer serverPlayer){
-                ItemStack ammo = new BulletManager(serverPlayer).getAmmo();
-
-                if (serverPlayer.getMainHandItem().getItem() instanceof BaseGun baseGun){
-//                    baseGun.shoot(serverPlayer.serverLevel(), serverPlayer, );
+            if (context.player() instanceof ServerPlayer serverPlayer) {
+                if (serverPlayer.getMainHandItem().getItem() instanceof BaseGun baseGun) {
+                    BulletManager bulletManager = new BulletManager(serverPlayer);
+                    ItemStack ammo = bulletManager.getAmmo();
+                    baseGun.shoot(serverPlayer, ammo);
                 }
             }
         }).exceptionally(e -> {
@@ -40,7 +37,7 @@ public record ShootPacketC2S(int penetrate) implements CustomPacketPayload {
         });
     }
 
-    public static void sendToServer(int index) {
-        PacketDistributor.sendToServer(new ShootPacketC2S(index));
+    public static void sendToServer() {
+        PacketDistributor.sendToServer(new ShootPacketC2S());
     }
 }

@@ -3,6 +3,7 @@ package org.confluence.terra_guns.common.item.gun;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -10,60 +11,57 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.neoforged.neoforge.common.NeoForge;
 import org.confluence.lib.common.component.ModRarity;
+import org.confluence.terra_guns.api.event.GunEvent;
+import org.confluence.terra_guns.common.component.BulletPropertyComponent;
 import org.confluence.terra_guns.common.component.GunPropertyComponent;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
+import org.confluence.terra_guns.impl.AmmoDataManager;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class BaseGun extends Item {
     private final GunPropertyComponent component;
 
     public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, ModRarity rarity) {
-        super(properties.stacksTo(1));
-        this.component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
+        super(properties.stacksTo(1).component(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity)));
 
-        this.components().getOrDefault(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), component);
+        this.component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
     }
 
-    public void shoot(
-            ServerLevel level,
-            LivingEntity shooter,
-            List<ItemStack> projectileItems,
-            float velocity,
-            float inaccuracy,
-            @Nullable LivingEntity target
-    ) {
-        float f1 = projectileItems.size() == 1 ? 0.0F : 2.0F / (float) (projectileItems.size() - 1);
-        float f2 = (float) ((projectileItems.size() - 1) % 2) * f1 / 2.0F;
-        float f3 = 1.0F;
+    public void shoot(ServerPlayer player, ItemStack ammo) {
+        ServerLevel serverLevel = player.serverLevel();
+        BulletPropertyComponent bulletComponent = ammo.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
+        if (bulletComponent == null) return;
 
-        for (int i = 0; i < projectileItems.size(); i++) {
-            ItemStack itemstack = projectileItems.get(i);
-            if (!itemstack.isEmpty()) {
-                float f4 = f2 + f3 * (float) ((i + 1) / 2) * f1;
-                f3 = -f3;
-                Projectile projectile = new BaseBulletEntity(level);
-                projectile.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot() + f4, 0.0F, velocity, inaccuracy);
+        AmmoDataManager ammoDataManager = new AmmoDataManager(this.component, bulletComponent);
+        float damage = ammoDataManager.getDamage();
+        float knockback = ammoDataManager.getKnockback();
+        float velocity = ammoDataManager.getVelocity();
+        int penetrate = ammoDataManager.getPenetrate();
+        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, damage, knockback, velocity, penetrate);
+        NeoForge.EVENT_BUS.post(ammoDataEvent);
 
-                level.addFreshEntity(projectile);
-            }
+        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(serverLevel, ((BaseBullet) ammo.getItem()), ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getPenetrate());
+        baseBulletEntity.setOwner(player);
+        baseBulletEntity.moveTo(player.getX(), player.getEyeY() - 0.1, player.getZ(), player.getXRot(), player.getYRot());
+        baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, ammoDataEvent.getVelocity(), 0);
+        serverLevel.addFreshEntity(baseBulletEntity);
+
+        if (!bulletComponent.infinity()) {
+            ammo.shrink(1);
         }
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         tooltipComponents.add(Component.translatable("tooltip.terra_guns.damage", component.damage()).withStyle(ChatFormatting.GRAY));
-        tooltipComponents.add(Component.translatable("tooltip.terra_guns.critical", component.critical() * 100).withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.terra_guns.critical", String.format("%.1f", component.critical() * 100)).withStyle(ChatFormatting.GRAY));
         tooltipComponents.add(Component.translatable("tooltip.terra_guns.knockback", component.knockback()).withStyle(ChatFormatting.GRAY));
-    }
-
-    public int getPenetrate() {
-        return component.penetrate();
     }
 
     public int getCooldown() {

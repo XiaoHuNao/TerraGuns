@@ -10,9 +10,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import org.confluence.terra_guns.TerraGuns;
+import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.client.init.TGKeys;
 import org.confluence.terra_guns.client.sounds.SoundsManager;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
+import org.confluence.terra_guns.impl.BulletManager;
+import org.confluence.terra_guns.network.c2s.ShootPacketC2S;
 
 @EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class GameEvent {
@@ -22,12 +25,16 @@ public class GameEvent {
     public static void gunShot(ClientTickEvent.Post event) {
         if (TGKeys.SHOOT.get().consumeClick()) {
             LocalPlayer player = minecraft.player;
-            ClientLevel level = minecraft.level;
             ItemCooldowns cooldowns = player.getCooldowns();
-            if (player.getMainHandItem().getItem() instanceof BaseGun baseGun && !cooldowns.isOnCooldown(baseGun)) {
-                player.playSound(SoundsManager.getSound(player.getMainHandItem()), 1f, 1f);
 
-                cooldowns.addCooldown(baseGun, baseGun.getCooldown());
+            if (player.getMainHandItem().getItem() instanceof BaseGun baseGun && !cooldowns.isOnCooldown(baseGun)) {
+                BulletManager bulletManager = new BulletManager(player);
+                GunEvent.UseGunEvent useGunEvent = new GunEvent.UseGunEvent(player, baseGun, baseGun.getCooldown());
+                if (useGunEvent.isCanceled() || !bulletManager.canShoot()) return;
+
+                player.playSound(SoundsManager.getSound(player.getMainHandItem()), 1f, 1f);
+                ShootPacketC2S.sendToServer();
+                cooldowns.addCooldown(baseGun, useGunEvent.getCooldowns());
             }
         }
     }

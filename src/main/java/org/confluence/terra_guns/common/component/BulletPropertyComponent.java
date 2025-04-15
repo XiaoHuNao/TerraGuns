@@ -17,9 +17,9 @@ import org.jetbrains.annotations.Nullable;
  * @param rarity 稀有度
  * @param infinity 无限使用
  */
-public record BulletPropertyComponent(int damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, boolean infinity) implements DataComponentType<BulletPropertyComponent>{
+public record BulletPropertyComponent(float damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, boolean infinity) implements DataComponentType<BulletPropertyComponent>{
     public static final Codec<BulletPropertyComponent> CODEC = RecordCodecBuilder.create(ins -> ins.group(
-            Codec.INT.fieldOf("damage").forGetter(BulletPropertyComponent::damage),
+            Codec.FLOAT.fieldOf("damage").forGetter(BulletPropertyComponent::damage),
             Codec.FLOAT.fieldOf("velocity").forGetter(BulletPropertyComponent::velocity),
             Codec.FLOAT.fieldOf("velocityMultiplier").forGetter(BulletPropertyComponent::velocityMultiplier),
             Codec.FLOAT.fieldOf("knockback").forGetter(BulletPropertyComponent::knockback),
