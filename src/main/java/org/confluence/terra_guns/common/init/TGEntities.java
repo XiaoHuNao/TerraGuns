@@ -11,5 +11,5 @@ import java.util.function.Supplier;
 
 public class TGEntities {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, TerraGuns.MODID);
-    public static final Supplier<EntityType<BaseBulletEntity>> BASE_BULLET_ENTITY = ENTITY_TYPES.register("base_bullet", () -> EntityType.Builder.of(BaseBulletEntity::new, MobCategory.MISC).sized(0.1f,0.1f).build(TerraGuns.asResourceString("base_bullet")));
+    public static final Supplier<EntityType<BaseBulletEntity>> BASE_BULLET_ENTITY = ENTITY_TYPES.register("base_bullet", () -> EntityType.Builder.<BaseBulletEntity>of(BaseBulletEntity::new, MobCategory.MISC).sized(0.1f,0.1f).build(TerraGuns.asResourceString("base_bullet")));
 }
