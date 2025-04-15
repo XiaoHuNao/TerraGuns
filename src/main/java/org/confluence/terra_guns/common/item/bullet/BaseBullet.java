@@ -10,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.confluence.lib.common.component.ModRarity;
+import org.confluence.terra_guns.api.event.BulletEvent;
 import org.confluence.terra_guns.common.component.BulletPropertyComponent;
 import org.confluence.terra_guns.common.component.GunPropertyComponent;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;

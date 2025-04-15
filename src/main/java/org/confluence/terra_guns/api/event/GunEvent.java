@@ -109,4 +109,19 @@ public class GunEvent extends Event {
             this.penetrate = penetrate;
         }
     }
+
+    public static class ShrinkBulletEvent extends GunEvent implements ICancellableEvent{
+        private int shrink = 1;
+        public ShrinkBulletEvent(Player player, BaseGun gun, ItemStack ammo) {
+            super(player, gun);
+        }
+
+        public void setShrink(int shrink) {
+            this.shrink = shrink;
+        }
+
+        public int getShrink() {
+            return shrink;
+        }
+    }
 }

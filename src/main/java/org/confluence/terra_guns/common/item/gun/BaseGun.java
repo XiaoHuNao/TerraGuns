@@ -4,13 +4,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.neoforge.common.NeoForge;
 import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.api.event.GunEvent;
@@ -18,7 +14,6 @@ import org.confluence.terra_guns.common.component.BulletPropertyComponent;
 import org.confluence.terra_guns.common.component.GunPropertyComponent;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGDataComponents;
-import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.confluence.terra_guns.impl.AmmoDataManager;
 
@@ -29,7 +24,6 @@ public class BaseGun extends Item {
 
     public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, ModRarity rarity) {
         super(properties.stacksTo(1).component(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity)));
-
         this.component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
     }
 
@@ -52,8 +46,9 @@ public class BaseGun extends Item {
         baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, ammoDataEvent.getVelocity(), 0);
         serverLevel.addFreshEntity(baseBulletEntity);
 
-        if (!bulletComponent.infinity()) {
-            ammo.shrink(1);
+        GunEvent.ShrinkBulletEvent shrinkBulletEvent = new GunEvent.ShrinkBulletEvent(player, this, ammo);
+        if (!bulletComponent.infinity() && !shrinkBulletEvent.isCanceled()) {
+            ammo.shrink(shrinkBulletEvent.getShrink());
         }
     }
 
