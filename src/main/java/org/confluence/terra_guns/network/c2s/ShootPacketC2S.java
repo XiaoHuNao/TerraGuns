@@ -13,6 +13,8 @@ import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletManager;
 
+import java.util.List;
+
 public record ShootPacketC2S() implements CustomPacketPayload {
     public static final Type<ShootPacketC2S> TYPE = new Type<>(TerraGuns.asResource("shoot"));
     public static final StreamCodec<ByteBuf, ShootPacketC2S> STREAM_CODEC = StreamCodec.unit(new ShootPacketC2S());
@@ -27,7 +29,7 @@ public record ShootPacketC2S() implements CustomPacketPayload {
             if (context.player() instanceof ServerPlayer serverPlayer) {
                 if (serverPlayer.getMainHandItem().getItem() instanceof BaseGun baseGun) {
                     BulletManager bulletManager = new BulletManager(serverPlayer);
-                    ItemStack ammo = bulletManager.getAmmo();
+                    List<ItemStack> ammo = bulletManager.getAmmo();
                     baseGun.shoot(serverPlayer, ammo);
                 }
             }

@@ -16,10 +16,16 @@ import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.confluence.terra_guns.impl.AmmoDataManager;
+import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class BaseGun extends Item {
+public class BaseGun extends Item implements GeoItem {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final GunPropertyComponent component;
 
     public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, ModRarity rarity) {
@@ -27,9 +33,10 @@ public class BaseGun extends Item {
         this.component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
     }
 
-    public void shoot(ServerPlayer player, ItemStack ammo) {
+    public void shoot(ServerPlayer player, List<ItemStack> ammo) {
+        ItemStack bullet = ammo.getFirst();
         ServerLevel serverLevel = player.serverLevel();
-        BulletPropertyComponent bulletComponent = ammo.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
+        BulletPropertyComponent bulletComponent = bullet.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
         if (bulletComponent == null) return;
 
         AmmoDataManager ammoDataManager = new AmmoDataManager(this.component, bulletComponent);
@@ -40,15 +47,18 @@ public class BaseGun extends Item {
         GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, damage, knockback, velocity, penetrate);
         NeoForge.EVENT_BUS.post(ammoDataEvent);
 
-        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(serverLevel, ((BaseBullet) ammo.getItem()), ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getPenetrate());
+        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(serverLevel, ((BaseBullet) bullet.getItem()), ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getPenetrate());
         baseBulletEntity.setOwner(player);
         baseBulletEntity.moveTo(player.getX(), player.getEyeY() - 0.1, player.getZ(), player.getXRot(), player.getYRot());
         baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, ammoDataEvent.getVelocity(), 0);
         serverLevel.addFreshEntity(baseBulletEntity);
 
-        GunEvent.ShrinkBulletEvent shrinkBulletEvent = new GunEvent.ShrinkBulletEvent(player, this, ammo);
-        if (!bulletComponent.infinity() && !shrinkBulletEvent.isCanceled()) {
-            ammo.shrink(shrinkBulletEvent.getShrink());
+        boolean infinity = bulletComponent.infinity();
+        GunEvent.ShrinkBulletEvent shrinkBulletEvent = new GunEvent.ShrinkBulletEvent(player, this, bullet, ammo, infinity);
+        NeoForge.EVENT_BUS.post(shrinkBulletEvent);
+
+        if (!shrinkBulletEvent.isInfinity() || !shrinkBulletEvent.isCanceled()) {
+            shrinkBulletEvent.getShrinkBullet().shrink(shrinkBulletEvent.getShrink());
         }
     }
 
@@ -61,5 +71,19 @@ public class BaseGun extends Item {
 
     public int getCooldown() {
         return component.cooldown();
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "controller", 20, this::predicate));
+    }
+
+    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> state) {
+        return PlayState.STOP;
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }

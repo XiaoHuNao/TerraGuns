@@ -6,6 +6,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 
+import java.util.List;
+
 public class GunEvent extends Event {
     private final Player player;
     private final BaseGun gun;
@@ -47,19 +49,27 @@ public class GunEvent extends Event {
      * 选择射击子弹
      */
     public static class AmmoSelectedEvent extends GunEvent {
-        private ItemStack bullet;
+        private List<ItemStack> ammo;
 
-        public AmmoSelectedEvent(Player player, BaseGun gun, ItemStack bullet) {
+        public AmmoSelectedEvent(Player player, BaseGun gun, List<ItemStack> ammo) {
             super(player, gun);
-            this.bullet = bullet;
+            this.ammo = ammo;
         }
 
-        public ItemStack getBullet() {
-            return bullet;
+        public List<ItemStack> getAmmo() {
+            return ammo;
         }
 
-        public void setBullet(ItemStack bullet) {
-            this.bullet = bullet;
+        public void setAmmo(List<ItemStack> ammo) {
+            this.ammo = ammo;
+        }
+
+        public void addAmmo(ItemStack ammo) {
+            this.ammo.add(ammo);
+        }
+
+        public boolean removeAmmo(ItemStack ammo) {
+            return this.ammo.remove(ammo);
         }
     }
 
@@ -112,13 +122,18 @@ public class GunEvent extends Event {
 
     /**
      * 子弹消耗
-     * */
-    public static class ShrinkBulletEvent extends GunEvent implements ICancellableEvent{
-        private ItemStack ammo;
+     */
+    public static class ShrinkBulletEvent extends GunEvent implements ICancellableEvent {
         private int shrink = 1;
-        public ShrinkBulletEvent(Player player, BaseGun gun, ItemStack ammo) {
+        private final List<ItemStack> ammo;
+        private boolean infinity;
+        private ItemStack bullet;
+
+        public ShrinkBulletEvent(Player player, BaseGun gun, ItemStack bullet, List<ItemStack> ammo, boolean infinity) {
             super(player, gun);
             this.ammo = ammo;
+            this.infinity = infinity;
+            this.bullet = bullet;
         }
 
         public void setShrink(int shrink) {
@@ -129,12 +144,24 @@ public class GunEvent extends Event {
             return shrink;
         }
 
-        public void setAmmo(ItemStack ammo) {
-            this.ammo = ammo;
+        public boolean isInfinity() {
+            return infinity;
         }
 
-        public ItemStack getAmmo() {
+        public List<ItemStack> getAmmo() {
             return ammo;
+        }
+
+        public void setInfinity(boolean infinity) {
+            this.infinity = infinity;
+        }
+
+        public ItemStack getShrinkBullet() {
+            return bullet;
+        }
+
+        public void setShrinkBullet(ItemStack bullet) {
+            this.bullet = bullet;
         }
     }
 }

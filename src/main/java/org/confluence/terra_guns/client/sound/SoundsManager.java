@@ -1,4 +1,4 @@
-package org.confluence.terra_guns.client.sounds;
+package org.confluence.terra_guns.client.sound;
 
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;

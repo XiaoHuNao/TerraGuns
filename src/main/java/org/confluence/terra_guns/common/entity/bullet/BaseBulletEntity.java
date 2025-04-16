@@ -18,11 +18,17 @@ import org.confluence.terra_guns.common.init.TGEntities;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BaseBulletEntity extends Projectile {
     private BaseBullet bullet;
     private float damage;
     private float knockback;
     private int penetrate;
+    private final List<Vec3> trails = new ArrayList<>();
+    private Vec3 posO = Vec3.ZERO;
+    private int life;
 
     public BaseBulletEntity(EntityType<? extends BaseBulletEntity> entityType, Level level) {
         super(entityType, level);
@@ -40,6 +46,7 @@ public class BaseBulletEntity extends Projectile {
     public void tick() {
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Pre(this, bullet));
         super.tick();
+        ++this.life;
 
         if (this.shouldDiscard()) {
             this.discard();
@@ -47,6 +54,7 @@ public class BaseBulletEntity extends Projectile {
         }
 
         bullet.tick(this);
+        savePos();
 
         HitResult hitResult = getHitResult();
         if (hitResult.getType() != HitResult.Type.MISS) {
@@ -57,7 +65,24 @@ public class BaseBulletEntity extends Projectile {
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, bullet));
     }
 
-    private HitResult getHitResult(){
+    private void savePos() {
+        if (this.level().isClientSide) {
+            if (trails.isEmpty()) {
+                trails.add(this.position());
+            }
+            if (this.life % 4 == 0) {
+                if (trails.get(trails.size() - 1).distanceTo(this.position()) > 1) {
+                    trails.add(this.position());
+                }
+            }
+            if (trails.size() > 10 || posO == this.position()) {
+                trails.remove(0);
+            }
+            posO = this.position();
+        }
+    }
+
+    private HitResult getHitResult() {
         Vec3 startVec = position();
         Vec3 endVec = startVec.add(getDeltaMovement());
         HitResult hitResult = this.level().clip(new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
@@ -81,11 +106,24 @@ public class BaseBulletEntity extends Projectile {
     }
 
     private void moveAndRotate() {
+        //TODO 速度问题，疑似过快
         Vec3 motion = getDeltaMovement();
         double x = getX() + motion.x;
         double y = getY() + motion.y;
         double z = getZ() + motion.z;
-        setPos(x, y, z);
+//        setPos(x, y, z);
+        Vec3 vec3 = this.getDeltaMovement();
+        double d5 = vec3.x;
+        double d6 = vec3.y;
+        double d1 = vec3.z;
+        double d7 = this.getX() + d5;
+        double d2 = this.getY() + d6;
+        double d3 = this.getZ() + d1;
+        setDeltaMovement(this.getDeltaMovement().scale(0.99f));
+    }
+
+    public List<Vec3> getTrails() {
+        return trails;
     }
 
     @Override
@@ -102,9 +140,20 @@ public class BaseBulletEntity extends Projectile {
 
             bullet.hitEffect(shooter, target, damage);
             if (knockback > 0) {
-                Vec3 knockVec = this.getDeltaMovement().multiply(1, 0, 1).normalize()
-                        .scale(knockback * 0.6 * Math.max(0.0, 1.0 - knockback));
-                Vec3 totalKnock = new Vec3(knockVec.x, 0.1, knockVec.z);
+                //TODO 枪械击退
+//                if (target instanceof LivingEntity livingEntity){
+//                    livingEntity.knockback(0.1,
+//                            Mth.sin(this.getYRot() * (float) (Math.PI / 180.0)),
+//                            -Mth.cos(this.getYRot() * (float) (Math.PI / 180.0))
+//                    );
+//                }
+//                Vec3 motion = this.getDeltaMovement().normalize();
+
+//                Vec3 knockVec = new Vec3(motion.x, 0, motion.z).normalize().scale(knockback * 0.5);
+
+//                target.push(knockVec.x, 0.1D, knockVec.z);
+                Vec3 knockVec = this.getDeltaMovement().multiply(1, 0, 1).normalize().scale(knockback * 0.1);
+                Vec3 totalKnock = new Vec3(knockVec.x, 0.0, knockVec.z);
                 BulletEvent.KnockbackEvent knockbackEvent = new BulletEvent.KnockbackEvent(this, bullet, totalKnock);
                 NeoForge.EVENT_BUS.post(knockbackEvent);
 

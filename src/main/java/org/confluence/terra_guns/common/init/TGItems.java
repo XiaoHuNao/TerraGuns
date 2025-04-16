@@ -1,5 +1,6 @@
 package org.confluence.terra_guns.common.init;
 
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.TerraGuns;
@@ -13,13 +14,14 @@ import java.util.function.Supplier;
  * 时间 三分之一
  * 伤害 五分之一
  * 速度 八分之一
+ * 击退 五分之二
  */
 public class TGItems {
     public static final DeferredRegister.Items GUNS = DeferredRegister.createItems(TerraGuns.MODID);
     public static final DeferredRegister.Items BULLETS = DeferredRegister.createItems(TerraGuns.MODID);
-    public static final Supplier<BaseGun> HAND_GUN = GUNS.registerItem("hand_gun", properties -> new BaseGun(properties, 5, 5.2f, 1.25f, 3, 0.04f, 1, ModRarity.GREEN));
+    public static final DeferredItem<BaseGun> HAND_GUN = GUNS.registerItem("hand_gun", properties -> new BaseGun(properties, 5, 5.2f, 1.25f, 1.2f, 0.04f, 1, ModRarity.GREEN));
 
-    public static final Supplier<BaseBullet> MUSKET_BULLET = BULLETS.registerItem("musket_bullet", properties -> new BaseBullet(properties.stacksTo(99), 1.5f, 0.5f, 2, 2, ModRarity.WHITE, false));
-    public static final Supplier<BaseBullet> ENDLESS_MUSKET_POUCH = BULLETS.registerItem("endless_musket_pouch", properties -> new BaseBullet(properties.stacksTo(1), 1.5f, 0.5f, 2, 2, ModRarity.GREEN, true));
+    public static final DeferredItem<BaseBullet> MUSKET_BULLET = BULLETS.registerItem("musket_bullet", properties -> new BaseBullet(properties.stacksTo(99), 1.5f, 0.5f, 2, 0.8f, ModRarity.WHITE, false));
+    public static final DeferredItem<BaseBullet> ENDLESS_MUSKET_POUCH = BULLETS.registerItem("endless_musket_pouch", properties -> new BaseBullet(properties.stacksTo(1), 1.5f, 0.5f, 2, 0.8f, ModRarity.GREEN, true));
 
 }

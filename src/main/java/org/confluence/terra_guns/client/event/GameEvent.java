@@ -1,7 +1,6 @@
 package org.confluence.terra_guns.client.event;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemCooldowns;
 import net.neoforged.api.distmarker.Dist;
@@ -12,7 +11,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.client.init.TGKeys;
-import org.confluence.terra_guns.client.sounds.SoundsManager;
+import org.confluence.terra_guns.client.sound.SoundsManager;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletManager;
 import org.confluence.terra_guns.network.c2s.ShootPacketC2S;
