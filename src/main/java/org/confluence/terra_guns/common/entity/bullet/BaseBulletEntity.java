@@ -111,15 +111,7 @@ public class BaseBulletEntity extends Projectile {
         double x = getX() + motion.x;
         double y = getY() + motion.y;
         double z = getZ() + motion.z;
-//        setPos(x, y, z);
-        Vec3 vec3 = this.getDeltaMovement();
-        double d5 = vec3.x;
-        double d6 = vec3.y;
-        double d1 = vec3.z;
-        double d7 = this.getX() + d5;
-        double d2 = this.getY() + d6;
-        double d3 = this.getZ() + d1;
-        setDeltaMovement(this.getDeltaMovement().scale(0.99f));
+        setPos(x, y, z);
     }
 
     public List<Vec3> getTrails() {

@@ -12,6 +12,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletManager;
+import software.bernie.geckolib.animatable.GeoItem;
 
 import java.util.List;
 
@@ -27,10 +28,13 @@ public record ShootPacketC2S() implements CustomPacketPayload {
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer serverPlayer) {
-                if (serverPlayer.getMainHandItem().getItem() instanceof BaseGun baseGun) {
+                ItemStack mainHandItem = serverPlayer.getMainHandItem();
+                if (mainHandItem.getItem() instanceof BaseGun baseGun) {
                     BulletManager bulletManager = new BulletManager(serverPlayer);
                     List<ItemStack> ammo = bulletManager.getAmmo();
+
                     baseGun.shoot(serverPlayer, ammo);
+                    baseGun.triggerAnim(serverPlayer, GeoItem.getOrAssignId(mainHandItem, serverPlayer.serverLevel()), "controller", "model.new");
                 }
             }
         }).exceptionally(e -> {

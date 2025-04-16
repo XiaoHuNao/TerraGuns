@@ -57,7 +57,7 @@ public class BaseGun extends Item implements GeoItem {
         GunEvent.ShrinkBulletEvent shrinkBulletEvent = new GunEvent.ShrinkBulletEvent(player, this, bullet, ammo, infinity);
         NeoForge.EVENT_BUS.post(shrinkBulletEvent);
 
-        if (!shrinkBulletEvent.isInfinity() || !shrinkBulletEvent.isCanceled()) {
+        if (!shrinkBulletEvent.isInfinity() && !shrinkBulletEvent.isCanceled()) {
             shrinkBulletEvent.getShrinkBullet().shrink(shrinkBulletEvent.getShrink());
         }
     }

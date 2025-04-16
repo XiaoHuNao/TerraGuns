@@ -3,6 +3,7 @@ package org.confluence.terra_guns.client.event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemCooldowns;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -15,6 +16,8 @@ import org.confluence.terra_guns.client.sound.SoundsManager;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletManager;
 import org.confluence.terra_guns.network.c2s.ShootPacketC2S;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 @EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class GameEvent {
@@ -26,7 +29,8 @@ public class GameEvent {
             LocalPlayer player = minecraft.player;
             ItemCooldowns cooldowns = player.getCooldowns();
 
-            if (player.getMainHandItem().getItem() instanceof BaseGun baseGun && !cooldowns.isOnCooldown(baseGun)) {
+            ItemStack mainHandItem = player.getMainHandItem();
+            if (mainHandItem.getItem() instanceof BaseGun baseGun && !cooldowns.isOnCooldown(baseGun)) {
                 BulletManager bulletManager = new BulletManager(player);
                 GunEvent.UseGunEvent useGunEvent = new GunEvent.UseGunEvent(player, baseGun, baseGun.getCooldown());
                 if (useGunEvent.isCanceled() || !bulletManager.canShoot()) return;
