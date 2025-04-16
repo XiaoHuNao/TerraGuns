@@ -2,7 +2,6 @@ package org.confluence.terra_guns.network.c2s;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,9 +14,7 @@ import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletManager;
-import software.bernie.geckolib.animatable.GeoItem;
 
-import java.util.List;
 
 public record ShootPacketC2S() implements CustomPacketPayload {
     public static final Type<ShootPacketC2S> TYPE = new Type<>(TerraGuns.asResource("shoot"));
@@ -37,10 +34,10 @@ public record ShootPacketC2S() implements CustomPacketPayload {
                     ItemStack ammo = bulletManager.getAmmo();
 
                     baseGun.shoot(serverPlayer, ammo);
-                    baseGun.triggerAnim(serverPlayer, GeoItem.getOrAssignId(gunStack, serverPlayer.serverLevel()), "controller", "fire");
+                    baseGun.fireAnimator(gunStack, serverPlayer);
 
                     boolean infinity = ammo.get(TGDataComponents.BULLET_PROPERTY_COMPONENT).infinity();
-                    GunEvent.ShrinkBulletEvent shrinkBulletEvent = new GunEvent.ShrinkBulletEvent(serverPlayer, baseGun, ammo, gunStack, infinity);
+                    GunEvent.ShrinkBulletEvent shrinkBulletEvent = new GunEvent.ShrinkBulletEvent(serverPlayer, baseGun, gunStack, ammo, infinity);
                     NeoForge.EVENT_BUS.post(shrinkBulletEvent);
 
                     if (!shrinkBulletEvent.isInfinity() && !shrinkBulletEvent.isCanceled()) {

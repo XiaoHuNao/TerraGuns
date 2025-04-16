@@ -16,8 +16,8 @@ import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.confluence.terra_guns.impl.AmmoDataManager;
-import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -31,6 +31,7 @@ public class BaseGun extends Item implements GeoItem {
     public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, ModRarity rarity) {
         super(properties.stacksTo(1).component(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity)));
         this.component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
+        SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
     public void shoot(ServerPlayer player, ItemStack bullet) {
@@ -51,8 +52,6 @@ public class BaseGun extends Item implements GeoItem {
         baseBulletEntity.moveTo(player.getX(), player.getEyeY() - 0.1, player.getZ(), player.getXRot(), player.getYRot());
         baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, ammoDataEvent.getVelocity(), 0);
         serverLevel.addFreshEntity(baseBulletEntity);
-
-
     }
 
     @Override
@@ -68,18 +67,13 @@ public class BaseGun extends Item implements GeoItem {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", state -> {
-                    return PlayState.CONTINUE;
-                })
-                .triggerableAnim("fire",
-                        RawAnimation.begin().then("fire",
-                                Animation.LoopType.PLAY_ONCE)
-                )
-        );
+        AnimationController<BaseGun> gun = new AnimationController<>(this, "gun", state -> PlayState.CONTINUE);
+        gun.triggerableAnim("gun_fire", RawAnimation.begin().then("animation.model.new", Animation.LoopType.PLAY_ONCE));
+        controllers.add(gun);
     }
 
-    public void fireAnimator(){
-//        this.triggerAnim();
+    public void fireAnimator(ItemStack itemStack, ServerPlayer serverPlayer){
+        this.triggerAnim(serverPlayer, GeoItem.getOrAssignId(itemStack, serverPlayer.serverLevel()), "gun", "gun_fire");
     }
 
     @Override

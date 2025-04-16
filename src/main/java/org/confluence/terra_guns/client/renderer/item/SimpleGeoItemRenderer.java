@@ -14,10 +14,10 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IClientItemExtensions {
     private final ResourceLocation model;
     private final ResourceLocation texture;
-    private final @Nullable ResourceLocation animation;
+    private final ResourceLocation animation;
     private GeoItemRenderer<T> renderer;
 
-    public SimpleGeoItemRenderer(ResourceLocation model, ResourceLocation texture, @Nullable ResourceLocation animation) {
+    public SimpleGeoItemRenderer(ResourceLocation model, ResourceLocation texture, ResourceLocation animation) {
         this.model = model;
         this.texture = texture;
         this.animation = animation;
