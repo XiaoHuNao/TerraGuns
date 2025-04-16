@@ -114,11 +114,11 @@ public class GunEvent extends Event {
      * 子弹消耗
      * */
     public static class ShrinkBulletEvent extends GunEvent implements ICancellableEvent{
-        private int shrink = 1;
         private ItemStack ammo;
+        private int shrink = 1;
         public ShrinkBulletEvent(Player player, BaseGun gun, ItemStack ammo) {
             super(player, gun);
-            this.ammo=ammo;
+            this.ammo = ammo;
         }
 
         public void setShrink(int shrink) {
@@ -127,6 +127,10 @@ public class GunEvent extends Event {
 
         public int getShrink() {
             return shrink;
+        }
+
+        public void setAmmo(ItemStack ammo) {
+            this.ammo = ammo;
         }
 
         public ItemStack getAmmo() {
