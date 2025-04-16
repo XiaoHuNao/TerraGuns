@@ -32,16 +32,15 @@ public class BulletManager {
         this.gun = gun;
     }
 
-    public List<ItemStack> getAmmo() {
-        List<ItemStack> ammo = new ArrayList<>();
+    public ItemStack getAmmo() {
         for (ItemStack item : inventory.items) {
             if (item.is(TGTags.AMMO) && isCompatible(item)) {
-                ammo.add(item);
+                GunEvent.AmmoSelectedEvent ammoSelectedEvent = new GunEvent.AmmoSelectedEvent(player, gun, item);
+                NeoForge.EVENT_BUS.post(ammoSelectedEvent);
+                return ammoSelectedEvent.getAmmo();
             }
         }
-        GunEvent.AmmoSelectedEvent event = new GunEvent.AmmoSelectedEvent(player, gun, ammo);
-        NeoForge.EVENT_BUS.post(event);
-        return ammo;
+        return ItemStack.EMPTY;
     }
 
     public boolean canShoot() {

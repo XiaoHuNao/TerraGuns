@@ -33,8 +33,7 @@ public class BaseGun extends Item implements GeoItem {
         this.component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
     }
 
-    public void shoot(ServerPlayer player, List<ItemStack> ammo) {
-        ItemStack bullet = ammo.getFirst();
+    public void shoot(ServerPlayer player, ItemStack bullet) {
         ServerLevel serverLevel = player.serverLevel();
         BulletPropertyComponent bulletComponent = bullet.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
         if (bulletComponent == null) return;
@@ -53,13 +52,7 @@ public class BaseGun extends Item implements GeoItem {
         baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, ammoDataEvent.getVelocity(), 0);
         serverLevel.addFreshEntity(baseBulletEntity);
 
-        boolean infinity = bulletComponent.infinity();
-        GunEvent.ShrinkBulletEvent shrinkBulletEvent = new GunEvent.ShrinkBulletEvent(player, this, bullet, ammo, infinity);
-        NeoForge.EVENT_BUS.post(shrinkBulletEvent);
 
-        if (!shrinkBulletEvent.isInfinity() && !shrinkBulletEvent.isCanceled()) {
-            shrinkBulletEvent.getShrinkBullet().shrink(shrinkBulletEvent.getShrink());
-        }
     }
 
     @Override
@@ -75,11 +68,18 @@ public class BaseGun extends Item implements GeoItem {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", 20, this::predicate));
+        controllers.add(new AnimationController<>(this, "controller", state -> {
+                    return PlayState.CONTINUE;
+                })
+                .triggerableAnim("fire",
+                        RawAnimation.begin().then("fire",
+                                Animation.LoopType.PLAY_ONCE)
+                )
+        );
     }
 
-    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> state) {
-        return PlayState.STOP;
+    public void fireAnimator(){
+//        this.triggerAnim();
     }
 
     @Override

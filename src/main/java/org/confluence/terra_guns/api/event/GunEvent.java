@@ -49,27 +49,19 @@ public class GunEvent extends Event {
      * 选择射击子弹
      */
     public static class AmmoSelectedEvent extends GunEvent {
-        private List<ItemStack> ammo;
+        private ItemStack bullet;
 
-        public AmmoSelectedEvent(Player player, BaseGun gun, List<ItemStack> ammo) {
+        public AmmoSelectedEvent(Player player, BaseGun gun, ItemStack bullet) {
             super(player, gun);
-            this.ammo = ammo;
+            this.bullet = bullet;
         }
 
-        public List<ItemStack> getAmmo() {
-            return ammo;
+        public ItemStack getAmmo() {
+            return bullet;
         }
 
-        public void setAmmo(List<ItemStack> ammo) {
-            this.ammo = ammo;
-        }
-
-        public void addAmmo(ItemStack ammo) {
-            this.ammo.add(ammo);
-        }
-
-        public boolean removeAmmo(ItemStack ammo) {
-            return this.ammo.remove(ammo);
+        public void setAmmo(ItemStack bullet) {
+            this.bullet = bullet;
         }
     }
 
@@ -125,13 +117,13 @@ public class GunEvent extends Event {
      */
     public static class ShrinkBulletEvent extends GunEvent implements ICancellableEvent {
         private int shrink = 1;
-        private final List<ItemStack> ammo;
         private boolean infinity;
         private ItemStack bullet;
+        private final ItemStack gun;
 
-        public ShrinkBulletEvent(Player player, BaseGun gun, ItemStack bullet, List<ItemStack> ammo, boolean infinity) {
-            super(player, gun);
-            this.ammo = ammo;
+        public ShrinkBulletEvent(Player player, BaseGun baseGun, ItemStack gun, ItemStack bullet, boolean infinity) {
+            super(player, baseGun);
+            this.gun=gun;
             this.infinity = infinity;
             this.bullet = bullet;
         }
@@ -148,20 +140,20 @@ public class GunEvent extends Event {
             return infinity;
         }
 
-        public List<ItemStack> getAmmo() {
-            return ammo;
-        }
-
         public void setInfinity(boolean infinity) {
             this.infinity = infinity;
         }
 
-        public ItemStack getShrinkBullet() {
+        public ItemStack getBulletStack() {
             return bullet;
         }
 
-        public void setShrinkBullet(ItemStack bullet) {
+        public void setBulletStack(ItemStack bullet) {
             this.bullet = bullet;
+        }
+
+        public ItemStack getGunStack() {
+            return gun;
         }
     }
 }
