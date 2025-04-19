@@ -6,6 +6,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.confluence.lib.ConfluenceMagicLib;
 import org.confluence.terra_guns.TerraGuns;
 
 public class TGTabs {
@@ -14,10 +15,10 @@ public class TGTabs {
             () -> CreativeModeTab.builder().icon(Items.STONE::getDefaultInstance)
                     .title(Component.translatable("creative_tab.terra_guns.gun_tab"))
                     .displayItems((parameters, output) -> {
-                        output.accept(Items.STONE);
-                        TGItems.GUNS.getEntries().forEach(holder -> output.accept(holder.get()));
-                        TGItems.BULLETS.getEntries().forEach(holder -> output.accept(holder.get()));
-                    })
-                    .build()
+                        if (!ConfluenceMagicLib.IS_CONFLUENCE_LOADED) {
+                            TGItems.GUNS.getEntries().forEach(holder -> output.accept(holder.get()));
+                            TGItems.BULLETS.getEntries().forEach(holder -> output.accept(holder.get()));
+                        }
+                    }).build()
     );
 }
