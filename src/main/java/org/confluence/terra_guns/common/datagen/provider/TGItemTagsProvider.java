@@ -20,5 +20,6 @@ public class TGItemTagsProvider extends ItemTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         TGItems.BULLETS.getEntries().forEach(item -> tag(TGTags.AMMO).add(item.get()));
+        TGItems.GUNS.getEntries().forEach(item -> tag(TGTags.GUN).add(item.get()));
     }
 }
