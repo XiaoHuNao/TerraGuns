@@ -1,28 +1,28 @@
 modLoader = "javafml"
-loaderVersion = "${loader_version_range}"
-license = "${mod_license}"
+loaderVersion = "[4,)"
+license = "MIT"
 [[mods]]
-modId = "${mod_id}"
-version = "${mod_version}"
-displayName = "${mod_name}"
-authors = "${mod_authors}"
+modId = "terra_guns"
+version = "0.0.1"
+displayName = "TerraGuns"
+authors = "xiaohunao, Kaleb Langley"
 
-description = '''${mod_description}'''
+description = ''''''
 
 [[mixins]]
-config="${mod_id}.mixins.json"
+config="terra_guns.mixins.json"
 
 [[accessTransformers]]
 file="META-INF/accesstransformer.cfg"
 
 
-[[dependencies."${mod_id}"]]
+[[dependencies.terra_guns]]
 modId = "neoforge"
 type = "required"
 versionRange = "${neo_version_range}"
 ordering = "NONE"
 side = "BOTH"
-[[dependencies."${mod_id}"]]
+[[dependencies.terra_guns]]
 modId = "minecraft"
 type = "required"
 versionRange = "${minecraft_version_range}"

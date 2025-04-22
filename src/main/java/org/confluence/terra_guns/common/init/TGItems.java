@@ -17,4 +17,5 @@ import java.util.function.Supplier;
 public class TGItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(TerraGuns.MODID);
     public static final DeferredItem<BaseGun> ANIM_ITEM = ITEMS.registerItem("anim_item", BaseGun::new);
+    public static final DeferredItem<BaseGun> HAND_GUN = ITEMS.registerItem("hand_gun", BaseGun::new);
 }
