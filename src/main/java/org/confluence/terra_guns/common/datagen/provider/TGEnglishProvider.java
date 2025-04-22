@@ -29,6 +29,6 @@ public class TGEnglishProvider extends LanguageProvider {
         add("key.terra_guns.aim", "Aim");
 
         add("creative_tab.terra_guns.gun_tab", "Terra Guns");
-        add("death.attack.bullet_damage", "%1%s was shot");
+        add("death.attack.bullet_damage", "%1%s was shot by %2$s");
     }
 }

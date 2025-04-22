@@ -22,6 +22,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BaseGun extends Item implements GeoItem {
@@ -34,24 +35,33 @@ public class BaseGun extends Item implements GeoItem {
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
+    public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, ModRarity rarity) {
+        this(properties, cooldown, damage, velocity, knockback, critical, 1, rarity);
+    }
+
     public void shoot(ServerPlayer player, ItemStack bullet) {
         ServerLevel serverLevel = player.serverLevel();
         BulletPropertyComponent bulletComponent = bullet.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
         if (bulletComponent == null) return;
 
         AmmoDataManager ammoDataManager = new AmmoDataManager(this.component, bulletComponent);
-        float damage = ammoDataManager.getDamage();
-        float knockback = ammoDataManager.getKnockback();
-        float velocity = ammoDataManager.getVelocity();
-        int penetrate = ammoDataManager.getPenetrate();
-        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, damage, knockback, velocity, penetrate);
+        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, ammoDataManager);
         NeoForge.EVENT_BUS.post(ammoDataEvent);
 
-        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(serverLevel, ((BaseBullet) bullet.getItem()), ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getPenetrate());
+        List<BaseBulletEntity> baseBulletEntities = prepareBulletEntity(player, bullet, ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate());
+        baseBulletEntities.forEach(serverLevel::addFreshEntity);
+    }
+
+    protected List<BaseBulletEntity> prepareBulletEntity(ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate){
+        List<BaseBulletEntity> baseBulletEntities = new ArrayList<>();
+
+        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player.serverLevel(), ((BaseBullet) bullet.getItem()), damage, knockback, penetrate);
         baseBulletEntity.setOwner(player);
         baseBulletEntity.moveTo(player.getX(), player.getEyeY() - 0.1, player.getZ(), player.getXRot(), player.getYRot());
-        baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, ammoDataEvent.getVelocity(), 0);
-        serverLevel.addFreshEntity(baseBulletEntity);
+        baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, 0);
+
+        baseBulletEntities.add(baseBulletEntity);
+        return baseBulletEntities;
     }
 
     @Override
@@ -68,7 +78,7 @@ public class BaseGun extends Item implements GeoItem {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         AnimationController<BaseGun> gun = new AnimationController<>(this, "gun", state -> PlayState.CONTINUE);
-        gun.triggerableAnim("gun_fire", RawAnimation.begin().then("animation.model.new", Animation.LoopType.PLAY_ONCE));
+        gun.triggerableAnim("gun_fire", RawAnimation.begin().then("fire", Animation.LoopType.PLAY_ONCE));
         controllers.add(gun);
     }
 

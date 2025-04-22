@@ -13,6 +13,7 @@ public class SoundsManager {
     protected static Map<Item, SoundEvent> soundMap = new HashMap<>();
     static {
         soundMap.put(TGItems.HAND_GUN.get(), TGSoundEvents.GUN_AUTO.get());
+        soundMap.put(TGItems.SHOTGUN.get(), TGSoundEvents.SHOTGUN_MULTI.get());
     }
 
     public static SoundEvent getSound(ItemStack itemStack) {
