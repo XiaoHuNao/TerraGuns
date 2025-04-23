@@ -88,19 +88,29 @@ public class BulletEvent extends Event {
     }
 
     public static class KnockbackEvent extends BulletEvent {
-        private Vec3 knockback;
+        private float scale;
+        private float motionY;
 
-        public KnockbackEvent(BaseBulletEntity bulletEntity, BaseBullet bullet, Vec3 knockback) {
+        public KnockbackEvent(BaseBulletEntity bulletEntity, BaseBullet bullet, float scale, float motionY) {
             super(bulletEntity, bullet);
-            this.knockback = knockback;
+            this.scale = scale;
+            this.motionY = motionY;
         }
 
-        public void setPenetrate(Vec3 penetrate) {
-            this.knockback = penetrate;
+        public void setScale(float scale) {
+            this.scale = scale;
         }
 
-        public Vec3 getPenetrate() {
-            return knockback;
+        public float getScale() {
+            return scale;
+        }
+
+        public void setMotionY(float motionY) {
+            this.motionY = motionY;
+        }
+
+        public float getMotionY() {
+            return motionY;
         }
     }
 

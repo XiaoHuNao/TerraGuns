@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.api.event.GunEvent;
@@ -55,10 +56,13 @@ public class BaseGun extends Item implements GeoItem {
     protected List<BaseBulletEntity> prepareBulletEntity(ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate){
         List<BaseBulletEntity> baseBulletEntities = new ArrayList<>();
 
-        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player.serverLevel(), ((BaseBullet) bullet.getItem()), damage, knockback, penetrate);
-        baseBulletEntity.setOwner(player);
-        baseBulletEntity.moveTo(player.getX(), player.getEyeY() - 0.1, player.getZ(), player.getXRot(), player.getYRot());
-        baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, 0);
+        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player);
+
+        baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, 1.0f);
+        baseBulletEntity.setBullet((BaseBullet) bullet.getItem());
+        baseBulletEntity.setDamage(damage);
+        baseBulletEntity.setKnockback(knockback);
+        baseBulletEntity.setPenetrate(penetrate);
 
         baseBulletEntities.add(baseBulletEntity);
         return baseBulletEntities;

@@ -4,6 +4,7 @@ import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.confluence.terra_guns.TerraGuns;
 
+import static org.confluence.terra_guns.common.init.TGEntities.*;
 import static org.confluence.terra_guns.common.init.TGItems.*;
 
 public class TGChineseProvider extends LanguageProvider {
@@ -26,6 +27,8 @@ public class TGChineseProvider extends LanguageProvider {
 
         addItem(MUSKET_BULLET, "火枪子弹");
         addItem(ENDLESS_MUSKET_POUCH, "无尽火枪袋");
+
+        addEntityType(BASE_BULLET_ENTITY, "子弹");
 
         add("key.terra_guns.shoot", "射击");
         add("key.terra_guns.aim", "瞄准");

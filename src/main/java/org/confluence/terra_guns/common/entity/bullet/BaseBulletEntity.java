@@ -1,28 +1,33 @@
 package org.confluence.terra_guns.common.entity.bullet;
 
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.entity.projectile.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import org.confluence.lib.util.VectorUtils;
 import org.confluence.terra_guns.api.event.BulletEvent;
 import org.confluence.terra_guns.common.init.TGEntities;
+import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseBulletEntity extends Projectile {
-    private BaseBullet bullet;
+public class BaseBulletEntity extends AbstractHurtingProjectile {
+    private BaseBullet bullet = TGItems.MUSKET_BULLET.get();
     private float damage;
     private float knockback;
     private int penetrate;
@@ -34,11 +39,24 @@ public class BaseBulletEntity extends Projectile {
         super(entityType, level);
     }
 
-    public BaseBulletEntity(Level level, BaseBullet bullet, float damage, float knockback, int penetrate) {
-        super(TGEntities.BASE_BULLET_ENTITY.get(), level);
+    public BaseBulletEntity(LivingEntity owner) {
+        super(TGEntities.BASE_BULLET_ENTITY.get(), owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), owner.level());
+        setOwner(owner);
+    }
+
+    public void setBullet(BaseBullet bullet) {
         this.bullet = bullet;
+    }
+
+    public void setDamage(float damage) {
         this.damage = damage;
+    }
+
+    public void setKnockback(float knockback) {
         this.knockback = knockback;
+    }
+
+    public void setPenetrate(int penetrate) {
         this.penetrate = penetrate;
     }
 
@@ -46,23 +64,32 @@ public class BaseBulletEntity extends Projectile {
     public void tick() {
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Pre(this, bullet));
         super.tick();
-        ++this.life;
-
-        if (this.shouldDiscard()) {
-            this.discard();
-            return;
-        }
-
+        this.life++;
+        if (disToOwner() > 128) this.discard();
+        getOwner().sendSystemMessage(Component.literal(String.valueOf(getOwner().position().distanceTo(this.position()))));
         bullet.tick(this);
         savePos();
 
-        HitResult hitResult = getHitResult();
-        if (hitResult.getType() != HitResult.Type.MISS) {
-            this.hitTargetOrDeflectSelf(hitResult);
-        }
-
-        this.moveAndRotate();
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, bullet));
+    }
+
+    @Override
+    protected boolean shouldBurn() {
+        return false;
+    }
+
+    @Override
+    protected @Nullable ParticleOptions getTrailParticle() {
+        return null;
+    }
+
+    @Override
+    public boolean isInWater() {
+        return false;
+    }
+
+    public double disToOwner(){
+        return this.position().distanceTo(getOwner().position());
     }
 
     private void savePos() {
@@ -82,37 +109,6 @@ public class BaseBulletEntity extends Projectile {
         }
     }
 
-    private HitResult getHitResult() {
-        Vec3 startVec = position();
-        Vec3 endVec = startVec.add(getDeltaMovement());
-        HitResult hitResult = this.level().clip(new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-        EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(this.level(), this, startVec, endVec, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0F), this::canHitEntity);
-        if (entityHitResult != null) {
-            hitResult = entityHitResult;
-        }
-        return hitResult;
-    }
-
-    private boolean shouldDiscard() {
-        Entity owner = this.getOwner();
-        boolean worldValid = this.level().hasChunkAt(this.blockPosition());
-
-        return this.onGround()
-                || this.level().isClientSide
-                || bullet == null
-                || (owner != null && owner.isRemoved())
-                || !worldValid
-                || penetrate == 0;
-    }
-
-    private void moveAndRotate() {
-        //TODO 速度问题，疑似过快
-        Vec3 motion = getDeltaMovement();
-        double x = getX() + motion.x;
-        double y = getY() + motion.y;
-        double z = getZ() + motion.z;
-        setPos(x, y, z);
-    }
 
     public List<Vec3> getTrails() {
         return trails;
@@ -132,24 +128,10 @@ public class BaseBulletEntity extends Projectile {
 
             bullet.hitEffect(shooter, target, damage);
             if (knockback > 0) {
-                //TODO 枪械击退
-//                if (target instanceof LivingEntity livingEntity){
-//                    livingEntity.knockback(0.1,
-//                            Mth.sin(this.getYRot() * (float) (Math.PI / 180.0)),
-//                            -Mth.cos(this.getYRot() * (float) (Math.PI / 180.0))
-//                    );
-//                }
-//                Vec3 motion = this.getDeltaMovement().normalize();
-
-//                Vec3 knockVec = new Vec3(motion.x, 0, motion.z).normalize().scale(knockback * 0.5);
-
-//                target.push(knockVec.x, 0.1D, knockVec.z);
-                Vec3 knockVec = this.getDeltaMovement().multiply(1, 0, 1).normalize().scale(knockback * 0.1);
-                Vec3 totalKnock = new Vec3(knockVec.x, 0.0, knockVec.z);
-                BulletEvent.KnockbackEvent knockbackEvent = new BulletEvent.KnockbackEvent(this, bullet, totalKnock);
+                BulletEvent.KnockbackEvent knockbackEvent = new BulletEvent.KnockbackEvent(this, bullet, knockback/8, 0f);
                 NeoForge.EVENT_BUS.post(knockbackEvent);
 
-                target.push(knockbackEvent.getPenetrate());
+                VectorUtils.knockBackA2B(this, target, knockbackEvent.getScale(), knockbackEvent.getMotionY());
             }
 
             BulletEvent.PenetrateEvent penetrateEvent = new BulletEvent.PenetrateEvent(this, bullet, penetrate);
@@ -158,6 +140,7 @@ public class BaseBulletEntity extends Projectile {
 
             if (penetrate > 0) {
                 this.penetrate--;
+                if (this.penetrate==0) this.discard();
             } else if (penetrate != -1) {
                 this.discard();
             }
@@ -170,10 +153,6 @@ public class BaseBulletEntity extends Projectile {
         if (hitBlockEvent.isCanceled()) return;
 
         super.onHitBlock(result);
-        setDeltaMovement(Vec3.ZERO);
-    }
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
+        this.discard();
     }
 }

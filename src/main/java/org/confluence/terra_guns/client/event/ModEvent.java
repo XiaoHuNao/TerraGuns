@@ -1,7 +1,6 @@
 package org.confluence.terra_guns.client.event;
 
-import net.minecraft.client.renderer.entity.NoopRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -11,12 +10,10 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import net.neoforged.neoforge.registries.DeferredItem;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.client.renderer.entity.BulletRenderer;
-import org.confluence.terra_guns.client.renderer.item.SimpleGeoItemRenderer;
 import org.confluence.terra_guns.common.init.TGEntities;
 import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.util.TGUtil;
-import software.bernie.geckolib.model.DefaultedItemGeoModel;
 
 import static org.confluence.terra_guns.client.init.TGKeys.*;
 
