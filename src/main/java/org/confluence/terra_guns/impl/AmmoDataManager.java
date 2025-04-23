@@ -15,7 +15,7 @@ public class AmmoDataManager {
 
     public float getDamage(){
         float damage = gunComponent.damage() + bulletComponent.damage();
-        if (RandomSource.create().nextFloat() < gunComponent.critical()){
+        if (RandomSource.create().nextFloat() < gunComponent.critical() + 0.31f){
             return damage * 2;
         }
         return damage;
@@ -30,6 +30,6 @@ public class AmmoDataManager {
     }
 
     public int getPenetrate(){
-        return gunComponent.penetrate();
+        return gunComponent.penetrate() + bulletComponent.penetrate();
     }
 }

@@ -30,4 +30,6 @@ public class TGSoundEvents {
     private static Supplier<SoundEvent> register(String id) {
         return SOUNDS.register(id, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(TerraGuns.MODID, id)));
     }
+
+
 }

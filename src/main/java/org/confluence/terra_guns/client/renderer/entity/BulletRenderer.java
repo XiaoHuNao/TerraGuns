@@ -11,10 +11,12 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGItems;
+import org.confluence.terra_guns.impl.TrailColorManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
@@ -35,66 +37,40 @@ public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
 
     @Override
     public void render(BaseBulletEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        List<Vec3> trails = entity.getTrails();
+        if (trails.isEmpty()) return;
+        Vec3 pos0;
+        Vec3 pos1;
         poseStack.pushPose();
-        poseStack.scale(3,3,3);
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        this.itemRenderer
-                .renderStatic(
-                        TGItems.MUSKET_BULLET.toStack(),
-                        ItemDisplayContext.GROUND,
-                        packedLight,
-                        OverlayTexture.NO_OVERLAY,
-                        poseStack,
-                        bufferSource,
-                        entity.level(),
-                        entity.getId()
-                );
+        Matrix4f matrix4f = poseStack.last().pose();
+        VertexConsumer bufferbuilder = bufferSource.getBuffer(RenderType.lightning());
+        int color = TrailColorManager.getColor(entity.getBullet());
+
+        float red = FastColor.ARGB32.red(color);
+        float green = FastColor.ARGB32.green(color);
+        float blue = FastColor.ARGB32.blue(color);
+        float alpha = 1;
+        for (int i = 1; i < trails.size(); i++) {
+            pos0 = trails.get(i - 1).subtract(entity.position());
+            pos1 = trails.get(i).subtract(entity.position());
+
+            float x1 = (float) pos0.x;
+            float y1 = (float) pos0.y;
+            float z1 = (float) pos0.z;
+            float x2 = (float) pos1.x;
+            float y2 = (float) pos1.y;
+            float z2 = (float) pos1.z;
+            float width0 = 0.05f / trails.size() * (i - 1);
+            float width1 = 0.05f / trails.size() * i;
+
+            alpha=0.1f*(11-i);
+            bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width0).setColor(red, green, blue, alpha);
+            bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width1).setColor(red, green, blue, alpha);
+            bufferbuilder.addVertex(matrix4f, x2, y2, z2 + width1).setColor(red, green, blue, alpha);
+            bufferbuilder.addVertex(matrix4f, x2, y2, z2 - width1).setColor(red, green, blue, alpha);
+        }
         poseStack.popPose();
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
-
-        //        List<Vec3> trails = entity.getTrails();
-//        if (trails.isEmpty()) return;
-//        Vec3 pos0;
-//        Vec3 pos1;
-//        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-//
-//        poseStack.pushPose();
-//        poseStack.translate(-camera.x, -camera.y, -camera.z);
-//        poseStack.translate(entity.getX(), entity.getY(), entity.getZ());
-//        Matrix4f matrix4f = poseStack.last().pose();
-//
-//        VertexConsumer bufferbuilder = bufferSource.getBuffer(RenderType.lightning());
-//        for (int i = 1; i < trails.size(); i++) {
-//            pos0 = trails.get(i - 1).subtract(entity.position());
-//            pos1 = trails.get(i).subtract(entity.position());
-//
-//            double x1 = pos0.x;
-//            double y1 = pos0.y;
-//            double z1 = pos0.z;
-//            double x2 = pos1.x;
-//            double y2 = pos1.y;
-//            double z2 = pos1.z;
-//            float width0 = 0.3f / trails.size() * (i - 1);
-//            float width1 = 0.3f / trails.size() * i;
-//            bufferbuilder.addVertex(matrix4f, (float) x1, (float) y1, (float) z1 - width0)
-//                    .setColor(1, 1, 1, 0.5f);
-//            bufferbuilder.addVertex(matrix4f, (float) x1, (float) y1, (float) z1 + width0)
-//                    .setColor(1, 1, 1, 0.5f);
-//            bufferbuilder.addVertex(matrix4f, (float) x2, (float) y2, (float) z2 + width1)
-//                    .setColor(1, 1, 1, 0.5f);
-//            bufferbuilder.addVertex(matrix4f, (float) x2, (float) y2, (float) z2 - width1)
-//                    .setColor(1, 1, 1, 0.5f);
-//
-//            bufferbuilder.addVertex(matrix4f, (float) x1 - width0, (float) y1, (float) z1)
-//                    .setColor(1, 1, 1, 0.5f);
-//            bufferbuilder.addVertex(matrix4f, (float) x1 + width0, (float) y1, (float) z1)
-//                    .setColor(1, 1, 1, 0.5f);
-//            bufferbuilder.addVertex(matrix4f, (float) x2 + width1, (float) y2, (float) z2)
-//                    .setColor(1, 1, 1, 0.5f);
-//            bufferbuilder.addVertex(matrix4f, (float) x2 - width1, (float) y2, (float) z2)
-//                    .setColor(1, 1, 1, 0.5f);
-//        }
-//        poseStack.popPose();
 
     }
 }

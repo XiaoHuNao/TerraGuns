@@ -13,12 +13,10 @@ import net.neoforged.neoforge.client.event.*;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.client.init.TGKeys;
-import org.confluence.terra_guns.client.sound.SoundsManager;
+import org.confluence.terra_guns.impl.SoundsManager;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletManager;
 import org.confluence.terra_guns.network.c2s.ShootPacketC2S;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 @EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class GameEvent {

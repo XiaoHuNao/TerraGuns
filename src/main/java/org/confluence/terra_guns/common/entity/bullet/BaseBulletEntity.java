@@ -60,13 +60,16 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         this.penetrate = penetrate;
     }
 
+    public BaseBullet getBullet() {
+        return bullet;
+    }
+
     @Override
     public void tick() {
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Pre(this, bullet));
         super.tick();
         this.life++;
         if (disToOwner() > 128) this.discard();
-        getOwner().sendSystemMessage(Component.literal(String.valueOf(getOwner().position().distanceTo(this.position()))));
         bullet.tick(this);
         savePos();
 
@@ -97,10 +100,8 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
             if (trails.isEmpty()) {
                 trails.add(this.position());
             }
-            if (this.life % 4 == 0) {
-                if (trails.get(trails.size() - 1).distanceTo(this.position()) > 1) {
-                    trails.add(this.position());
-                }
+            if (trails.get(trails.size() - 1).distanceTo(this.position()) > 1) {
+                trails.add(this.position());
             }
             if (trails.size() > 10 || posO == this.position()) {
                 trails.remove(0);

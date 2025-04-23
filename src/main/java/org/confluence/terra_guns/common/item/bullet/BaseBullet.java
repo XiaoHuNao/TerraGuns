@@ -21,10 +21,10 @@ import java.util.List;
 
 public class BaseBullet extends Item {
     private BulletPropertyComponent component;
-    public BaseBullet(Properties properties, float damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, boolean infinity) {
-        super(properties.component(TGDataComponents.BULLET_PROPERTY_COMPONENT.get(), new BulletPropertyComponent(damage, velocity, velocityMultiplier, knockback, rarity, infinity)));
+    public BaseBullet(Properties properties, float damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, int penetrate, boolean infinity) {
+        super(properties.component(TGDataComponents.BULLET_PROPERTY_COMPONENT.get(), new BulletPropertyComponent(damage, velocity, velocityMultiplier, knockback, penetrate, rarity, infinity)));
 
-        this.component = new BulletPropertyComponent(damage, velocity, velocityMultiplier, knockback, rarity, infinity);
+        this.component = new BulletPropertyComponent(damage, velocity, velocityMultiplier, knockback, penetrate, rarity, infinity);
     }
 
     public void tick(BaseBulletEntity baseBulletEntity){
