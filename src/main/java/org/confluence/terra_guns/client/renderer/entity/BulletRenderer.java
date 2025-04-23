@@ -46,10 +46,11 @@ public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
         VertexConsumer bufferbuilder = bufferSource.getBuffer(RenderType.lightning());
         int color = TrailColorManager.getColor(entity.getBullet());
 
-        float red = FastColor.ARGB32.red(color);
-        float green = FastColor.ARGB32.green(color);
-        float blue = FastColor.ARGB32.blue(color);
-        float alpha = 1;
+        int red = FastColor.ARGB32.red(color);
+        int green = FastColor.ARGB32.green(color);
+        int blue = FastColor.ARGB32.blue(color);
+        int alpha;
+        int argb;
         for (int i = 1; i < trails.size(); i++) {
             pos0 = trails.get(i - 1).subtract(entity.position());
             pos1 = trails.get(i).subtract(entity.position());
@@ -63,11 +64,12 @@ public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
             float width0 = 0.05f / trails.size() * (i - 1);
             float width1 = 0.05f / trails.size() * i;
 
-            alpha=0.1f*(11-i);
-            bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width0).setColor(red, green, blue, alpha);
-            bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width1).setColor(red, green, blue, alpha);
-            bufferbuilder.addVertex(matrix4f, x2, y2, z2 + width1).setColor(red, green, blue, alpha);
-            bufferbuilder.addVertex(matrix4f, x2, y2, z2 - width1).setColor(red, green, blue, alpha);
+            alpha = (int) (0.1f * (11 - i) * 255f);
+            argb = FastColor.ARGB32.color(alpha, red, green, blue);
+            bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width0).setColor(argb);
+            bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width1).setColor(argb);
+            bufferbuilder.addVertex(matrix4f, x2, y2, z2 + width1).setColor(argb);
+            bufferbuilder.addVertex(matrix4f, x2, y2, z2 - width1).setColor(argb);
         }
         poseStack.popPose();
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
