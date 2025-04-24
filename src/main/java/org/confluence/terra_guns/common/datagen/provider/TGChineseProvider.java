@@ -24,6 +24,7 @@ public class TGChineseProvider extends LanguageProvider {
         addItem(BOOMSTICK, "三发猎枪");
         addItem(THE_UNDERTAKER, "夺命枪");
         addItem(MUSKET, "火枪");
+        addItem(MINISHARK, "迷你鲨");
 
         addItem(MUSKET_BULLET, "火枪子弹");
         addItem(ENDLESS_MUSKET_POUCH, "无尽火枪袋");

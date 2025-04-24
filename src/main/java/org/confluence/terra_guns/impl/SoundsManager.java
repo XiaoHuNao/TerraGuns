@@ -22,6 +22,7 @@ public class SoundsManager {
         putSound(BOOMSTICK, SHOTGUN_MULTI);
         putSound(THE_UNDERTAKER);
         putSound(MUSKET);
+        putSound(MINISHARK);
     }
 
     public static void putSound(Supplier<BaseGun> item){
