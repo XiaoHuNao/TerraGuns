@@ -1,5 +1,7 @@
 package org.confluence.terra_guns.client.renderer.entity;
 
+import com.mojang.blaze3d.platform.GlConst;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -7,15 +9,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
-import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.impl.TrailColorManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -23,56 +21,70 @@ import org.joml.Matrix4f;
 import java.util.List;
 
 public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
-    private final ItemRenderer itemRenderer;
-
     public BulletRenderer(EntityRendererProvider.Context context) {
         super(context);
-        this.itemRenderer = context.getItemRenderer();
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(BaseBulletEntity baseBulletEntity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull BaseBulletEntity baseBulletEntity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 
     @Override
     public void render(BaseBulletEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         List<Vec3> trails = entity.getTrails();
-        if (trails.isEmpty()) return;
-        Vec3 pos0;
-        Vec3 pos1;
+
+        int color = TrailColorManager.getColor(entity.getBullet());
+        renderTrail(trails, entity.position(), poseStack, bufferSource, color);
+
+        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+    }
+
+    public static void renderTrail(List<Vec3> trails, Vec3 entityPos, PoseStack poseStack, MultiBufferSource bufferSource, int color) {
+        if (trails.size() < 2) return;
+
         poseStack.pushPose();
         Matrix4f matrix4f = poseStack.last().pose();
-        VertexConsumer bufferbuilder = bufferSource.getBuffer(RenderType.lightning());
-        int color = TrailColorManager.getColor(entity.getBullet());
+        VertexConsumer buffer = bufferSource.getBuffer(RenderType.lightning()); // 你也可以自定义 RenderType
+
+        Minecraft mc = Minecraft.getInstance();
+        Vec3 camDir = new Vec3(mc.gameRenderer.getMainCamera().getLookVector());
 
         int red = FastColor.ARGB32.red(color);
         int green = FastColor.ARGB32.green(color);
         int blue = FastColor.ARGB32.blue(color);
-        int alpha;
-        int argb;
+
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlConst.GL_SRC_ALPHA, GlConst.GL_ONE_MINUS_SRC_ALPHA);
         for (int i = 1; i < trails.size(); i++) {
-            pos0 = trails.get(i - 1).subtract(entity.position());
-            pos1 = trails.get(i).subtract(entity.position());
+            Vec3 pos0 = trails.get(i - 1).subtract(entityPos);
+            Vec3 pos1 = trails.get(i).subtract(entityPos);
 
-            float x1 = (float) pos0.x;
-            float y1 = (float) pos0.y;
-            float z1 = (float) pos0.z;
-            float x2 = (float) pos1.x;
-            float y2 = (float) pos1.y;
-            float z2 = (float) pos1.z;
-            float width0 = 0.05f / trails.size() * (i - 1);
-            float width1 = 0.05f / trails.size() * i;
+            Vec3 dir = pos1.subtract(pos0).normalize();
 
-            alpha = (int) (0.1f * (11 - i) * 255f);
-            argb = FastColor.ARGB32.color(alpha, red, green, blue);
-            bufferbuilder.addVertex(matrix4f, x1, y1, z1 - width0).setColor(argb);
-            bufferbuilder.addVertex(matrix4f, x1, y1, z1 + width1).setColor(argb);
-            bufferbuilder.addVertex(matrix4f, x2, y2, z2 + width1).setColor(argb);
-            bufferbuilder.addVertex(matrix4f, x2, y2, z2 - width1).setColor(argb);
+            float progress = i / (float) trails.size();
+            float width = 0.15f * progress;
+            int alpha = (int) (200 * progress);
+            int argb = FastColor.ARGB32.color(alpha, red, green, blue);
+
+            Vec3 side = dir.cross(camDir).normalize().scale(width);
+            Vec3 left0 = pos0.add(side.scale(+width));
+            Vec3 right0 = pos0.add(side.scale(-width));
+            Vec3 left1 = pos1.add(side.scale(+width));
+            Vec3 right1 = pos1.add(side.scale(-width));
+
+            addVertex(buffer, matrix4f, left0, argb);
+            addVertex(buffer, matrix4f, right0, argb);
+            addVertex(buffer, matrix4f, right1, argb);
+            addVertex(buffer, matrix4f, left1, argb);
         }
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
         poseStack.popPose();
-        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+    }
 
+    private static void addVertex(VertexConsumer buffer, Matrix4f matrix, Vec3 pos, int argb) {
+        buffer.addVertex(matrix, (float) pos.x, (float) pos.y, (float) pos.z)
+                .setColor(argb);
     }
 }

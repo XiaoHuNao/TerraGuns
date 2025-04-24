@@ -41,6 +41,7 @@ public class GameEvent {
     public static void gunShot(ClientTickEvent.Post event) {
         if (TGKeys.SHOOT.get().consumeClick()) {
             LocalPlayer player = minecraft.player;
+            if (player.isSpectator()) return;
             ItemCooldowns cooldowns = player.getCooldowns();
 
             ItemStack mainHandItem = player.getMainHandItem();

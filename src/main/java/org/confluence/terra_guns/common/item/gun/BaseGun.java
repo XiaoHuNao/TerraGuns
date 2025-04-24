@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.api.event.GunEvent;
@@ -29,6 +28,7 @@ import java.util.List;
 public class BaseGun extends Item implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final GunPropertyComponent component;
+    private final ArrayList<BaseBulletEntity> baseBulletEntities = new ArrayList<>();
 
     public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, ModRarity rarity) {
         super(properties.stacksTo(1).component(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity)));
@@ -49,13 +49,12 @@ public class BaseGun extends Item implements GeoItem {
         GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, ammoDataManager);
         NeoForge.EVENT_BUS.post(ammoDataEvent);
 
-        List<BaseBulletEntity> baseBulletEntities = prepareBulletEntity(player, bullet, ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate());
+        prepareBulletEntity(baseBulletEntities, player, bullet, ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate());
         baseBulletEntities.forEach(serverLevel::addFreshEntity);
+        baseBulletEntities.clear();
     }
 
-    protected List<BaseBulletEntity> prepareBulletEntity(ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate){
-        List<BaseBulletEntity> baseBulletEntities = new ArrayList<>();
-
+    protected void prepareBulletEntity(List<BaseBulletEntity> baseBulletEntities, ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate){
         BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player);
 
         baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, 1.0f);
@@ -65,8 +64,9 @@ public class BaseGun extends Item implements GeoItem {
         baseBulletEntity.setPenetrate(penetrate);
 
         baseBulletEntities.add(baseBulletEntity);
-        return baseBulletEntities;
     }
+
+
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {

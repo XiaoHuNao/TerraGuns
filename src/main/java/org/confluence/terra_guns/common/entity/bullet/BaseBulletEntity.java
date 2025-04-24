@@ -1,15 +1,11 @@
 package org.confluence.terra_guns.common.entity.bullet;
 
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.*;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -32,8 +28,6 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
     private float knockback;
     private int penetrate;
     private final List<Vec3> trails = new ArrayList<>();
-    private Vec3 posO = Vec3.ZERO;
-    private int life;
 
     public BaseBulletEntity(EntityType<? extends BaseBulletEntity> entityType, Level level) {
         super(entityType, level);
@@ -68,10 +62,9 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
     public void tick() {
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Pre(this, bullet));
         super.tick();
-        this.life++;
         if (disToOwner() > 128) this.discard();
         bullet.tick(this);
-        savePos();
+        this.saveTrailPos();
 
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, bullet));
     }
@@ -95,20 +88,34 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         return this.position().distanceTo(getOwner().position());
     }
 
-    private void savePos() {
+    private void saveTrailPos() {
         if (this.level().isClientSide) {
+            Vec3 currentPos = this.position();
+
             if (trails.isEmpty()) {
-                trails.add(this.position());
+                trails.addLast(currentPos);
             }
-            if (trails.get(trails.size() - 1).distanceTo(this.position()) > 1) {
-                trails.add(this.position());
+
+            Vec3 lastPos = trails.getLast();
+            double dist = lastPos.distanceTo(currentPos);
+
+            double spacing = 0.4;
+            if (dist > spacing) {
+                int steps = Mth.floor(dist / spacing);
+                Vec3 delta = currentPos.subtract(lastPos).scale(1.0 / steps);
+                for (int i = 1; i <= steps; i++) {
+                    trails.addLast(lastPos.add(delta.scale(i)));
+                }
+            } else {
+                trails.addLast(currentPos);
             }
-            if (trails.size() > 10 || posO == this.position()) {
-                trails.remove(0);
+
+            while (trails.size() > 20) {
+                trails.removeFirst();
             }
-            posO = this.position();
         }
     }
+
 
 
     public List<Vec3> getTrails() {
