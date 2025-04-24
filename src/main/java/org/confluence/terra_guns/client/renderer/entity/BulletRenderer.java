@@ -45,7 +45,7 @@ public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
 
         poseStack.pushPose();
         Matrix4f matrix4f = poseStack.last().pose();
-        VertexConsumer buffer = bufferSource.getBuffer(RenderType.lightning()); // 你也可以自定义 RenderType
+        VertexConsumer buffer = bufferSource.getBuffer(RenderType.lightning());
 
         Minecraft mc = Minecraft.getInstance();
         Vec3 camDir = new Vec3(mc.gameRenderer.getMainCamera().getLookVector());

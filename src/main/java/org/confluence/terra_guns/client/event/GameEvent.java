@@ -1,6 +1,7 @@
 package org.confluence.terra_guns.client.event;
 
 import net.minecraft.client.Camera;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.HumanoidArm;
@@ -13,6 +14,7 @@ import net.neoforged.neoforge.client.event.*;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.client.init.TGKeys;
+import org.confluence.terra_guns.common.init.TGTags;
 import org.confluence.terra_guns.impl.SoundsManager;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletManager;
@@ -39,21 +41,25 @@ public class GameEvent {
 
     @SubscribeEvent
     public static void gunShot(ClientTickEvent.Post event) {
-        if (TGKeys.SHOOT.get().consumeClick()) {
+        KeyMapping shoot = TGKeys.SHOOT.get();
+        if (shoot.isDown()) {
             LocalPlayer player = minecraft.player;
             if (player.isSpectator()) return;
-            ItemCooldowns cooldowns = player.getCooldowns();
 
             ItemStack mainHandItem = player.getMainHandItem();
-            if (mainHandItem.getItem() instanceof BaseGun baseGun && !cooldowns.isOnCooldown(baseGun)) {
+            ItemCooldowns cooldowns = player.getCooldowns();
+            if (mainHandItem.getItem() instanceof BaseGun baseGun && !cooldowns.isOnCooldown(baseGun)){
+                if (mainHandItem.is(TGTags.MANUAL_GUN) && !shoot.consumeClick()) return;
+
                 BulletManager bulletManager = new BulletManager(player);
                 GunEvent.UseGunEvent useGunEvent = new GunEvent.UseGunEvent(player, baseGun, baseGun.getCooldown());
                 if (useGunEvent.isCanceled() || !bulletManager.canShoot()) return;
 
-                player.playSound(SoundsManager.getSound(player.getMainHandItem()), 1f, 1f);
+                player.playSound(SoundsManager.getSound(mainHandItem), 1f, 1f);
                 ShootPacketC2S.sendToServer();
                 cooldowns.addCooldown(baseGun, useGunEvent.getCooldowns());
             }
+
         }
     }
 
