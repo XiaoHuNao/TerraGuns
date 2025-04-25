@@ -16,6 +16,7 @@ import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.confluence.terra_guns.impl.AmmoDataContext;
+import org.confluence.terra_guns.util.AnimUtil;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -29,20 +30,21 @@ public class BaseGun extends Item implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final GunPropertyComponent component;
     private final ArrayList<BaseBulletEntity> baseBulletEntities = new ArrayList<>();
+    private final float inaccuracy;
 
-    public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, ModRarity rarity) {
+    public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, float inaccuracy, ModRarity rarity) {
         super(properties.stacksTo(1));
         GunPropertyComponent component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
         properties.component(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), component);
 
         this.components = Properties.COMPONENT_INTERNER.intern(properties.components.build());
         this.component = component;
-
+        this.inaccuracy = inaccuracy;
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
-    public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, ModRarity rarity) {
-        this(properties, cooldown, damage, velocity, knockback, critical, 1, rarity);
+    public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, float inaccuracy, ModRarity rarity) {
+        this(properties, cooldown, damage, velocity, knockback, critical, 1, inaccuracy, rarity);
     }
 
     public void shoot(ServerPlayer player, ItemStack bullet) {
@@ -50,23 +52,23 @@ public class BaseGun extends Item implements GeoItem {
         BulletPropertyComponent bulletComponent = bullet.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
         if (bulletComponent == null) return;
 
-        AmmoDataContext ammoDataContext = new AmmoDataContext(this.component, bulletComponent);
+        AmmoDataContext ammoDataContext = new AmmoDataContext(this.component, bulletComponent, inaccuracy);
         GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, ammoDataContext);
         NeoForge.EVENT_BUS.post(ammoDataEvent);
 
-        prepareBulletEntity(baseBulletEntities, player, bullet, ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate());
+        prepareBulletEntity(baseBulletEntities, player, bullet, ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate(), ammoDataEvent.getInaccuracy());
         baseBulletEntities.forEach(serverLevel::addFreshEntity);
         baseBulletEntities.clear();
     }
 
-    protected void prepareBulletEntity(List<BaseBulletEntity> baseBulletEntities, ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate){
+    protected void prepareBulletEntity(List<BaseBulletEntity> baseBulletEntities, ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate, float inaccuracy){
         BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player);
 
         baseBulletEntity.setBullet((BaseBullet) bullet.getItem());
         baseBulletEntity.setDamage(damage);
         baseBulletEntity.setKnockback(knockback);
         baseBulletEntity.setPenetrate(penetrate);
-        baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, 1.0f);
+        baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, inaccuracy);
 
         baseBulletEntities.add(baseBulletEntity);
     }
@@ -92,7 +94,7 @@ public class BaseGun extends Item implements GeoItem {
     }
 
     public void fireAnimator(ItemStack itemStack, ServerPlayer serverPlayer){
-        this.triggerAnim(serverPlayer, GeoItem.getOrAssignId(itemStack, serverPlayer.serverLevel()), "gun", "gun_fire");
+        AnimUtil.stopAndPlayAnim(this, itemStack, serverPlayer, "gun", "gun_fire");
     }
 
     @Override

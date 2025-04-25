@@ -14,20 +14,20 @@ public class Shotgun extends BaseGun {
     private final int minBullet;
     private final int maxBullet;
 
-    public Shotgun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, ModRarity rarity, int minBullet, int maxBullet) {
-        super(properties, cooldown, damage, velocity, knockback, critical, penetrate, rarity);
+    public Shotgun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, float inaccuracy, ModRarity rarity, int minBullet, int maxBullet) {
+        super(properties, cooldown, damage, velocity, knockback, critical, penetrate, inaccuracy, rarity);
         this.minBullet = minBullet;
         this.maxBullet = maxBullet;
     }
 
-    public Shotgun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, ModRarity rarity, int minBullet, int maxBullet) {
-        super(properties, cooldown, damage, velocity, knockback, critical, rarity);
+    public Shotgun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, float inaccuracy, ModRarity rarity, int minBullet, int maxBullet) {
+        super(properties, cooldown, damage, velocity, knockback, critical, inaccuracy, rarity);
         this.minBullet = minBullet;
         this.maxBullet = maxBullet;
     }
 
     @Override
-    protected void prepareBulletEntity(List<BaseBulletEntity> baseBulletEntities, ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate) {
+    protected void prepareBulletEntity(List<BaseBulletEntity> baseBulletEntities, ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
         int times = ThreadLocalRandom.current().nextInt(this.minBullet, this.maxBullet + 1);
 
         IntStream.range(0, times).forEach(i -> {
@@ -37,7 +37,7 @@ public class Shotgun extends BaseGun {
             baseBulletEntity.setDamage(damage);
             baseBulletEntity.setKnockback(knockback);
             baseBulletEntity.setPenetrate(penetrate);
-            baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, 10f);
+            baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, inaccuracy);
 
             baseBulletEntities.add(baseBulletEntity);
         });

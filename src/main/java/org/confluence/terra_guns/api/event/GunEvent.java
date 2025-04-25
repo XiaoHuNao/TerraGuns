@@ -69,6 +69,7 @@ public class GunEvent extends Event {
         private float knockback;
         private float velocity;
         private int penetrate;
+        private float inaccuracy;
 
         public AmmoDataEvent(Player player, BaseGun gun, AmmoDataContext ammoDataContext) {
             super(player, gun);
@@ -76,6 +77,7 @@ public class GunEvent extends Event {
             this.knockback = ammoDataContext.getKnockback();
             this.velocity = ammoDataContext.getVelocity();
             this.penetrate = ammoDataContext.getPenetrate();
+            this.inaccuracy = ammoDataContext.getInaccuracy();
         }
 
         public float getDamage() {
@@ -108,6 +110,14 @@ public class GunEvent extends Event {
 
         public void setPenetrate(int penetrate) {
             this.penetrate = penetrate;
+        }
+
+        public float getInaccuracy() {
+            return inaccuracy;
+        }
+
+        public void setInaccuracy(float inaccuracy) {
+            this.inaccuracy = inaccuracy;
         }
     }
 
