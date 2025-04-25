@@ -62,11 +62,11 @@ public class BaseGun extends Item implements GeoItem {
     protected void prepareBulletEntity(List<BaseBulletEntity> baseBulletEntities, ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate){
         BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player);
 
-        baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, 1.0f);
         baseBulletEntity.setBullet((BaseBullet) bullet.getItem());
         baseBulletEntity.setDamage(damage);
         baseBulletEntity.setKnockback(knockback);
         baseBulletEntity.setPenetrate(penetrate);
+        baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, 1.0f);
 
         baseBulletEntities.add(baseBulletEntity);
     }
