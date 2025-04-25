@@ -1,10 +1,7 @@
 package org.confluence.terra_guns.impl;
 
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.FastColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 
 import java.util.HashMap;
@@ -13,7 +10,7 @@ import java.util.function.Supplier;
 
 import static org.confluence.terra_guns.common.init.TGItems.*;
 
-public class TrailColorManager {
+public class TrailColorProvider {
     protected static Map<BaseBullet, Integer> colorMap = new HashMap<>();
     static {
         putColor(MUSKET_BULLET, 0xFFFD3E03);

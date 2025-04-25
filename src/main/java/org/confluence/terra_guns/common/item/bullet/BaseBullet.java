@@ -20,11 +20,14 @@ import org.confluence.terra_guns.common.init.TGDataComponents;
 import java.util.List;
 
 public class BaseBullet extends Item {
-    private BulletPropertyComponent component;
+    private final BulletPropertyComponent component;
     public BaseBullet(Properties properties, float damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, int penetrate, boolean infinity) {
-        super(properties.component(TGDataComponents.BULLET_PROPERTY_COMPONENT.get(), new BulletPropertyComponent(damage, velocity, velocityMultiplier, knockback, penetrate, rarity, infinity)));
+        super(properties);
+        BulletPropertyComponent component = new BulletPropertyComponent(damage, velocity, velocityMultiplier, knockback, penetrate, rarity, infinity);
+        properties.component(TGDataComponents.BULLET_PROPERTY_COMPONENT.get(), component);
 
-        this.component = new BulletPropertyComponent(damage, velocity, velocityMultiplier, knockback, penetrate, rarity, infinity);
+        this.components = Properties.COMPONENT_INTERNER.intern(properties.components.build());
+        this.component = component;
     }
 
     public void tick(BaseBulletEntity baseBulletEntity){

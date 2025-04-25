@@ -15,7 +15,7 @@ import org.confluence.terra_guns.common.component.GunPropertyComponent;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
-import org.confluence.terra_guns.impl.AmmoDataManager;
+import org.confluence.terra_guns.impl.AmmoDataContext;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -31,8 +31,13 @@ public class BaseGun extends Item implements GeoItem {
     private final ArrayList<BaseBulletEntity> baseBulletEntities = new ArrayList<>();
 
     public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, ModRarity rarity) {
-        super(properties.stacksTo(1).component(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity)));
-        this.component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
+        super(properties.stacksTo(1));
+        GunPropertyComponent component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
+        properties.component(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), component);
+
+        this.components = Properties.COMPONENT_INTERNER.intern(properties.components.build());
+        this.component = component;
+
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
@@ -45,8 +50,8 @@ public class BaseGun extends Item implements GeoItem {
         BulletPropertyComponent bulletComponent = bullet.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
         if (bulletComponent == null) return;
 
-        AmmoDataManager ammoDataManager = new AmmoDataManager(this.component, bulletComponent);
-        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, ammoDataManager);
+        AmmoDataContext ammoDataContext = new AmmoDataContext(this.component, bulletComponent);
+        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, ammoDataContext);
         NeoForge.EVENT_BUS.post(ammoDataEvent);
 
         prepareBulletEntity(baseBulletEntities, player, bullet, ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate());

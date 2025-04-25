@@ -4,11 +4,11 @@ import net.minecraft.util.RandomSource;
 import org.confluence.terra_guns.common.component.BulletPropertyComponent;
 import org.confluence.terra_guns.common.component.GunPropertyComponent;
 
-public class AmmoDataManager {
+public class AmmoDataContext {
     private final GunPropertyComponent gunComponent;
     private final BulletPropertyComponent bulletComponent;
 
-    public AmmoDataManager(GunPropertyComponent gunComponent, BulletPropertyComponent bulletComponent){
+    public AmmoDataContext(GunPropertyComponent gunComponent, BulletPropertyComponent bulletComponent){
         this.gunComponent = gunComponent;
         this.bulletComponent = bulletComponent;
     }

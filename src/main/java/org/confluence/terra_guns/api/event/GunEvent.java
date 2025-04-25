@@ -5,9 +5,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
-import org.confluence.terra_guns.impl.AmmoDataManager;
-
-import java.util.List;
+import org.confluence.terra_guns.impl.AmmoDataContext;
 
 public class GunEvent extends Event {
     private final Player player;
@@ -72,12 +70,12 @@ public class GunEvent extends Event {
         private float velocity;
         private int penetrate;
 
-        public AmmoDataEvent(Player player, BaseGun gun, AmmoDataManager ammoDataManager) {
+        public AmmoDataEvent(Player player, BaseGun gun, AmmoDataContext ammoDataContext) {
             super(player, gun);
-            this.damage = ammoDataManager.getDamage();
-            this.knockback = ammoDataManager.getKnockback();
-            this.velocity = ammoDataManager.getVelocity();
-            this.penetrate = ammoDataManager.getPenetrate();
+            this.damage = ammoDataContext.getDamage();
+            this.knockback = ammoDataContext.getKnockback();
+            this.velocity = ammoDataContext.getVelocity();
+            this.penetrate = ammoDataContext.getPenetrate();
         }
 
         public float getDamage() {

@@ -33,12 +33,11 @@ neoForge {
         mappingsVersion = project.parchment_mappings_version
         minecraftVersion = project.parchment_minecraft_version
     }
-    // accessTransformers.add('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
         client {
             client()
-            jvmArgument("-XX:+AllowEnhancedClassRedefinition")
             programArgument '--username kl'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }

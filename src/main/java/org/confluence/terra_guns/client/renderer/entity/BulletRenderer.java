@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
-import org.confluence.terra_guns.impl.TrailColorManager;
+import org.confluence.terra_guns.impl.TrailColorProvider;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
@@ -34,7 +34,7 @@ public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
     public void render(BaseBulletEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         List<Vec3> trails = entity.getTrails();
 
-        int color = TrailColorManager.getColor(entity.getBullet());
+        int color = TrailColorProvider.getColor(entity.getBullet());
         renderTrail(trails, entity.position(), poseStack, bufferSource, color);
 
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);

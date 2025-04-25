@@ -15,9 +15,9 @@ import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.client.init.TGKeys;
 import org.confluence.terra_guns.common.init.TGTags;
-import org.confluence.terra_guns.impl.SoundsManager;
+import org.confluence.terra_guns.impl.BulletHandler;
+import org.confluence.terra_guns.impl.SoundsProvider;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
-import org.confluence.terra_guns.impl.BulletManager;
 import org.confluence.terra_guns.network.c2s.ShootPacketC2S;
 
 @EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
@@ -51,11 +51,10 @@ public class GameEvent {
             if (mainHandItem.getItem() instanceof BaseGun baseGun && !cooldowns.isOnCooldown(baseGun)){
                 if (mainHandItem.is(TGTags.MANUAL_GUN) && !shoot.consumeClick()) return;
 
-                BulletManager bulletManager = new BulletManager(player);
                 GunEvent.UseGunEvent useGunEvent = new GunEvent.UseGunEvent(player, baseGun, baseGun.getCooldown());
-                if (useGunEvent.isCanceled() || !bulletManager.canShoot()) return;
+                if (useGunEvent.isCanceled() || !BulletHandler.canShoot(player, baseGun)) return;
 
-                player.playSound(SoundsManager.getSound(mainHandItem), 1f, 1f);
+                player.playSound(SoundsProvider.getSound(mainHandItem), 1f, 1f);
                 ShootPacketC2S.sendToServer();
                 cooldowns.addCooldown(baseGun, useGunEvent.getCooldowns());
             }

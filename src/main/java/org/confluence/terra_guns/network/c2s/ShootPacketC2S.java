@@ -13,7 +13,7 @@ import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
-import org.confluence.terra_guns.impl.BulletManager;
+import org.confluence.terra_guns.impl.BulletHandler;
 
 
 public record ShootPacketC2S() implements CustomPacketPayload {
@@ -30,8 +30,7 @@ public record ShootPacketC2S() implements CustomPacketPayload {
             if (context.player() instanceof ServerPlayer serverPlayer) {
                 ItemStack gunStack = serverPlayer.getMainHandItem();
                 if (gunStack.getItem() instanceof BaseGun baseGun) {
-                    BulletManager bulletManager = new BulletManager(serverPlayer);
-                    ItemStack ammo = bulletManager.getAmmo();
+                    ItemStack ammo = BulletHandler.getAmmo(serverPlayer, baseGun);
 
                     baseGun.shoot(serverPlayer, ammo);
                     baseGun.fireAnimator(gunStack, serverPlayer);

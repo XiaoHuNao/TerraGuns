@@ -10,29 +10,12 @@ import org.confluence.terra_guns.common.init.TGTags;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class BulletManager {
-    private final Player player;
-    private final Inventory inventory;
-    private final BaseGun gun;
-
-    public BulletManager(Player player) {
-        this(player, player.getInventory(), (BaseGun) player.getMainHandItem().getItem());
-    }
-
-    public BulletManager(Player player, BaseGun gun) {
-        this(player, player.getInventory(), gun);
-    }
-
-    public BulletManager(Player player, Inventory inventory, BaseGun gun) {
-        this.player = player;
-        this.inventory = inventory;
-        this.gun = gun;
-    }
-
-    public ItemStack getAmmo() {
+public class BulletHandler {
+    /**
+     * 获取玩家背包中第一个兼容该枪的子弹
+     */
+    public static ItemStack getAmmo(Player player, BaseGun gun) {
+        Inventory inventory = player.getInventory();
         for (ItemStack item : inventory.items) {
             if (item.is(TGTags.AMMO) && isCompatible(item)) {
                 GunEvent.AmmoSelectedEvent ammoSelectedEvent = new GunEvent.AmmoSelectedEvent(player, gun, item);
@@ -43,14 +26,17 @@ public class BulletManager {
         return ItemStack.EMPTY;
     }
 
-    public boolean canShoot() {
-        return !getAmmo().isEmpty();
+    /**
+     * 判断某个子弹是否与枪兼容（目前只判断是不是 BaseBullet 实例）
+     */
+    public static boolean isCompatible(ItemStack ammo) {
+        return ammo.getItem() instanceof BaseBullet;
     }
 
     /**
-     * 判断某种子弹是否与该枪兼容
+     * 是否可以开枪（是否找到有效弹药）
      */
-    public boolean isCompatible(ItemStack ammo) {
-        return ammo.getItem() instanceof BaseBullet;
+    public static boolean canShoot(Player player, BaseGun gun) {
+        return !getAmmo(player, gun).isEmpty();
     }
 }
