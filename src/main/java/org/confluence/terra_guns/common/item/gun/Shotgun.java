@@ -31,12 +31,11 @@ public class Shotgun extends BaseGun {
         int times = ThreadLocalRandom.current().nextInt(this.minBullet, this.maxBullet + 1);
 
         IntStream.range(0, times).forEach(i -> {
-            BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player);
+            BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player, (BaseBullet) bullet.getItem());
 
-            baseBulletEntity.setBullet((BaseBullet) bullet.getItem());
-            baseBulletEntity.setDamage(damage);
-            baseBulletEntity.setKnockback(knockback);
-            baseBulletEntity.setPenetrate(penetrate);
+            baseBulletEntity.damage = damage;
+            baseBulletEntity.knockback = knockback;
+            baseBulletEntity.penetrate = penetrate;
             baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, inaccuracy);
 
             baseBulletEntities.add(baseBulletEntity);

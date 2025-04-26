@@ -7,6 +7,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import org.confluence.lib.common.LibTags;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.init.TGTags;

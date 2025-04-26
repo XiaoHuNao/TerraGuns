@@ -23,35 +23,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseBulletEntity extends AbstractHurtingProjectile {
-    private BaseBullet bullet = TGItems.MUSKET_BULLET.get();
-    private float damage;
-    private float knockback;
-    private int penetrate;
+    private final BaseBullet bullet;
+    public float damage;
+    public float knockback;
+    public int penetrate;
+    public int hitBlockTime;
     private final List<Vec3> trails = new ArrayList<>();
 
     public BaseBulletEntity(EntityType<? extends BaseBulletEntity> entityType, Level level) {
         super(entityType, level);
+        this.bullet = TGItems.MUSKET_BULLET.get();
     }
 
-    public BaseBulletEntity(LivingEntity owner) {
+    public BaseBulletEntity(LivingEntity owner, BaseBullet bullet) {
         super(TGEntities.BASE_BULLET_ENTITY.get(), owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), owner.level());
         setOwner(owner);
-    }
-
-    public void setBullet(BaseBullet bullet) {
         this.bullet = bullet;
-    }
-
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    public void setKnockback(float knockback) {
-        this.knockback = knockback;
-    }
-
-    public void setPenetrate(int penetrate) {
-        this.penetrate = penetrate;
     }
 
     public BaseBullet getBullet() {
@@ -134,8 +121,8 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
             BulletEvent.DamageEntityEvent damageEntityEvent = new BulletEvent.DamageEntityEvent(this, bullet, shooter, target);
             NeoForge.EVENT_BUS.post(damageEntityEvent);
 
-            bullet.hitEffect(shooter, target, damage);
-            if (knockback > 0) {
+            this.bullet.onHitEntity(this, result);
+            if (this.knockback > 0) {
                 BulletEvent.KnockbackEvent knockbackEvent = new BulletEvent.KnockbackEvent(this, bullet, knockback/8, 0f);
                 NeoForge.EVENT_BUS.post(knockbackEvent);
 
@@ -156,11 +143,17 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
     }
 
     @Override
-    protected void onHitBlock(BlockHitResult result) {
+    protected void onHitBlock(@NotNull BlockHitResult result) {
         BulletEvent.HitEvent.Block hitBlockEvent = new BulletEvent.HitEvent.Block(this, bullet, result);
         if (hitBlockEvent.isCanceled()) return;
 
         super.onHitBlock(result);
-        this.discard();
+        this.bullet.onHitBlock(this, result);
+
+        this.hitBlockTime++;
+    }
+
+    public int getHitBlockTime() {
+        return this.hitBlockTime;
     }
 }

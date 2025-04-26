@@ -1,5 +1,6 @@
 package org.confluence.terra_guns.common.event;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -15,13 +16,14 @@ import org.confluence.terra_guns.common.item.gun.BaseGun;
 public class GameEvent {
     @SubscribeEvent
     public static void swapGunAnimator(LivingEquipmentChangeEvent event){
-        if (event.getSlot() == EquipmentSlot.MAINHAND && event.getTo().getItem() instanceof BaseGun) {
+        if (event.getSlot() == EquipmentSlot.MAINHAND && event.getTo().getItem() instanceof BaseGun baseGun) {
             // 切枪
-            TerraGuns.LOGGER.info(event.getTo().toString());
+            baseGun.pickAnimator(event.getTo(), (ServerPlayer) event.getEntity());
+//            TerraGuns.LOGGER.info(event.getTo().toString());
         }
         if (event.getSlot() == EquipmentSlot.MAINHAND && event.getFrom().getItem() instanceof BaseGun) {
             // 收枪
-            TerraGuns.LOGGER.info(event.getFrom().toString());
+//            TerraGuns.LOGGER.info(event.getFrom().toString());
         }
     }
 

@@ -9,6 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.api.event.BulletEvent;
 import org.confluence.terra_guns.common.component.BulletPropertyComponent;
@@ -21,6 +23,7 @@ import java.util.List;
 
 public class BaseBullet extends Item {
     private final BulletPropertyComponent component;
+
     public BaseBullet(Properties properties, float damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, int penetrate, boolean infinity) {
         super(properties);
         BulletPropertyComponent component = new BulletPropertyComponent(damage, velocity, velocityMultiplier, knockback, penetrate, rarity, infinity);
@@ -30,11 +33,16 @@ public class BaseBullet extends Item {
         this.component = component;
     }
 
-    public void tick(BaseBulletEntity baseBulletEntity){
+    public void tick(BaseBulletEntity baseBulletEntity) {
     }
 
-    public void hitEffect(Entity player, Entity entity, float amount) {
-        entity.hurt(TGDamageTypes.of(entity.level(), TGDamageTypes.BULLET_DAMAGE, player), amount);
+    public void onHitBlock(BaseBulletEntity bulletEntity, BlockHitResult result) {
+        bulletEntity.discard();
+    }
+
+    public void onHitEntity(BaseBulletEntity bulletEntity, EntityHitResult result) {
+        Entity entity = result.getEntity();
+        entity.hurt(TGDamageTypes.of(entity.level(), TGDamageTypes.BULLET_DAMAGE, bulletEntity.getOwner()), bulletEntity.damage);
     }
 
     @Override

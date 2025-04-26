@@ -61,18 +61,16 @@ public class BaseGun extends Item implements GeoItem {
         baseBulletEntities.clear();
     }
 
-    protected void prepareBulletEntity(List<BaseBulletEntity> baseBulletEntities, ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate, float inaccuracy){
-        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player);
+    protected void prepareBulletEntity(List<BaseBulletEntity> baseBulletEntities, ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
+        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player, (BaseBullet) bullet.getItem());
 
-        baseBulletEntity.setBullet((BaseBullet) bullet.getItem());
-        baseBulletEntity.setDamage(damage);
-        baseBulletEntity.setKnockback(knockback);
-        baseBulletEntity.setPenetrate(penetrate);
+        baseBulletEntity.damage = damage;
+        baseBulletEntity.knockback = knockback;
+        baseBulletEntity.penetrate = penetrate;
         baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, inaccuracy);
 
         baseBulletEntities.add(baseBulletEntity);
     }
-
 
 
     @Override
@@ -90,11 +88,21 @@ public class BaseGun extends Item implements GeoItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         AnimationController<BaseGun> gun = new AnimationController<>(this, "gun", state -> PlayState.CONTINUE);
         gun.triggerableAnim("gun_fire", RawAnimation.begin().then("fire", Animation.LoopType.PLAY_ONCE));
+        gun.triggerableAnim("gun_pick", RawAnimation.begin().then("pick up", Animation.LoopType.PLAY_ONCE));
+        gun.triggerableAnim("gun_reload", RawAnimation.begin().then("reloading", Animation.LoopType.PLAY_ONCE));
         controllers.add(gun);
     }
 
-    public void fireAnimator(ItemStack itemStack, ServerPlayer serverPlayer){
+    public void fireAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
         AnimUtil.stopAndPlayAnim(this, itemStack, serverPlayer, "gun", "gun_fire");
+    }
+
+    public void pickAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
+        AnimUtil.stopAndPlayAnim(this, itemStack, serverPlayer, "gun", "gun_pick");
+    }
+
+    public void reloadAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
+        AnimUtil.stopAndPlayAnim(this, itemStack, serverPlayer, "gun", "gun_reload");
     }
 
     @Override
