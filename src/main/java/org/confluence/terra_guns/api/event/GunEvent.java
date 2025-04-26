@@ -45,12 +45,13 @@ public class GunEvent extends Event {
     }
 
     /**
-     * 选择射击子弹
+     * 开火事件
      */
-    public static class AmmoSelectedEvent extends GunEvent {
+    public static class GunFireEvent extends GunEvent implements ICancellableEvent{
         private ItemStack bullet;
+        private boolean alwaysFire = false;
 
-        public AmmoSelectedEvent(Player player, BaseGun gun, ItemStack bullet) {
+        public GunFireEvent(Player player, BaseGun gun, ItemStack bullet) {
             super(player, gun);
             this.bullet = bullet;
         }
@@ -61,6 +62,14 @@ public class GunEvent extends Event {
 
         public void setAmmo(ItemStack bullet) {
             this.bullet = bullet;
+        }
+
+        public boolean isAlwaysFire() {
+            return alwaysFire;
+        }
+
+        public void setAlwaysFire(boolean alwaysFire) {
+            this.alwaysFire = alwaysFire;
         }
     }
 
