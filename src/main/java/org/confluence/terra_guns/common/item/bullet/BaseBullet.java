@@ -23,6 +23,7 @@ import java.util.List;
 
 public class BaseBullet extends Item {
     private final BulletPropertyComponent component;
+    private String colorID;
 
     public BaseBullet(Properties properties, float damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, int penetrate, boolean infinity) {
         super(properties);
@@ -49,5 +50,9 @@ public class BaseBullet extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         tooltipComponents.add(Component.translatable("tooltip.terra_guns.damage", component.damage()).withStyle(ChatFormatting.GRAY));
         tooltipComponents.add(Component.translatable("tooltip.terra_guns.knockback", component.knockback()).withStyle(ChatFormatting.GRAY));
+    }
+
+    public String colorID(){
+        return colorID;
     }
 }

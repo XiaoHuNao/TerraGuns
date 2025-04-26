@@ -41,8 +41,8 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         this.bullet = bullet;
     }
 
-    public BaseBullet getBullet() {
-        return bullet;
+    public String getColorID() {
+        return bullet.colorID();
     }
 
     @Override
@@ -144,7 +144,7 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
 
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
-        BulletEvent.HitEvent.Block hitBlockEvent = new BulletEvent.HitEvent.Block(this, bullet, result);
+        BulletEvent.HitEvent.Block hitBlockEvent = new BulletEvent.HitEvent.Block(this,  bullet, result);
         if (hitBlockEvent.isCanceled()) return;
 
         super.onHitBlock(result);

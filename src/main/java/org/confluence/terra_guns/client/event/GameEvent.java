@@ -52,7 +52,7 @@ public class GameEvent {
                 if (mainHandItem.is(TGTags.MANUAL_GUN) && !shoot.consumeClick()) return;
 
                 GunEvent.UseGunEvent useGunEvent = new GunEvent.UseGunEvent(player, baseGun, baseGun.getCooldown());
-                if (useGunEvent.isCanceled() || !BulletHandler.canShoot(player, baseGun)) return;
+                if (useGunEvent.isCanceled() || !BulletHandler.canShoot(player, mainHandItem)) return;
 
                 player.playSound(SoundsProvider.getSound(mainHandItem), 1f, 1f);
                 ShootPacketC2S.sendToServer();

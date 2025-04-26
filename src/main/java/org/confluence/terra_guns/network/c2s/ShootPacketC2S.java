@@ -30,7 +30,7 @@ public record ShootPacketC2S() implements CustomPacketPayload {
             if (context.player() instanceof ServerPlayer serverPlayer) {
                 ItemStack gunStack = serverPlayer.getMainHandItem();
                 if (gunStack.getItem() instanceof BaseGun baseGun) {
-                    ItemStack ammo = BulletHandler.getAmmo(serverPlayer, baseGun);
+                    ItemStack ammo = BulletHandler.getAmmo(serverPlayer, gunStack);
 
                     baseGun.shoot(serverPlayer, ammo);
                     baseGun.fireAnimator(gunStack, serverPlayer);
