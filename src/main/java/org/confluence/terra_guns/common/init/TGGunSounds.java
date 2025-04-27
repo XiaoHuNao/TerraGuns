@@ -1,7 +1,8 @@
-package org.confluence.terra_guns.impl;
+package org.confluence.terra_guns.common.init;
 
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.registries.DeferredItem;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 
 import java.util.HashMap;
@@ -11,9 +12,9 @@ import java.util.function.Supplier;
 import static org.confluence.terra_guns.common.init.TGItems.*;
 import static org.confluence.terra_guns.common.init.TGSoundEvents.*;
 
-public class SoundsProvider {
+public class TGGunSounds {
     protected static Map<BaseGun, SoundEvent> soundMap = new HashMap<>();
-    static {
+    public static void init() {
         putSound(HAND_GUN, GUN_AUTO);
         putSound(SHOTGUN, SHOTGUN_MULTI);
         putSound(FLINTLOCK_PISTOL);
@@ -23,11 +24,11 @@ public class SoundsProvider {
         putSound(MINISHARK);
     }
 
-    public static void putSound(Supplier<BaseGun> item){
+    public static void putSound(DeferredItem<? extends BaseGun> item){
         putSound(item, GUN_GENERIC);
     }
 
-    public static void putSound(Supplier<BaseGun> item, Supplier<SoundEvent> soundEvent){
+    public static void putSound(DeferredItem<? extends BaseGun> item, Supplier<SoundEvent> soundEvent){
         putSound(item.get(), soundEvent.get());
     }
 

@@ -1,11 +1,17 @@
 package org.confluence.terra_guns.common.entity.bullet;
 
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.*;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -23,12 +29,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseBulletEntity extends AbstractHurtingProjectile {
+    private static final EntityDataAccessor<String> COLOR_ID = SynchedEntityData.defineId(BaseBulletEntity.class, EntityDataSerializers.STRING);
     private final BaseBullet bullet;
     public float damage;
     public float knockback;
     public int penetrate;
     public int hitBlockTime;
     private final List<Vec3> trails = new ArrayList<>();
+    private String colorID;
 
     public BaseBulletEntity(EntityType<? extends BaseBulletEntity> entityType, Level level) {
         super(entityType, level);
@@ -41,8 +49,54 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         this.bullet = bullet;
     }
 
-    public BaseBullet getBullet() {
-        return bullet;
+    public String getColorID() {
+        if (!this.entityData.get(COLOR_ID).isEmpty()){
+            return this.entityData.get(COLOR_ID);
+        } else if (!bullet.colorID().isEmpty()){
+            return bullet.colorID();
+        }
+        return BuiltInRegistries.ITEM.getKey(bullet).getPath();
+    }
+
+    public void setColorID(String colorID) {
+        this.entityData.set(COLOR_ID, colorID);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(COLOR_ID, "");
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+
+        if (compound.contains("ColorID", CompoundTag.TAG_STRING)) {
+            this.setColorID(compound.getString("ColorID"));
+        }
+        if (compound.contains("Damage", CompoundTag.TAG_FLOAT)) {
+            this.damage = compound.getFloat("Damage");
+        }
+        if (compound.contains("Knockback", CompoundTag.TAG_FLOAT)) {
+            this.knockback = compound.getFloat("Knockback");
+        }
+        if (compound.contains("Penetrate", CompoundTag.TAG_INT)) {
+            this.penetrate = compound.getInt("Penetrate");
+        }
+        if (compound.contains("HitBlockTime", CompoundTag.TAG_INT)) {
+            this.hitBlockTime = compound.getInt("HitBlockTime");
+        }
+    }
+
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+
+        compound.putString("ColorID", this.getColorID());
+        compound.putFloat("Damage", this.damage);
+        compound.putFloat("Knockback", this.knockback);
+        compound.putInt("Penetrate", this.penetrate);
+        compound.putInt("HitBlockTime", this.hitBlockTime);
     }
 
     @Override
@@ -72,6 +126,7 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
     }
 
     public double disToOwner(){
+        if (getOwner()==null) return 256;
         return this.position().distanceTo(getOwner().position());
     }
 

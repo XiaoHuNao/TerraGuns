@@ -68,7 +68,8 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
                     AnimationController<T> controller = animationState.getController();
                     Optional<AnimationProcessor.QueuedAnimation> currentAnimation = Optional.ofNullable(controller.getCurrentAnimation());
 
-                    if (currentAnimation.isPresent() && currentAnimation.get().animation().name().equals("fire") && controller.getAnimationState() != AnimationController.State.STOPPED) {
+                    if (currentAnimation.isPresent() && controller.getAnimationState() != AnimationController.State.STOPPED) {
+                        if (!currentAnimation.get().animation().name().equals("fire")) return;
                         fire.ifPresent(geoBone -> geoBone.setHidden(false));
                         fire1.ifPresent(geoBone -> geoBone.setHidden(false));
                     } else {

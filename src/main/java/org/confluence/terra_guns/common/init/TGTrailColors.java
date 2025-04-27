@@ -1,11 +1,9 @@
-package org.confluence.terra_guns.impl;
+package org.confluence.terra_guns.common.init;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.registries.DeferredItem;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 
@@ -15,11 +13,12 @@ import java.util.function.Supplier;
 
 import static org.confluence.terra_guns.common.init.TGItems.*;
 
-public class TrailColorProvider {
+public class TGTrailColors {
     protected static Map<String, Integer> colorMap = new HashMap<>();
 
-    static {
+    public static void init() {
         putColor(MUSKET_BULLET, 0xFFFD3E03);
+        putColor("idea", 0xFF444748);
     }
 
     public static void putColor(String item) {

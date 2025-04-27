@@ -29,6 +29,7 @@ public class TerraGuns {
         ENTITY_TYPES.register(modEventBus);
         GUNS.register(modEventBus);
         BULLETS.register(modEventBus);
+        OTHER.register(modEventBus);
         MOB_EFFECTS.register(modEventBus);
         SOUNDS.register(modEventBus);
     }

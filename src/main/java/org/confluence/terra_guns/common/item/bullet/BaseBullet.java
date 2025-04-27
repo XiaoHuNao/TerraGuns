@@ -23,7 +23,7 @@ import java.util.List;
 
 public class BaseBullet extends Item {
     private final BulletPropertyComponent component;
-    private String colorID;
+    protected String colorID = "";
 
     public BaseBullet(Properties properties, float damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, int penetrate, boolean infinity) {
         super(properties);
@@ -52,7 +52,20 @@ public class BaseBullet extends Item {
         tooltipComponents.add(Component.translatable("tooltip.terra_guns.knockback", component.knockback()).withStyle(ChatFormatting.GRAY));
     }
 
-    public String colorID(){
+    public String colorID() {
         return colorID;
+    }
+
+    public static class EmptyBullet extends BaseBullet {
+        public EmptyBullet(Properties properties) {
+            super(properties, 0, 0, 0, 0, ModRarity.WHITE, 0, false);
+        }
+
+        void setColorID(String colorID) {
+            this.colorID = colorID;
+        }
+
+        public void setDamage(int damage) {
+        }
     }
 }

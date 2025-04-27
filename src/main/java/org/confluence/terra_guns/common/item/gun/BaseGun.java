@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -17,6 +18,7 @@ import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.confluence.terra_guns.impl.AmmoDataContext;
 import org.confluence.terra_guns.util.AnimUtil;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -29,8 +31,8 @@ import java.util.List;
 public class BaseGun extends Item implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final GunPropertyComponent component;
-    private final ArrayList<BaseBulletEntity> baseBulletEntities = new ArrayList<>();
-    private final float inaccuracy;
+    protected final ArrayList<Projectile> baseBulletEntities = new ArrayList<>();
+    protected final float inaccuracy;
 
     public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, float inaccuracy, ModRarity rarity) {
         super(properties.stacksTo(1));
@@ -47,23 +49,24 @@ public class BaseGun extends Item implements GeoItem {
         this(properties, cooldown, damage, velocity, knockback, critical, 1, inaccuracy, rarity);
     }
 
-    public void shoot(ServerPlayer player, ItemStack bullet) {
+    public void shoot(ServerPlayer player, ItemStack bullet, ItemStack gun) {
         ServerLevel serverLevel = player.serverLevel();
         BulletPropertyComponent bulletComponent = bullet.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
         if (bulletComponent == null) return;
 
         AmmoDataContext ammoDataContext = new AmmoDataContext(this.component, bulletComponent, inaccuracy);
-        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, ammoDataContext);
+        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, ammoDataContext.getDamage(), ammoDataContext.getKnockback(), ammoDataContext.getVelocity(), ammoDataContext.getPenetrate(), ammoDataContext.getInaccuracy());
         NeoForge.EVENT_BUS.post(ammoDataEvent);
 
-        prepareBulletEntity(baseBulletEntities, player, bullet, ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate(), ammoDataEvent.getInaccuracy());
+        prepareBulletEntity(baseBulletEntities, player, bullet, gun, ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate(), ammoDataEvent.getInaccuracy());
         baseBulletEntities.forEach(serverLevel::addFreshEntity);
         baseBulletEntities.clear();
     }
 
-    protected void prepareBulletEntity(List<BaseBulletEntity> baseBulletEntities, ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
+    protected void prepareBulletEntity(List<Projectile> baseBulletEntities, ServerPlayer player, ItemStack bullet, ItemStack gun, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
         BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player, (BaseBullet) bullet.getItem());
 
+        baseBulletEntity.setColorID(((BaseGun) gun.getItem()).getColorID());
         baseBulletEntity.damage = damage;
         baseBulletEntity.knockback = knockback;
         baseBulletEntity.penetrate = penetrate;
@@ -72,6 +75,9 @@ public class BaseGun extends Item implements GeoItem {
         baseBulletEntities.add(baseBulletEntity);
     }
 
+    public String getColorID() {
+        return "";
+    }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {

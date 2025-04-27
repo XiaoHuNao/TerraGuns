@@ -12,6 +12,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.common.init.TGDataComponents;
+import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletHandler;
 
@@ -31,8 +32,9 @@ public record ShootPacketC2S() implements CustomPacketPayload {
                 ItemStack gunStack = serverPlayer.getMainHandItem();
                 if (gunStack.getItem() instanceof BaseGun baseGun) {
                     ItemStack ammo = BulletHandler.getAmmo(serverPlayer, gunStack);
+                    ammo = ammo.equals(ItemStack.EMPTY) ? TGItems.EMPTY_BULLET.toStack() : ammo;
 
-                    baseGun.shoot(serverPlayer, ammo);
+                    baseGun.shoot(serverPlayer, ammo, gunStack);
                     baseGun.fireAnimator(gunStack, serverPlayer);
 
                     boolean infinity = ammo.get(TGDataComponents.BULLET_PROPERTY_COMPONENT).infinity();

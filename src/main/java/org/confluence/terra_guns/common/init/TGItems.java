@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 public class TGItems {
     public static final DeferredRegister.Items GUNS = DeferredRegister.createItems(TerraGuns.MODID);
     public static final DeferredRegister.Items BULLETS = DeferredRegister.createItems(TerraGuns.MODID);
+    public static final DeferredRegister.Items OTHER = DeferredRegister.createItems(TerraGuns.MODID);
 
     public static final DeferredItem<BaseGun> HAND_GUN = GUNS.registerItem("hand_gun", properties -> new BaseGun(properties, 5, 5.2f, 1.25f, 0.15f, 0.04f, 0, ModRarity.GREEN)); // 手枪
     public static final DeferredItem<BaseGun> FLINTLOCK_PISTOL = GUNS.registerItem("flintlock_pistol", properties -> new BaseGun(properties, 5, 2.6f, 0.6f, 0.05f, 0.04f, 0, ModRarity.BLUE)); // 燧发枪
@@ -34,4 +35,7 @@ public class TGItems {
 
     public static final DeferredItem<BaseBullet> MUSKET_BULLET = BULLETS.registerItem("musket_bullet", properties -> new BaseBullet(properties.stacksTo(99), 1.5f, 0.5f, 2, 0.1f, ModRarity.WHITE, 0, false));
     public static final DeferredItem<BaseBullet> ENDLESS_MUSKET_POUCH = BULLETS.registerItem("endless_musket_pouch", properties -> new BaseBullet(properties.stacksTo(1), 1.5f, 0.5f, 2, 0.1f, ModRarity.GREEN, 0, true));
+
+    public static final DeferredItem<BaseBullet.EmptyBullet> EMPTY_BULLET = OTHER.registerItem("empty_bullet", BaseBullet.EmptyBullet::new);
+
 }

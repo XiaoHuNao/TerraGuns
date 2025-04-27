@@ -49,11 +49,12 @@ public class GunEvent extends Event {
      */
     public static class GunFireEvent extends GunEvent implements ICancellableEvent{
         private ItemStack bullet;
-        private boolean alwaysFire = false;
+        private boolean alwaysFire;
 
-        public GunFireEvent(Player player, BaseGun gun, ItemStack bullet) {
+        public GunFireEvent(Player player, BaseGun gun, ItemStack bullet, boolean alwaysFire) {
             super(player, gun);
             this.bullet = bullet;
+            this.alwaysFire=alwaysFire;
         }
 
         public ItemStack getAmmo() {
@@ -80,13 +81,13 @@ public class GunEvent extends Event {
         private int penetrate;
         private float inaccuracy;
 
-        public AmmoDataEvent(Player player, BaseGun gun, AmmoDataContext ammoDataContext) {
+        public AmmoDataEvent(Player player, BaseGun gun, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
             super(player, gun);
-            this.damage = ammoDataContext.getDamage();
-            this.knockback = ammoDataContext.getKnockback();
-            this.velocity = ammoDataContext.getVelocity();
-            this.penetrate = ammoDataContext.getPenetrate();
-            this.inaccuracy = ammoDataContext.getInaccuracy();
+            this.damage = damage;
+            this.knockback = knockback;
+            this.velocity = velocity;
+            this.penetrate = penetrate;
+            this.inaccuracy = inaccuracy;
         }
 
         public float getDamage() {

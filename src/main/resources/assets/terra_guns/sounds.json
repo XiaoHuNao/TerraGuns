@@ -9,6 +9,11 @@
             "terra_guns:gun_fish"
         ]
     },
+    "gun_space": {
+        "sounds": [
+            "terra_guns:gun_space"
+        ]
+    },
     "gun_flamethrower": {
         "sounds": [
             "terra_guns:gun_flamethrower"

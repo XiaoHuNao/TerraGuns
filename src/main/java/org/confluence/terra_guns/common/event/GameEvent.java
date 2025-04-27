@@ -9,7 +9,9 @@ import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import org.confluence.terra_guns.TerraGuns;
+import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.common.init.TGDamageTypes;
+import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 
 @EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.GAME)
@@ -32,6 +34,13 @@ public class GameEvent {
         if (event.getSource().is(TGDamageTypes.BULLET_DAMAGE)) {
             if (TerraGuns.IS_CONFLUENCE_LOADED) return;
             event.setInvulnerabilityTicks(0);
+        }
+    }
+
+    @SubscribeEvent
+    public static void shirkAmmo(GunEvent.ShrinkBulletEvent event){
+        if (event.getBulletStack().is(TGItems.EMPTY_BULLET)) {
+            event.setCanceled(true);
         }
     }
 }

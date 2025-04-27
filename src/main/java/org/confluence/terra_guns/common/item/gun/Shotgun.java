@@ -1,6 +1,7 @@
 package org.confluence.terra_guns.common.item.gun;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
@@ -27,12 +28,13 @@ public class Shotgun extends BaseGun {
     }
 
     @Override
-    protected void prepareBulletEntity(List<BaseBulletEntity> baseBulletEntities, ServerPlayer player, ItemStack bullet, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
+    protected void prepareBulletEntity(List<Projectile> baseBulletEntities, ServerPlayer player, ItemStack bullet, ItemStack gun, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
         int times = ThreadLocalRandom.current().nextInt(this.minBullet, this.maxBullet + 1);
 
         IntStream.range(0, times).forEach(i -> {
             BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player, (BaseBullet) bullet.getItem());
 
+            baseBulletEntity.setColorID(((BaseGun) gun.getItem()).getColorID());
             baseBulletEntity.damage = damage;
             baseBulletEntity.knockback = knockback;
             baseBulletEntity.penetrate = penetrate;

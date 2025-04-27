@@ -13,6 +13,7 @@ public class TGSoundEvents {
 
     public static final Supplier<SoundEvent> GUN_AUTO = register("gun_auto"); // 凤凰爆破枪，左轮手枪，手枪，维纳斯万能枪，链式机枪，鳄鱼机关枪
     public static final Supplier<SoundEvent> GUN_FISH = register("gun_fish"); // 食人鱼枪，鱼叉枪
+    public static final Supplier<SoundEvent> GUN_SPACE = register("gun_space"); // 常用枪音效
     public static final Supplier<SoundEvent> GUN_FLAMETHROWER = register("gun_flamethrower"); // 火焰喷射器，精灵熔枪
     public static final Supplier<SoundEvent> GUN_GENERIC = register("gun_generic"); // 常用枪音效
     public static final Supplier<SoundEvent> GUN_HIGHPOWER = register("gun_highpower"); // 太空海豚机枪，狙击步枪
