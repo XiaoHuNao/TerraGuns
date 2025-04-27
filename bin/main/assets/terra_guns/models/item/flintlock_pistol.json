@@ -2,64 +2,47 @@
   "credit": "Made with Blockbench",
   "parent": "builtin/entity",
   "texture_size": [
-    32,
-    32
+    64,
+    64
   ],
   "display": {
     "thirdperson_righthand": {
       "translation": [
-        0,
-        -3.25,
-        0
-      ],
-      "scale": [
-        0.6,
-        0.6,
-        0.6
-      ]
-    },
-    "thirdperson_lefthand": {
-      "translation": [
-        0,
-        -3.25,
-        0
-      ],
-      "scale": [
-        0.6,
-        0.6,
-        0.6
+        -0.25,
+        -1.5,
+        2.25
       ]
     },
     "firstperson_righthand": {
       "translation": [
-        -3.75,
         0,
-        3.5
+        -2,
+        2.25
       ]
     },
     "firstperson_lefthand": {
       "translation": [
-        -3.75,
         0,
-        3.5
-      ]
-    },
-    "ground": {
-      "translation": [
-        0,
-        -4.75,
-        0
+        -2,
+        2.25
       ]
     },
     "gui": {
       "rotation": [
-        90,
-        -45,
-        90
+        0,
+        -90,
+        0
       ],
       "translation": [
-        2.5,
-        -3.75,
+        -5.5,
+        -3.25,
+        0
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        7.5,
         0
       ]
     },
@@ -70,13 +53,13 @@
         0
       ],
       "translation": [
-        1,
-        -5.75,
+        6.25,
+        -2.75,
         0
       ]
     }
   },
   "textures": {
-    "particle": "item/flintlockpistoltexture"
+    "particle": "terra_gun:item/flintlock_pistol"
   }
 }
