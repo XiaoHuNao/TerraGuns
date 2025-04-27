@@ -34,7 +34,7 @@ public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
     public void render(BaseBulletEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         List<Vec3> trails = entity.getTrails();
 
-        int color = TrailColorProvider.getColor(entity.getColorID());
+        int color = TrailColorProvider.getColor(entity.getBullet());
         renderTrail(trails, entity.position(), poseStack, bufferSource, color);
 
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);

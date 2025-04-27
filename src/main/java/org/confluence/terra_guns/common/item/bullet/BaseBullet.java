@@ -23,7 +23,7 @@ import java.util.List;
 
 public class BaseBullet extends Item {
     private final BulletPropertyComponent component;
-    private String colorID;
+    private String colorID="";
 
     public BaseBullet(Properties properties, float damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, int penetrate, boolean infinity) {
         super(properties);

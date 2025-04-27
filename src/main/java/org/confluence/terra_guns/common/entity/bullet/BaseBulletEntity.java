@@ -41,8 +41,8 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         this.bullet = bullet;
     }
 
-    public String getColorID() {
-        return bullet.colorID();
+    public BaseBullet getBullet() {
+        return bullet;
     }
 
     @Override

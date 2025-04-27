@@ -3,8 +3,10 @@ package org.confluence.terra_guns.impl;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.common.init.TGTags;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
+import org.confluence.terra_guns.common.item.gun.BaseGun;
 
 public class BulletHandler {
     /**
@@ -30,9 +32,11 @@ public class BulletHandler {
     }
 
     /**
-     * 是否可以开枪（是否找到有效弹药）
+     * 是否可以开枪
      */
     public static boolean canShoot(Player player, ItemStack gun) {
-        return !getAmmo(player, gun).isEmpty();
+        ItemStack ammo = getAmmo(player, gun);
+        GunEvent.GunFireEvent gunFireEvent = new GunEvent.GunFireEvent(player, (BaseGun) gun.getItem(), ammo);
+        return !(ammo.isEmpty() && gunFireEvent.isCanceled()) || gunFireEvent.isAlwaysFire();
     }
 }
