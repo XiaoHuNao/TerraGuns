@@ -1,5 +1,5 @@
 {
-	"format_version": "1.12.0",
+	"format_version": "1.21.20",
 	"minecraft:geometry": [
 		{
 			"description": {
@@ -7,10 +7,17 @@
 				"texture_width": 64,
 				"texture_height": 64,
 				"visible_bounds_width": 2,
-				"visible_bounds_height": 1.5,
-				"visible_bounds_offset": [0, 0.25, 0]
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
 			},
 			"bones": [
+				{
+					"name": "Fire",
+					"pivot": [0, 5, -19],
+					"cubes": [
+						{"origin": [-5, 0, -20], "size": [10, 10, 2], "uv": [0, 16]}
+					]
+				},
 				{
 					"name": "Root",
 					"pivot": [0, 2.08579, -3.58579],

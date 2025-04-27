@@ -25,7 +25,7 @@ public class BulletHandler {
     }
 
     /**
-     * 判断某个子弹是否与枪兼容（目前只判断是不是 BaseBullet 实例）
+     * 判断某个子弹是否与枪兼容
      */
     public static boolean isCompatible(ItemStack ammo, ItemStack gun) {
         return ammo.getItem() instanceof BaseBullet;

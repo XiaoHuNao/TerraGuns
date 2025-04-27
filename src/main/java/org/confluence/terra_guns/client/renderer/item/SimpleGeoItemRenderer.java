@@ -11,9 +11,16 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationProcessor;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.cache.object.BakedGeoModel;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.DefaultedItemGeoModel;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
+
+import java.util.Optional;
 
 public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IClientItemExtensions {
     private final ResourceLocation model;
@@ -50,6 +57,24 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
                 @Override
                 public ResourceLocation getAnimationResource(T animatable) {
                     return animation;
+                }
+
+                @Override
+                public void setCustomAnimations(T animatable, long instanceId, AnimationState<T> animationState) {
+                    super.setCustomAnimations(animatable, instanceId, animationState);
+                    Optional<GeoBone> fire = Optional.ofNullable(getAnimationProcessor().getBone("Fire"));
+                    Optional<GeoBone> fire1 = Optional.ofNullable(getAnimationProcessor().getBone("Fire1"));
+
+                    AnimationController<T> controller = animationState.getController();
+                    Optional<AnimationProcessor.QueuedAnimation> currentAnimation = Optional.ofNullable(controller.getCurrentAnimation());
+
+                    if (currentAnimation.isPresent() && currentAnimation.get().animation().name().equals("fire") && controller.getAnimationState() != AnimationController.State.STOPPED) {
+                        fire.ifPresent(geoBone -> geoBone.setHidden(false));
+                        fire1.ifPresent(geoBone -> geoBone.setHidden(false));
+                    } else {
+                        fire.ifPresent(geoBone -> geoBone.setHidden(true));
+                        fire1.ifPresent(geoBone -> geoBone.setHidden(true));
+                    }
                 }
             });
         }
