@@ -27,7 +27,21 @@ public class TGChineseProvider extends LanguageProvider {
         addItem(MINISHARK, "迷你鲨");
 
         addItem(MUSKET_BULLET, "火枪子弹");
+        addItem(METEOR_SHOT, "流星弹");
+        addItem(SILVER_BULLET, "银子弹");
+        addItem(CRYSTAL_BULLET, "水晶子弹");
+        addItem(CURSED_BULLET, "诅咒弹");
+        addItem(CHLOROPHYTE_BULLET, "叶绿弹");
+        addItem(HIGH_VELOCITY_BULLET, "高速子弹");
+        addItem(ICHOR_BULLET, "灵液弹");
+        addItem(VENOM_BULLET, "毒液弹");
+        addItem(PARTY_BULLET, "派对弹");
+        addItem(NANO_BULLET, "纳米弹");
+        addItem(EXPLODING_BULLET, "爆破弹");
+        addItem(GOLDEN_BULLET, "金子弹");
         addItem(ENDLESS_MUSKET_POUCH, "无尽火枪袋");
+        addItem(LUMINITE_BULLET, "夜明弹");
+        addItem(TUNGSTEN_BULLET, "钨子弹");
 
         addEntityType(BASE_BULLET_ENTITY, "子弹");
 

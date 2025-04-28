@@ -32,7 +32,7 @@ public class Shotgun extends BaseGun {
         int times = ThreadLocalRandom.current().nextInt(this.minBullet, this.maxBullet + 1);
 
         IntStream.range(0, times).forEach(i -> {
-            BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player, (BaseBullet) bullet.getItem());
+            BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player, bullet);
 
             baseBulletEntity.setColorID(((BaseGun) gun.getItem()).getColorID());
             baseBulletEntity.damage = damage;

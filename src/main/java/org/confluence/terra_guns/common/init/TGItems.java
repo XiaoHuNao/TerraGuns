@@ -34,8 +34,21 @@ public class TGItems {
 
 
     public static final DeferredItem<BaseBullet> MUSKET_BULLET = BULLETS.registerItem("musket_bullet", properties -> new BaseBullet(properties.stacksTo(99), 1.5f, 0.5f, 2, 0.1f, ModRarity.WHITE, 0, false));
+    public static final DeferredItem<BaseBullet> METEOR_SHOT = BULLETS.registerItem("meteor_shot", properties -> new BaseBullet(properties.stacksTo(99), 1.6f, 0.37f, 2, 0.05f, ModRarity.BLUE, 1, false));
+    public static final DeferredItem<BaseBullet> SILVER_BULLET = BULLETS.registerItem("silver_bullet", properties -> new BaseBullet(properties.stacksTo(99), 1.8f, 0.56f, 2, 0.15f, ModRarity.WHITE, 0, false));
+    public static final DeferredItem<BaseBullet> CRYSTAL_BULLET = BULLETS.registerItem("crystal_bullet", properties -> new BaseBullet(properties.stacksTo(99), 1.8f, 0.62f, 2, 0.05f, ModRarity.ORANGE, 0, false));
+    public static final DeferredItem<BaseBullet> CURSED_BULLET = BULLETS.registerItem("cursed_bullet", properties -> new BaseBullet(properties.stacksTo(99), 2.4f, 0.62f, 3, 0.2f, ModRarity.ORANGE, 0, false));
+    public static final DeferredItem<BaseBullet> CHLOROPHYTE_BULLET = BULLETS.registerItem("chlorophyte_bullet", properties -> new BaseBullet(properties.stacksTo(99), 1.8f, 0.62f, 3, 0.22f, ModRarity.LIME, 0, false));
+    public static final DeferredItem<BaseBullet> HIGH_VELOCITY_BULLET = BULLETS.registerItem("high_velocity_bullet", properties -> new BaseBullet(properties.stacksTo(99), 2.2f, 0.5f, 8, 0.2f, ModRarity.ORANGE, 2, false));
+    public static final DeferredItem<BaseBullet> ICHOR_BULLET = BULLETS.registerItem("ichor_bullet", properties -> new BaseBullet(properties.stacksTo(99), 2.6f, 0.65f, 3, 0.2f, ModRarity.ORANGE, 0, false));
+    public static final DeferredItem<BaseBullet> VENOM_BULLET = BULLETS.registerItem("venom_bullet", properties -> new BaseBullet(properties.stacksTo(99), 3f, 0.66f, 3, 0.21f, ModRarity.ORANGE, 0, false));
+    public static final DeferredItem<BaseBullet> PARTY_BULLET = BULLETS.registerItem("party_bullet", properties -> new BaseBullet(properties.stacksTo(99), 2f, 0.63f, 3, 0.25f, ModRarity.ORANGE, 0, false));
+    public static final DeferredItem<BaseBullet> NANO_BULLET = BULLETS.registerItem("nano_bullet", properties -> new BaseBullet(properties.stacksTo(99), 3f, 0.57f, 3, 0.18f, ModRarity.ORANGE, 0, false));
+    public static final DeferredItem<BaseBullet> EXPLODING_BULLET = BULLETS.registerItem("exploding_bullet", properties -> new BaseBullet(properties.stacksTo(99), 2f, 0.58f, 3, 0.33f, ModRarity.ORANGE, 0, false));
+    public static final DeferredItem<BaseBullet> GOLDEN_BULLET = BULLETS.registerItem("golden_bullet", properties -> new BaseBullet(properties.stacksTo(99), 2f, 0.57f, 3, 0.18f, ModRarity.ORANGE, 0, false));
     public static final DeferredItem<BaseBullet> ENDLESS_MUSKET_POUCH = BULLETS.registerItem("endless_musket_pouch", properties -> new BaseBullet(properties.stacksTo(1), 1.5f, 0.5f, 2, 0.1f, ModRarity.GREEN, 0, true));
+    public static final DeferredItem<BaseBullet> LUMINITE_BULLET = BULLETS.registerItem("luminite_bullet", properties -> new BaseBullet(properties.stacksTo(99), 4, 0.25f, 6, 0.15f, ModRarity.CYAN, -1, false));
+    public static final DeferredItem<BaseBullet> TUNGSTEN_BULLET = BULLETS.registerItem("tungsten_bullet", properties -> new BaseBullet(properties.stacksTo(99), 1.8f, 0.56f, 2, 0.2f, ModRarity.WHITE, 0, false));
 
     public static final DeferredItem<BaseBullet.EmptyBullet> EMPTY_BULLET = OTHER.registerItem("empty_bullet", BaseBullet.EmptyBullet::new);
-
 }

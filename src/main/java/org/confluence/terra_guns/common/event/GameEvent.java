@@ -37,10 +37,5 @@ public class GameEvent {
         }
     }
 
-    @SubscribeEvent
-    public static void shirkAmmo(GunEvent.ShrinkBulletEvent event){
-        if (event.getBulletStack().is(TGItems.EMPTY_BULLET)) {
-            event.setCanceled(true);
-        }
-    }
+
 }

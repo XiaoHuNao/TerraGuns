@@ -11,7 +11,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.*;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -30,41 +32,56 @@ import java.util.List;
 
 public class BaseBulletEntity extends AbstractHurtingProjectile {
     private static final EntityDataAccessor<String> COLOR_ID = SynchedEntityData.defineId(BaseBulletEntity.class, EntityDataSerializers.STRING);
-    private final BaseBullet bullet;
+    private static final EntityDataAccessor<ItemStack> BULLET = SynchedEntityData.defineId(BaseBulletEntity.class, EntityDataSerializers.ITEM_STACK);
     public float damage;
     public float knockback;
-    public int penetrate;
     public int hitBlockTime;
+    public int penetrate;
     private final List<Vec3> trails = new ArrayList<>();
-    private String colorID;
 
     public BaseBulletEntity(EntityType<? extends BaseBulletEntity> entityType, Level level) {
         super(entityType, level);
-        this.bullet = TGItems.MUSKET_BULLET.get();
     }
 
-    public BaseBulletEntity(LivingEntity owner, BaseBullet bullet) {
+    public BaseBulletEntity(LivingEntity owner, ItemStack bullet) {
         super(TGEntities.BASE_BULLET_ENTITY.get(), owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), owner.level());
         setOwner(owner);
-        this.bullet = bullet;
+        this.entityData.set(BULLET, bullet);
     }
 
     public String getColorID() {
-        if (!this.entityData.get(COLOR_ID).isEmpty()){
+        if (!this.entityData.get(COLOR_ID).isEmpty()) {
             return this.entityData.get(COLOR_ID);
-        } else if (!bullet.colorID().isEmpty()){
-            return bullet.colorID();
+        } else if (!this.getBullet().colorID().isEmpty()) {
+            return this.getBullet().colorID();
         }
-        return BuiltInRegistries.ITEM.getKey(bullet).getPath();
+        return BuiltInRegistries.ITEM.getKey(this.getBullet()).getPath();
     }
 
     public void setColorID(String colorID) {
         this.entityData.set(COLOR_ID, colorID);
     }
 
+    public void setBullet(ItemStack stack) {
+        if (stack.isEmpty()) {
+            this.getEntityData().set(BULLET, this.getDefaultItem());
+        } else {
+            this.getEntityData().set(BULLET, stack.copyWithCount(1));
+        }
+    }
+
+    public ItemStack getBulletStack() {
+        return this.getEntityData().get(BULLET);
+    }
+
+    public BaseBullet getBullet() {
+        return (BaseBullet) this.getEntityData().get(BULLET).getItem();
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(COLOR_ID, "");
+        builder.define(BULLET, this.getDefaultItem());
     }
 
     @Override
@@ -73,6 +90,11 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
 
         if (compound.contains("ColorID", CompoundTag.TAG_STRING)) {
             this.setColorID(compound.getString("ColorID"));
+        }
+        if (compound.contains("Item", 10)) {
+            this.setBullet(ItemStack.parse(this.registryAccess(), compound.getCompound("Item")).orElse(this.getDefaultItem()));
+        } else {
+            this.setBullet(this.getDefaultItem());
         }
         if (compound.contains("Damage", CompoundTag.TAG_FLOAT)) {
             this.damage = compound.getFloat("Damage");
@@ -88,11 +110,16 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         }
     }
 
+    private ItemStack getDefaultItem() {
+        return TGItems.EMPTY_BULLET.toStack();
+    }
+
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
 
         compound.putString("ColorID", this.getColorID());
+        compound.put("Item", this.getBulletStack().save(this.registryAccess()));
         compound.putFloat("Damage", this.damage);
         compound.putFloat("Knockback", this.knockback);
         compound.putInt("Penetrate", this.penetrate);
@@ -101,13 +128,13 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
 
     @Override
     public void tick() {
-        NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Pre(this, bullet));
+        NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Pre(this, this.getBullet()));
         super.tick();
-        if (disToOwner() > 128) this.discard();
-        bullet.tick(this);
+        if (disToOwner() > 256) this.discard();
+        this.getBullet().tick(this);
         this.saveTrailPos();
 
-        NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, bullet));
+        NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, this.getBullet()));
     }
 
     @Override
@@ -125,8 +152,8 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         return false;
     }
 
-    public double disToOwner(){
-        if (getOwner()==null) return 256;
+    public double disToOwner() {
+        if (getOwner() == null) return 256;
         return this.position().distanceTo(getOwner().position());
     }
 
@@ -159,51 +186,50 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
     }
 
 
-
     public List<Vec3> getTrails() {
         return trails;
     }
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
-        BulletEvent.HitEvent.Entity hitEntityEvent = new BulletEvent.HitEvent.Entity(this, bullet, result);
+        BulletEvent.HitEvent.Entity hitEntityEvent = new BulletEvent.HitEvent.Entity(this, this.getBullet(), result);
         if (hitEntityEvent.isCanceled()) return;
 
         Entity hit = result.getEntity();
         Entity shooter = this.getOwner();
 
         if (hit instanceof LivingEntity target && !hit.is(shooter)) {
-            BulletEvent.DamageEntityEvent damageEntityEvent = new BulletEvent.DamageEntityEvent(this, bullet, shooter, target);
+            BulletEvent.DamageEntityEvent damageEntityEvent = new BulletEvent.DamageEntityEvent(this, this.getBullet(), shooter, target);
             NeoForge.EVENT_BUS.post(damageEntityEvent);
 
-            this.bullet.onHitEntity(this, result);
+            this.getBullet().onHitEntity(this, result);
             if (this.knockback > 0) {
-                BulletEvent.KnockbackEvent knockbackEvent = new BulletEvent.KnockbackEvent(this, bullet, knockback/8, 0f);
+                BulletEvent.KnockbackEvent knockbackEvent = new BulletEvent.KnockbackEvent(this, this.getBullet(), knockback / 8, 0f);
                 NeoForge.EVENT_BUS.post(knockbackEvent);
 
                 VectorUtils.knockBackA2B(this, target, knockbackEvent.getScale(), knockbackEvent.getMotionY());
             }
 
-            BulletEvent.PenetrateEvent penetrateEvent = new BulletEvent.PenetrateEvent(this, bullet, penetrate);
+            BulletEvent.PenetrateEvent penetrateEvent = new BulletEvent.PenetrateEvent(this, this.getBullet(), penetrate);
             NeoForge.EVENT_BUS.post(penetrateEvent);
             int penetrate = penetrateEvent.getPenetrate();
 
-            if (penetrate > 0) {
-                this.penetrate--;
-                if (this.penetrate==0) this.discard();
-            } else if (penetrate != -1) {
+            if (penetrate == -1) {
+                return;
+            } else if (penetrate == 0) {
                 this.discard();
             }
+            this.penetrate--;
         }
     }
 
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
-        BulletEvent.HitEvent.Block hitBlockEvent = new BulletEvent.HitEvent.Block(this,  bullet, result);
+        BulletEvent.HitEvent.Block hitBlockEvent = new BulletEvent.HitEvent.Block(this, this.getBullet(), result);
         if (hitBlockEvent.isCanceled()) return;
 
         super.onHitBlock(result);
-        this.bullet.onHitBlock(this, result);
+        this.getBullet().onHitBlock(this, result);
 
         this.hitBlockTime++;
     }

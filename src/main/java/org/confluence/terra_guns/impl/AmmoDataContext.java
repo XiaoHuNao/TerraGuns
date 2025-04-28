@@ -32,6 +32,7 @@ public class AmmoDataContext {
     }
 
     public int getPenetrate() {
+        if (bulletComponent.penetrate() == -1 || gunComponent.penetrate() == -1) return -1;
         return gunComponent.penetrate() + bulletComponent.penetrate();
     }
 

@@ -1,6 +1,8 @@
 package org.confluence.terra_guns.common.item.bullet;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -12,6 +14,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.confluence.lib.common.component.ModRarity;
+import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.event.BulletEvent;
 import org.confluence.terra_guns.common.component.BulletPropertyComponent;
 import org.confluence.terra_guns.common.component.GunPropertyComponent;
@@ -27,10 +30,13 @@ public class BaseBullet extends Item {
 
     public BaseBullet(Properties properties, float damage, float velocity, float velocityMultiplier, float knockback, ModRarity rarity, int penetrate, boolean infinity) {
         super(properties);
+
         BulletPropertyComponent component = new BulletPropertyComponent(damage, velocity, velocityMultiplier, knockback, penetrate, rarity, infinity);
         properties.component(TGDataComponents.BULLET_PROPERTY_COMPONENT.get(), component);
+        DataComponentMap.Builder components = properties.components;
+        if ((Integer) components.map.get(DataComponents.MAX_STACK_SIZE) ==99 && TerraGuns.IS_CONFLUENCE_LOADED) properties.stacksTo(9999);
 
-        this.components = Properties.COMPONENT_INTERNER.intern(properties.components.build());
+        this.components = Properties.COMPONENT_INTERNER.intern(components.build());
         this.component = component;
     }
 
@@ -63,9 +69,6 @@ public class BaseBullet extends Item {
 
         void setColorID(String colorID) {
             this.colorID = colorID;
-        }
-
-        public void setDamage(int damage) {
         }
     }
 }

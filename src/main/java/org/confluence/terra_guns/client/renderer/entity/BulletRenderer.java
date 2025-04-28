@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.terra_guns.client.init.TGRenderTypes;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGTrailColors;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
@@ -35,7 +36,8 @@ public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
     public void render(BaseBulletEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         List<Vec3> trails = entity.getTrails();
 
-        int color = TGTrailColors.getColor(entity.getColorID());
+        String colorID = entity.getColorID();
+        int color = TGTrailColors.getColor(colorID);
         renderTrail(trails, entity.position(), poseStack, bufferSource, color);
 
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
@@ -46,7 +48,7 @@ public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
 
         poseStack.pushPose();
         Matrix4f matrix4f = poseStack.last().pose();
-        VertexConsumer buffer = bufferSource.getBuffer(RenderType.lightning());
+        VertexConsumer buffer = bufferSource.getBuffer(TGRenderTypes.TRAIL_RENDER_TYPE);
 
         Minecraft mc = Minecraft.getInstance();
         Vec3 camDir = new Vec3(mc.gameRenderer.getMainCamera().getLookVector());

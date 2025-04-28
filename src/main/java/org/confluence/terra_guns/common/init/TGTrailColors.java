@@ -18,7 +18,20 @@ public class TGTrailColors {
 
     public static void init() {
         putColor(MUSKET_BULLET, 0xFFFD3E03);
-        putColor("idea", 0xFF444748);
+        putColor(METEOR_SHOT, 0xFFFD034A);
+        putColor(SILVER_BULLET, 0xFFFFAF8B);
+        putColor(CRYSTAL_BULLET, 0x2FF04058);
+        putColor(CURSED_BULLET, 0xFF60F802);
+        putColor(CHLOROPHYTE_BULLET, 0xFF01EB0F);
+        putColor(HIGH_VELOCITY_BULLET, 0xFFFFDD17);
+        putColor(ICHOR_BULLET, 0xFFFFEA01);
+        putColor(VENOM_BULLET, 0xFF974FA2);
+        putColor(PARTY_BULLET, 0xFFF0009E);
+        putColor(NANO_BULLET, 0xFF00A7F0);
+        putColor(EXPLODING_BULLET, 0xFFF03E00);
+        putColor(GOLDEN_BULLET, 0xFFB9A417);
+        putColor(LUMINITE_BULLET, 0xFF53FFC3);
+        putColor(TUNGSTEN_BULLET, 0xFFFD3E03);
     }
 
     public static void putColor(String item) {

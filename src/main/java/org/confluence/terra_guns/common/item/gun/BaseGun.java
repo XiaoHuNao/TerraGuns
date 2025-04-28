@@ -46,7 +46,7 @@ public class BaseGun extends Item implements GeoItem {
     }
 
     public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, float inaccuracy, ModRarity rarity) {
-        this(properties, cooldown, damage, velocity, knockback, critical, 1, inaccuracy, rarity);
+        this(properties, cooldown, damage, velocity, knockback, critical, 0, inaccuracy, rarity);
     }
 
     public void shoot(ServerPlayer player, ItemStack bullet, ItemStack gun) {
@@ -64,7 +64,7 @@ public class BaseGun extends Item implements GeoItem {
     }
 
     protected void prepareBulletEntity(List<Projectile> baseBulletEntities, ServerPlayer player, ItemStack bullet, ItemStack gun, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
-        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player, (BaseBullet) bullet.getItem());
+        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player, bullet);
 
         baseBulletEntity.setColorID(((BaseGun) gun.getItem()).getColorID());
         baseBulletEntity.damage = damage;
