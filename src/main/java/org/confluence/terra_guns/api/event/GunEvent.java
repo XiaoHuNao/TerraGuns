@@ -47,14 +47,14 @@ public class GunEvent extends Event {
     /**
      * 开火事件
      */
-    public static class GunFireEvent extends GunEvent implements ICancellableEvent{
+    public static class GunFireEvent extends GunEvent {
         private ItemStack bullet;
-        private boolean alwaysFire;
+        private boolean fire;
 
-        public GunFireEvent(Player player, BaseGun gun, ItemStack bullet, boolean alwaysFire) {
+        public GunFireEvent(Player player, BaseGun gun, ItemStack bullet, boolean fire) {
             super(player, gun);
             this.bullet = bullet;
-            this.alwaysFire=alwaysFire;
+            this.fire=fire;
         }
 
         public ItemStack getAmmo() {
@@ -65,15 +65,44 @@ public class GunEvent extends Event {
             this.bullet = bullet;
         }
 
-        public boolean isAlwaysFire() {
-            return alwaysFire;
+        public boolean isFire() {
+            return fire;
         }
 
-        public void setAlwaysFire(boolean alwaysFire) {
-            this.alwaysFire = alwaysFire;
+        public void setFire(boolean fire) {
+            this.fire = fire;
         }
     }
 
+    /**
+     * 初始化开火事件
+     */
+    public static class AmmoSelectionEvent extends GunEvent {
+        private final ItemStack ammo;
+        private boolean selected;
+
+        public AmmoSelectionEvent(Player player, BaseGun gun, ItemStack ammo, boolean selected) {
+            super(player, gun);
+            this.ammo = ammo;
+            this.selected = selected;
+        }
+
+        public ItemStack getAmmo() {
+            return ammo;
+        }
+
+        public boolean isSelected() {
+            return selected;
+        }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+        }
+    }
+
+    /**
+     * 射击时，子弹数据计算事件
+     */
     public static class AmmoDataEvent extends GunEvent {
         private float damage;
         private float knockback;
@@ -132,7 +161,7 @@ public class GunEvent extends Event {
     }
 
     /**
-     * 子弹消耗
+     * 子弹消耗事件
      */
     public static class ShrinkBulletEvent extends GunEvent implements ICancellableEvent {
         private int shrink = 1;

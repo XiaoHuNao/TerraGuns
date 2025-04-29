@@ -52,7 +52,7 @@ public class BaseGun extends Item implements GeoItem {
     public void shoot(ServerPlayer player, ItemStack bullet, ItemStack gun) {
         ServerLevel serverLevel = player.serverLevel();
         BulletPropertyComponent bulletComponent = bullet.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
-        if (bulletComponent == null) return;
+        if (bulletComponent == null) bulletComponent = BulletPropertyComponent.EMPTY;
 
         AmmoDataContext ammoDataContext = new AmmoDataContext(this.component, bulletComponent, inaccuracy);
         GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, ammoDataContext.getDamage(), ammoDataContext.getKnockback(), ammoDataContext.getVelocity(), ammoDataContext.getPenetrate(), ammoDataContext.getInaccuracy());

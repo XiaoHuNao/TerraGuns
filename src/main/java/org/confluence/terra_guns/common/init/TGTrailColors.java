@@ -71,6 +71,6 @@ public class TGTrailColors {
     }
 
     public static int getColor(String item) {
-        return colorMap.get(item);
+        return colorMap.getOrDefault(item, 0xFFFD3E03);
     }
 }

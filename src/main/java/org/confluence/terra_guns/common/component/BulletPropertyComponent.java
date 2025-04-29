@@ -30,6 +30,7 @@ public record BulletPropertyComponent(float damage, float velocity, float veloci
     ).apply(ins, BulletPropertyComponent::new));
 
     public static final StreamCodec<FriendlyByteBuf, BulletPropertyComponent> STREAM_CODEC = new SimpleStreamCodec<>(CODEC);
+    public static final BulletPropertyComponent EMPTY = new BulletPropertyComponent(0, 0, 1, 0, 0, ModRarity.WHITE, false);
 
     @Override
     public @Nullable Codec<BulletPropertyComponent> codec() {

@@ -43,10 +43,14 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         super(entityType, level);
     }
 
-    public BaseBulletEntity(LivingEntity owner, ItemStack bullet) {
-        super(TGEntities.BASE_BULLET_ENTITY.get(), owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), owner.level());
+    public BaseBulletEntity(EntityType<? extends AbstractHurtingProjectile> entityType, LivingEntity owner, ItemStack bullet) {
+        super(entityType, owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), owner.level());
         setOwner(owner);
         this.entityData.set(BULLET, bullet);
+    }
+
+    public BaseBulletEntity(LivingEntity owner, ItemStack bullet){
+        this(TGEntities.BASE_BULLET_ENTITY.get(), owner, bullet);
     }
 
     public String getColorID() {
@@ -110,10 +114,6 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         }
     }
 
-    private ItemStack getDefaultItem() {
-        return TGItems.EMPTY_BULLET.toStack();
-    }
-
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
@@ -124,6 +124,10 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         compound.putFloat("Knockback", this.knockback);
         compound.putInt("Penetrate", this.penetrate);
         compound.putInt("HitBlockTime", this.hitBlockTime);
+    }
+
+    protected ItemStack getDefaultItem() {
+        return TGItems.EMPTY_BULLET.toStack();
     }
 
     @Override

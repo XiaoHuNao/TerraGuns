@@ -27,6 +27,7 @@ public class ModEvent {
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(TGEntities.BASE_BULLET_ENTITY.get(), BulletRenderer::new);
+        event.registerEntityRenderer(TGEntities.GRAVITY_BULLET_ENTITY.get(), ThrownItemRenderer::new);
     }
 
     @SubscribeEvent
