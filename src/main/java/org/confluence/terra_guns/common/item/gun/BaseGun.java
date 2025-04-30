@@ -18,6 +18,7 @@ import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.confluence.terra_guns.impl.AmmoDataContext;
 import org.confluence.terra_guns.util.AnimUtil;
+import org.confluence.terra_guns.util.TGUtil;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
@@ -55,10 +56,11 @@ public class BaseGun extends Item implements GeoItem {
         if (bulletComponent == null) bulletComponent = BulletPropertyComponent.EMPTY;
 
         AmmoDataContext ammoDataContext = new AmmoDataContext(this.component, bulletComponent, inaccuracy);
-        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, gun, ammoDataContext.getDamage(), ammoDataContext.getKnockback(), ammoDataContext.getVelocity(), ammoDataContext.getPenetrate(), ammoDataContext.getInaccuracy());
+        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, gun, ammoDataContext.getDamage(), ammoDataContext.getCritical(), ammoDataContext.getKnockback(), ammoDataContext.getVelocity(), ammoDataContext.getPenetrate(), ammoDataContext.getInaccuracy());
         NeoForge.EVENT_BUS.post(ammoDataEvent);
 
-        prepareBulletEntity(baseBulletEntities, player, bullet, gun, ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate(), ammoDataEvent.getInaccuracy());
+        float finalDamage = TGUtil.criticalDamageTotal(ammoDataEvent.getCritical(), ammoDataEvent.getDamage());
+        prepareBulletEntity(baseBulletEntities, player, bullet, gun, finalDamage, ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate(), ammoDataEvent.getInaccuracy());
         baseBulletEntities.forEach(serverLevel::addFreshEntity);
         baseBulletEntities.clear();
     }

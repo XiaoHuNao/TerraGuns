@@ -16,11 +16,11 @@ public class AmmoDataContext {
     }
 
     public float getDamage() {
-        float damage = gunComponent.damage() + bulletComponent.damage();
-        if (RandomSource.create().nextFloat() < gunComponent.critical() + 0.31f) {
-            return damage * 2;
-        }
-        return damage;
+        return gunComponent.damage() + bulletComponent.damage();
+    }
+
+    public float getCritical(){
+        return gunComponent.critical();
     }
 
     public float getVelocity() {

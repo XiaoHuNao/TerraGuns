@@ -140,15 +140,17 @@ public class GunEvent extends Event {
      */
     public static class AmmoDataEvent extends GunEvent {
         private float damage;
+        private float critical;
         private float knockback;
         private float velocity;
         private int penetrate;
         private float inaccuracy;
         private final ItemStack gunStack;
 
-        public AmmoDataEvent(Player player, BaseGun gun, ItemStack gunStack, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
+        public AmmoDataEvent(Player player, BaseGun gun, ItemStack gunStack, float damage, float critical, float knockback, float velocity, int penetrate, float inaccuracy) {
             super(player, gun);
             this.gunStack = gunStack;
+            this.critical = critical;
             this.damage = damage;
             this.knockback = knockback;
             this.velocity = velocity;
@@ -162,6 +164,10 @@ public class GunEvent extends Event {
 
         public float getDamage() {
             return damage;
+        }
+
+        public float getCritical() {
+            return critical;
         }
 
         public float getKnockback() {
@@ -178,6 +184,10 @@ public class GunEvent extends Event {
 
         public void setDamage(float damage) {
             this.damage = damage;
+        }
+
+        public void setCritical(float critical) {
+            this.critical = critical;
         }
 
         public void setKnockback(float knockback) {
