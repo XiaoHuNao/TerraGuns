@@ -1,11 +1,14 @@
 package org.confluence.terra_guns.api.event;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.AmmoDataContext;
+
+import java.util.List;
 
 public class GunEvent extends Event {
     private final Player player;
@@ -54,7 +57,7 @@ public class GunEvent extends Event {
         public GunFireEvent(Player player, BaseGun gun, ItemStack bullet, boolean fire) {
             super(player, gun);
             this.bullet = bullet;
-            this.fire=fire;
+            this.fire = fire;
         }
 
         public ItemStack getAmmo() {
@@ -101,6 +104,38 @@ public class GunEvent extends Event {
     }
 
     /**
+     * 初始化开火事件
+     */
+    public static class InventoryExtraEvent extends GunEvent {
+        private final List<ItemStack> ammoList;
+
+        public InventoryExtraEvent(Player player, BaseGun gun, List<ItemStack> ammoList) {
+            super(player, gun);
+            this.ammoList=ammoList;
+        }
+
+        public List<ItemStack> getAmmoList() {
+            return ammoList;
+        }
+
+        public void addBulletFirst(ItemStack bullet){
+            this.ammoList.addFirst(bullet);
+        }
+
+        public void addBulletLast(ItemStack bullet){
+            this.ammoList.addLast(bullet);
+        }
+
+        public void addAmmoFirst(List<ItemStack> ammo){
+            this.ammoList.addAll(0, ammo);
+        }
+
+        public void addAmmoLast(List<ItemStack> ammo){
+            this.ammoList.addAll(ammo);
+        }
+    }
+
+    /**
      * 射击时，子弹数据计算事件
      */
     public static class AmmoDataEvent extends GunEvent {
@@ -109,14 +144,20 @@ public class GunEvent extends Event {
         private float velocity;
         private int penetrate;
         private float inaccuracy;
+        private final ItemStack gunStack;
 
-        public AmmoDataEvent(Player player, BaseGun gun, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
+        public AmmoDataEvent(Player player, BaseGun gun, ItemStack gunStack, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
             super(player, gun);
+            this.gunStack = gunStack;
             this.damage = damage;
             this.knockback = knockback;
             this.velocity = velocity;
             this.penetrate = penetrate;
             this.inaccuracy = inaccuracy;
+        }
+
+        public ItemStack getGunStack() {
+            return gunStack;
         }
 
         public float getDamage() {
@@ -171,7 +212,7 @@ public class GunEvent extends Event {
 
         public ShrinkBulletEvent(Player player, BaseGun baseGun, ItemStack gun, ItemStack bullet, boolean infinity) {
             super(player, baseGun);
-            this.gun=gun;
+            this.gun = gun;
             this.infinity = infinity;
             this.bullet = bullet;
         }

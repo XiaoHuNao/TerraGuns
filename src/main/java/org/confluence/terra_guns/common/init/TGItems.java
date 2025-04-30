@@ -26,16 +26,14 @@ public class TGItems {
     public static final DeferredItem<BaseGun> THE_UNDERTAKER = GUNS.registerItem("the_undertaker", properties -> new BaseGun(properties, 8, 3.8f, 0.75f, 0.1f, 0.04f, 0, ModRarity.BLUE)); // 夺命枪
     public static final DeferredItem<BaseGun> MUSKET = GUNS.registerItem("musket", properties -> new BaseGun(properties, 10, 6.2f, 1.1f, 0.25f, 0.11f, 0, ModRarity.BLUE)); // 火枪
 
-    public static final DeferredItem<BaseGun> BLOWPIPE = GUNS.registerItem("blowpipe", properties -> new CustomGun(properties, 8, 1.8f, 1.4f, 0.17f, 0.04f, 0, ModRarity.WHITE, 0.25f)); // 吹管
-    public static final DeferredItem<BaseGun> SNOWBALL_CANNON = GUNS.registerItem("snowball_cannon", properties -> new CustomGun(properties, 3, 2, 1.4f, 0.05f, 0.04f, 3.0f, ModRarity.BLUE, 0.1f)); // 雪球炮
+    public static final DeferredItem<BaseGun> BLOWPIPE = GUNS.registerItem("blowpipe", properties -> new CustomGun(properties, 8, 1.8f, 1.4f, 0.17f, 0.04f, 0, ModRarity.WHITE, 0.08f)); // 吹管
+    public static final DeferredItem<BaseGun> SNOWBALL_CANNON = GUNS.registerItem("snowball_cannon", properties -> new CustomGun(properties, 3, 2, 1.4f, 0.05f, 0.04f, 3.0f, ModRarity.BLUE, 0.05f)); // 雪球炮
 
     public static final DeferredItem<BaseGun> BOOMSTICK = GUNS.registerItem("boomstick", properties -> new Shotgun(properties, 13, 2.8f, 0.66f, 0.28f, 0.04f, 8.0f, ModRarity.GREEN, 3, 4)); // 三发猎枪
     public static final DeferredItem<BaseGun> SHOTGUN = GUNS.registerItem("shotgun", properties -> new Shotgun(properties, 15, 4.8f, 0.9f, 0.375f, 0.04f, 10.0f, ModRarity.LIGHT_RED, 3, 5)); // 霰弹枪
     public static final DeferredItem<BaseGun> TACTICAL_SHOTGUN = GUNS.registerItem("tactical_shotgun", properties -> new Shotgun(properties, 11, 5.8f, 0.75f, 0.35f, 0.04f, 12.0f, ModRarity.YELLOW, 6, 6)); // 战术霰弹枪
 
     public static final DeferredItem<BaseGun> MINISHARK = GUNS.registerItem("minishark", properties -> new BaseGun(properties, 3, 1.2f, 1.0f, 0.0f, 0.04f, 5.0f, ModRarity.GREEN)); // 迷你鲨
-
-    public static final DeferredItem<BaseGun> STAR_CANNON = GUNS.registerItem("star_cannon", properties -> new BaseGun(properties, 4, 11, 1.8f, 0.15f, 0.04f, 0.0f, ModRarity.GREEN)); // 桑百颗
 
     public static final DeferredItem<BaseBullet> MUSKET_BULLET = BULLETS.registerItem("musket_bullet", properties -> new BaseBullet(properties.stacksTo(99), 1.5f, 0.5f, 2, 0.1f, ModRarity.WHITE, 0, false));
     public static final DeferredItem<BaseBullet> METEOR_SHOT = BULLETS.registerItem("meteor_shot", properties -> new BaseBullet(properties.stacksTo(99), 1.6f, 0.37f, 2, 0.05f, ModRarity.BLUE, 1, false));

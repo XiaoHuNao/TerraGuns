@@ -1,5 +1,6 @@
 package org.confluence.terra_guns.impl;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -10,6 +11,9 @@ import org.confluence.terra_guns.common.init.TGTags;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BulletHandler {
     /**
      * 获取玩家背包中第一个兼容该枪的子弹
@@ -17,7 +21,14 @@ public class BulletHandler {
     public static ItemStack getAmmo(Player player, ItemStack gun) {
         Inventory inventory = player.getInventory();
         ItemStack ammo = ItemStack.EMPTY;
-        for (ItemStack item : inventory.items) {
+        NonNullList<ItemStack> stackNonNullList = inventory.items;
+        List<ItemStack> copyList = new ArrayList<>(stackNonNullList);
+
+        GunEvent.InventoryExtraEvent inventoryExtraEvent = new GunEvent.InventoryExtraEvent(player, (BaseGun) gun.getItem(), copyList);
+        NeoForge.EVENT_BUS.post(inventoryExtraEvent);
+
+        for (ItemStack item : inventoryExtraEvent.getAmmoList()) {
+            if (item == null) continue;
             if (item.is(TGTags.AMMO) && isCompatible(player, item, gun)) {
                 ammo = item;
                 break;
@@ -36,7 +47,7 @@ public class BulletHandler {
 
         GunEvent.AmmoSelectionEvent ammoSelectionEvent = new GunEvent.AmmoSelectionEvent(player, (BaseGun) gun.getItem(), ammo, selected);
         NeoForge.EVENT_BUS.post(ammoSelectionEvent);
-        return selected;
+        return ammoSelectionEvent.isSelected();
     }
 
     /**

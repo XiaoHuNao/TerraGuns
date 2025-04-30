@@ -12,7 +12,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.DefaultedItemGeoModel;
 import software.bernie.geckolib.model.GeoModel;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 import java.util.Optional;
 
@@ -58,6 +57,8 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
                     super.setCustomAnimations(animatable, instanceId, animationState);
                     Optional<GeoBone> fire = Optional.ofNullable(getAnimationProcessor().getBone("Fire"));
                     Optional<GeoBone> fire1 = Optional.ofNullable(getAnimationProcessor().getBone("Fire1"));
+                    Optional<GeoBone> fire2 = Optional.ofNullable(getAnimationProcessor().getBone("Fire2"));
+                    Optional<GeoBone> fire3 = Optional.ofNullable(getAnimationProcessor().getBone("Fire3"));
 
                     AnimationController<T> controller = animationState.getController();
                     Optional<AnimationProcessor.QueuedAnimation> currentAnimation = Optional.ofNullable(controller.getCurrentAnimation());
@@ -66,9 +67,13 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
                         if (!currentAnimation.get().animation().name().equals("fire")) return;
                         fire.ifPresent(geoBone -> geoBone.setHidden(false));
                         fire1.ifPresent(geoBone -> geoBone.setHidden(false));
+                        fire2.ifPresent(geoBone -> geoBone.setHidden(false));
+                        fire3.ifPresent(geoBone -> geoBone.setHidden(false));
                     } else {
                         fire.ifPresent(geoBone -> geoBone.setHidden(true));
                         fire1.ifPresent(geoBone -> geoBone.setHidden(true));
+                        fire2.ifPresent(geoBone -> geoBone.setHidden(true));
+                        fire3.ifPresent(geoBone -> geoBone.setHidden(true));
                     }
                 }
             });

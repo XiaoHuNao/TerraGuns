@@ -10,11 +10,15 @@ import software.bernie.geckolib.model.DefaultedItemGeoModel;
 
 
 public class TGUtil {
-    public static void registerGunModel(RegisterClientExtensionsEvent event, DeferredItem<BaseGun> gunSupplier) {
+    public static void registerOtherGunModel(RegisterClientExtensionsEvent event, String modid, DeferredItem<? extends BaseGun> gunSupplier) {
+        registerGunModel(event, ResourceLocation.fromNamespaceAndPath(modid, "gun/" + gunSupplier.getId().getPath()), gunSupplier);
+    }
+
+    public static void registerGunModel(RegisterClientExtensionsEvent event, DeferredItem<? extends BaseGun> gunSupplier) {
         registerGunModel(event, ResourceLocation.fromNamespaceAndPath(TerraGuns.MODID, "gun/" + gunSupplier.getId().getPath()), gunSupplier);
     }
 
-    public static void registerGunModel(RegisterClientExtensionsEvent event, ResourceLocation resourceLocation, DeferredItem<BaseGun> gunSupplier) {
+    public static void registerGunModel(RegisterClientExtensionsEvent event, ResourceLocation resourceLocation, DeferredItem<? extends BaseGun> gunSupplier) {
         event.registerItem(new SimpleGeoItemRenderer<BaseGun>(new DefaultedItemGeoModel<>(resourceLocation)), gunSupplier.get());
     }
 }

@@ -50,6 +50,12 @@ public class CustomBulletEntity extends BaseBulletEntity implements ItemSupplier
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        this.applyGravity();
+    }
+
+    @Override
     protected double getDefaultGravity() {
         return gravity;
     }

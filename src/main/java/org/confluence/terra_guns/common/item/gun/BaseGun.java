@@ -55,7 +55,7 @@ public class BaseGun extends Item implements GeoItem {
         if (bulletComponent == null) bulletComponent = BulletPropertyComponent.EMPTY;
 
         AmmoDataContext ammoDataContext = new AmmoDataContext(this.component, bulletComponent, inaccuracy);
-        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, ammoDataContext.getDamage(), ammoDataContext.getKnockback(), ammoDataContext.getVelocity(), ammoDataContext.getPenetrate(), ammoDataContext.getInaccuracy());
+        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, gun, ammoDataContext.getDamage(), ammoDataContext.getKnockback(), ammoDataContext.getVelocity(), ammoDataContext.getPenetrate(), ammoDataContext.getInaccuracy());
         NeoForge.EVENT_BUS.post(ammoDataEvent);
 
         prepareBulletEntity(baseBulletEntities, player, bullet, gun, ammoDataEvent.getDamage(), ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate(), ammoDataEvent.getInaccuracy());
@@ -93,9 +93,9 @@ public class BaseGun extends Item implements GeoItem {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         AnimationController<BaseGun> gun = new AnimationController<>(this, "gun", state -> PlayState.CONTINUE);
-        gun.triggerableAnim("gun_fire", RawAnimation.begin().then("fire", Animation.LoopType.PLAY_ONCE));
-        gun.triggerableAnim("gun_pick", RawAnimation.begin().then("pick up", Animation.LoopType.PLAY_ONCE));
-        gun.triggerableAnim("gun_reload", RawAnimation.begin().then("reloading", Animation.LoopType.PLAY_ONCE));
+        gun.triggerableAnim("gun_fire", RawAnimation.begin().then("fire", Animation.LoopType.DEFAULT));
+        gun.triggerableAnim("gun_pick", RawAnimation.begin().then("pick up", Animation.LoopType.DEFAULT));
+        gun.triggerableAnim("gun_reload", RawAnimation.begin().then("reloading", Animation.LoopType.DEFAULT));
         controllers.add(gun);
     }
 

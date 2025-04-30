@@ -9,29 +9,66 @@
     "thirdperson_righthand": {
       "translation": [
         0,
-        -1.5,
-        1.5
+        -0.5,
+        3.25
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
       ]
     },
     "thirdperson_lefthand": {
       "translation": [
         0,
-        -1.5,
-        1.5
+        -0.5,
+        3.25
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
       ]
     },
     "firstperson_righthand": {
       "translation": [
-        0,
-        -1.25,
-        2.25
+        0.75,
+        0.5,
+        3.75
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
       ]
     },
     "firstperson_lefthand": {
       "translation": [
+        0.75,
+        0.5,
+        3.75
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "ground": {
+      "rotation": [
         0,
-        -1.25,
-        2.25
+        -90,
+        0
+      ],
+      "translation": [
+        -6,
+        -1.5,
+        0
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
       ]
     },
     "gui": {
@@ -41,14 +78,14 @@
         0
       ],
       "translation": [
-        -6.25,
+        -6.75,
         -3.25,
         0
       ],
       "scale": [
-        0.7,
-        0.7,
-        0.7
+        0.8,
+        0.8,
+        0.8
       ]
     },
     "fixed": {
@@ -58,18 +95,18 @@
         0
       ],
       "translation": [
-        6.5,
+        7,
         -2.5,
         0
       ],
       "scale": [
-        0.7,
-        0.7,
-        0.7
+        0.8,
+        0.8,
+        0.8
       ]
     }
   },
   "textures": {
-    "particle": "item/texture"
+    "particle": "terra_guns:item/texture"
   }
 }

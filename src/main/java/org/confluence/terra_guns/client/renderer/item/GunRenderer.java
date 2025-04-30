@@ -9,6 +9,6 @@ import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer<T> {
     public GunRenderer(GeoModel<T> model) {
         super(model);
-        addRenderLayer(new AutoGlowingGeoLayer<>(this));
+//        addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 }
