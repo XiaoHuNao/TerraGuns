@@ -6,15 +6,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.confluence.terra_guns.TerraGuns;
-import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
-
-import java.util.function.Supplier;
 
 public class TGDamageTypes {
     public static final ResourceKey<DamageType> BULLET_DAMAGE = register("bullet_damage");
@@ -31,6 +24,7 @@ public class TGDamageTypes {
         return of(level, key, causing, causing);
     }
 
-    public static DamageSource of(Level level, ResourceKey<DamageType> key, Entity causing, Entity direct) {
-        return new DamageSource(level.registryAccess().registry(Registries.DAMAGE_TYPE).orElseThrow().getHolderOrThrow(key), causing, direct);
-    }}
+    public static DamageSource of(Level level, ResourceKey<DamageType> key, Entity direct, Entity causing) {
+        return level.damageSources().source(key, direct, causing);
+    }
+}

@@ -10,7 +10,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.*;
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -49,7 +49,7 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         this.entityData.set(BULLET, bullet.is(Items.AIR) || bullet.isEmpty() ? getDefaultItem() : bullet);
     }
 
-    public BaseBulletEntity(LivingEntity owner, ItemStack bullet){
+    public BaseBulletEntity(LivingEntity owner, ItemStack bullet) {
         this(TGEntities.BASE_BULLET_ENTITY.get(), owner, bullet);
     }
 
@@ -136,6 +136,10 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
 
     @Override
     public void tick() {
+        if (getOwner() == null) {
+            discard();
+            return;
+        }
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Pre(this, this.getBullet()));
         super.tick();
         if (disToOwner() > 256) this.discard();
