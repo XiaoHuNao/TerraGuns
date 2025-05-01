@@ -54,17 +54,16 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
 
                 @Override
                 public void setCustomAnimations(T animatable, long instanceId, AnimationState<T> animationState) {
-                    super.setCustomAnimations(animatable, instanceId, animationState);
                     Optional<GeoBone> fire = Optional.ofNullable(getAnimationProcessor().getBone("Fire"));
                     Optional<GeoBone> fire1 = Optional.ofNullable(getAnimationProcessor().getBone("Fire1"));
                     Optional<GeoBone> fire2 = Optional.ofNullable(getAnimationProcessor().getBone("Fire2"));
                     Optional<GeoBone> fire3 = Optional.ofNullable(getAnimationProcessor().getBone("Fire3"));
 
                     AnimationController<T> controller = animationState.getController();
-                    Optional<AnimationProcessor.QueuedAnimation> currentAnimation = Optional.ofNullable(controller.getCurrentAnimation());
+                    AnimationProcessor.QueuedAnimation currentAnimation = controller.getCurrentAnimation();
 
-                    if (currentAnimation.isPresent() && controller.getAnimationState() != AnimationController.State.STOPPED) {
-                        if (!currentAnimation.get().animation().name().equals("fire")) return;
+                    if (currentAnimation != null && controller.getAnimationState() != AnimationController.State.STOPPED) {
+                        if (!currentAnimation.animation().name().equals("fire")) return;
                         fire.ifPresent(geoBone -> geoBone.setHidden(false));
                         fire1.ifPresent(geoBone -> geoBone.setHidden(false));
                         fire2.ifPresent(geoBone -> geoBone.setHidden(false));
@@ -75,6 +74,7 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
                         fire2.ifPresent(geoBone -> geoBone.setHidden(true));
                         fire3.ifPresent(geoBone -> geoBone.setHidden(true));
                     }
+                    super.setCustomAnimations(animatable, instanceId, animationState);
                 }
             });
         }

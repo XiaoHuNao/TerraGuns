@@ -4,6 +4,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.NeoForge;
 import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.common.init.TGItems;
@@ -28,7 +29,7 @@ public class BulletHandler {
         NeoForge.EVENT_BUS.post(inventoryExtraEvent);
 
         for (ItemStack item : inventoryExtraEvent.getAmmoList()) {
-            if (item == null) continue;
+            if (item == null || item.is(Items.AIR)) continue;
             if (item.is(TGTags.AMMO) && isCompatible(player, item, gun)) {
                 ammo = item;
                 break;

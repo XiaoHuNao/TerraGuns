@@ -1,5 +1,5 @@
 {
-	"format_version": "1.12.0",
+	"format_version": "1.21.20",
 	"minecraft:geometry": [
 		{
 			"description": {
@@ -11,6 +11,13 @@
 				"visible_bounds_offset": [0, 0.75, 0]
 			},
 			"bones": [
+				{
+					"name": "Fire",
+					"pivot": [0, 5, -13],
+					"cubes": [
+						{"origin": [-5, 0, -14], "size": [10, 10, 2], "uv": [0, 19]}
+					]
+				},
 				{
 					"name": "Root",
 					"pivot": [0, 2.08579, -3.58579],

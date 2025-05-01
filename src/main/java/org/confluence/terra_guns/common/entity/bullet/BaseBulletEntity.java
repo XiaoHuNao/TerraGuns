@@ -46,7 +46,7 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
     public BaseBulletEntity(EntityType<? extends AbstractHurtingProjectile> entityType, LivingEntity owner, ItemStack bullet) {
         super(entityType, owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), owner.level());
         setOwner(owner);
-        this.entityData.set(BULLET, bullet);
+        this.entityData.set(BULLET, bullet.is(Items.AIR) || bullet.isEmpty() ? getDefaultItem() : bullet);
     }
 
     public BaseBulletEntity(LivingEntity owner, ItemStack bullet){

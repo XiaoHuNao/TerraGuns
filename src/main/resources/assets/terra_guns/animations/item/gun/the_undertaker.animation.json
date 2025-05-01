@@ -58,7 +58,7 @@
 			}
 		},
 		"fire": {
-			"loop": "play_once",
+			"loop": "hold_on_last_frame",
 			"animation_length": 0.2917,
 			"bones": {
 				"Fire": {
