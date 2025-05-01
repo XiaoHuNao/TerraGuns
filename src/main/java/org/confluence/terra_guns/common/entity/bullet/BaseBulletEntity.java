@@ -199,6 +199,16 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
     }
 
     @Override
+    protected boolean canHitEntity(Entity target) {
+        if (!target.canBeHitByProjectile()) {
+            return false;
+        } else {
+            Entity entity = this.getOwner();
+            return entity == null || !entity.isPassengerOfSameVehicle(target);
+        }
+    }
+
+    @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         BulletEvent.HitEvent.Entity hitEntityEvent = new BulletEvent.HitEvent.Entity(this, this.getBullet(), result);
         if (hitEntityEvent.isCanceled()) return;

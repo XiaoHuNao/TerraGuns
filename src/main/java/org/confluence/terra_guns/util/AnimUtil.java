@@ -16,7 +16,7 @@ public class AnimUtil {
         AnimationController<GeoAnimatable> gun = managerForId.getAnimationControllers().get(controllerName);
         AnimationProcessor.QueuedAnimation currentAnimation = gun.getCurrentAnimation();
 
-        if (currentAnimation != null && currentAnimation.animation().name().equals(animName)){
+        if (currentAnimation != null){
             managerForId.stopTriggeredAnimation(controllerName, animName);
         }
 
