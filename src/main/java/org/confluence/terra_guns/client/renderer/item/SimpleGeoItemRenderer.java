@@ -13,6 +13,7 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.DefaultedItemGeoModel;
 import software.bernie.geckolib.model.GeoModel;
 
+import java.util.List;
 import java.util.Optional;
 
 public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IClientItemExtensions {
@@ -54,27 +55,31 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
 
                 @Override
                 public void setCustomAnimations(T animatable, long instanceId, AnimationState<T> animationState) {
-                    Optional<GeoBone> fire = Optional.ofNullable(getAnimationProcessor().getBone("Fire"));
-                    Optional<GeoBone> fire1 = Optional.ofNullable(getAnimationProcessor().getBone("Fire1"));
-                    Optional<GeoBone> fire2 = Optional.ofNullable(getAnimationProcessor().getBone("Fire2"));
-                    Optional<GeoBone> fire3 = Optional.ofNullable(getAnimationProcessor().getBone("Fire3"));
+                    boolean isFiring = this.isFiring(animationState);
 
-                    AnimationController<T> controller = animationState.getController();
-                    AnimationProcessor.QueuedAnimation currentAnimation = controller.getCurrentAnimation();
-
-                    if (currentAnimation != null && controller.getAnimationState() != AnimationController.State.STOPPED) {
-                        if (!currentAnimation.animation().name().equals("fire")) return;
-                        fire.ifPresent(geoBone -> geoBone.setHidden(false));
-                        fire1.ifPresent(geoBone -> geoBone.setHidden(false));
-                        fire2.ifPresent(geoBone -> geoBone.setHidden(false));
-                        fire3.ifPresent(geoBone -> geoBone.setHidden(false));
-                    } else {
-                        fire.ifPresent(geoBone -> geoBone.setHidden(true));
-                        fire1.ifPresent(geoBone -> geoBone.setHidden(true));
-                        fire2.ifPresent(geoBone -> geoBone.setHidden(true));
-                        fire3.ifPresent(geoBone -> geoBone.setHidden(true));
+                    List<String> fireBones = List.of("Fire", "Fire1", "Fire2", "Fire3");
+                    for (String boneName : fireBones) {
+                        GeoBone bone = getAnimationProcessor().getBone(boneName);
+                        if (bone != null) {
+                            bone.setHidden(!isFiring);
+                        }
                     }
+
                     super.setCustomAnimations(animatable, instanceId, animationState);
+                }
+
+                private boolean isFiring(AnimationState<T> animationState) {
+                    AnimationController<T> controller = animationState.getController();
+                    AnimationController.State state = controller.getAnimationState();
+
+                    boolean isFiring = false;
+                    if (state != AnimationController.State.STOPPED) {
+                        AnimationProcessor.QueuedAnimation currentAnimation = controller.getCurrentAnimation();
+                        if (currentAnimation != null && "fire".equals(currentAnimation.animation().name())) {
+                            isFiring = true;
+                        }
+                    }
+                    return isFiring;
                 }
             });
         }

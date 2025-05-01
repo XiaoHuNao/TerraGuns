@@ -79,7 +79,11 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
     }
 
     public BaseBullet getBullet() {
-        return (BaseBullet) this.getEntityData().get(BULLET).getItem();
+        Item item = this.getEntityData().get(BULLET).getItem();
+        if (item instanceof BaseBullet bullet) {
+            return bullet;
+        }
+        return (BaseBullet) getDefaultItem().getItem();
     }
 
     @Override
