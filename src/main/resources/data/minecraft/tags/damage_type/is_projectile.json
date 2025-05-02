@@ -1,6 +1,5 @@
 {
-  "values": [
-    "terra_guns:base_bullet",
-    "terra_guns:gravity_bullet"
-  ]
+    "values": [
+        "terra_guns:bullet_damage"
+    ]
 }
