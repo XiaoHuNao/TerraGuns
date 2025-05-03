@@ -11,15 +11,15 @@ import software.bernie.geckolib.animation.AnimationProcessor;
 
 public class AnimUtil {
     public static void stopAndPlayAnim(GeoItem geoItem, ItemStack itemStack, ServerPlayer serverPlayer, String controllerName, @Nullable String animName){
+        if (controllerName == null || animName == null) return;
         long orAssignId = GeoItem.getOrAssignId(itemStack, serverPlayer.serverLevel());
-        AnimatableManager<GeoAnimatable> managerForId = geoItem.getAnimatableInstanceCache().getManagerForId(orAssignId);
-        AnimationController<GeoAnimatable> gun = managerForId.getAnimationControllers().get(controllerName);
-        AnimationProcessor.QueuedAnimation currentAnimation = gun.getCurrentAnimation();
+        AnimatableManager<GeoAnimatable> animatableManager = geoItem.getAnimatableInstanceCache().getManagerForId(orAssignId);
+        AnimationController<GeoAnimatable> gunController = animatableManager.getAnimationControllers().get(controllerName);
+        AnimationProcessor.QueuedAnimation currentAnimation = gunController.getCurrentAnimation();
 
         if (currentAnimation != null){
-            managerForId.stopTriggeredAnimation(controllerName, animName);
+            geoItem.stopTriggeredAnim(serverPlayer, orAssignId, controllerName, animName);
         }
-
         geoItem.triggerAnim(serverPlayer, orAssignId, controllerName, animName);
     }
 }

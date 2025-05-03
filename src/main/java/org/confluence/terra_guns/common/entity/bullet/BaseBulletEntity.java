@@ -155,6 +155,11 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
     }
 
     @Override
+    public boolean fireImmune() {
+        return true;
+    }
+
+    @Override
     protected @Nullable ParticleOptions getTrailParticle() {
         return null;
     }
