@@ -4,6 +4,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,11 +17,9 @@ import org.confluence.terra_guns.common.component.BulletPropertyComponent;
 import org.confluence.terra_guns.common.component.GunPropertyComponent;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGDataComponents;
-import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.confluence.terra_guns.impl.AmmoDataContext;
 import org.confluence.terra_guns.util.AnimUtil;
 import org.confluence.terra_guns.util.TGUtil;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -116,5 +116,10 @@ public class BaseGun extends Item implements GeoItem {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
+    }
+
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
+        return true;
     }
 }
