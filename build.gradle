@@ -78,7 +78,7 @@ neoForge {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-var dev = false
+boolean dev = true
 
 dependencies {
     compileOnly "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
