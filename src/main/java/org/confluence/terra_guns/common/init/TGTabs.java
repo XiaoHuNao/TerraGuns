@@ -15,7 +15,7 @@ public class TGTabs {
             () -> CreativeModeTab.builder().icon(Items.STONE::getDefaultInstance)
                     .title(Component.translatable("creative_tab.terra_guns.gun_tab"))
                     .displayItems((parameters, output) -> {
-                        if (!ConfluenceMagicLib.IS_CONFLUENCE_LOADED) {
+                        if (!ConfluenceMagicLib.isConfluenceLoaded()) {
                             TGItems.GUNS.getEntries().forEach(holder -> output.accept(holder.get()));
                             TGItems.BULLETS.getEntries().forEach(holder -> output.accept(holder.get()));
                         }
