@@ -219,8 +219,7 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
-        BulletEvent.HitEvent.Entity hitEntityEvent = new BulletEvent.HitEvent.Entity(this, this.getBullet(), result);
-        if (hitEntityEvent.isCanceled()) return;
+        if (NeoForge.EVENT_BUS.post(new BulletEvent.HitEvent.Entity(this, this.getBullet(), result)).isCanceled()) return;
 
         Entity hit = result.getEntity();
         Entity shooter = this.getOwner();
@@ -252,8 +251,7 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
 
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
-        BulletEvent.HitEvent.Block hitBlockEvent = new BulletEvent.HitEvent.Block(this, this.getBullet(), result);
-        if (hitBlockEvent.isCanceled()) return;
+        if (NeoForge.EVENT_BUS.post(new BulletEvent.HitEvent.Block(this, this.getBullet(), result)).isCanceled()) return;
 
         super.onHitBlock(result);
         this.getBullet().onHitBlock(this, result);
