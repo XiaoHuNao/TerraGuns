@@ -65,8 +65,12 @@ public class BaseGun extends Item implements GeoItem {
         baseBulletEntities.clear();
     }
 
+    protected BaseBulletEntity createBulletEntity(List<Projectile> baseBulletEntities, ServerPlayer player, ItemStack bullet, ItemStack gun, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
+        return new BaseBulletEntity(player, bullet);
+    }
+
     protected void prepareBulletEntity(List<Projectile> baseBulletEntities, ServerPlayer player, ItemStack bullet, ItemStack gun, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
-        BaseBulletEntity baseBulletEntity = new BaseBulletEntity(player, bullet);
+        BaseBulletEntity baseBulletEntity = createBulletEntity(baseBulletEntities, player, bullet, gun, damage, knockback, velocity, penetrate, inaccuracy);
 
         baseBulletEntity.setColorID(((BaseGun) gun.getItem()).getColorID());
         baseBulletEntity.damage = damage;

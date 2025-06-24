@@ -4,7 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -14,7 +13,6 @@ import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.component.BulletPropertyComponent;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
-import org.confluence.terra_guns.common.init.TGDamageTypes;
 import org.confluence.terra_guns.common.init.TGDataComponents;
 
 import java.util.List;
@@ -43,8 +41,7 @@ public class BaseBullet extends Item {
     }
 
     public void onHitEntity(BaseBulletEntity bulletEntity, EntityHitResult result) {
-        Entity entity = result.getEntity();
-        entity.hurt(TGDamageTypes.of(entity.level(), TGDamageTypes.BULLET_DAMAGE, bulletEntity, bulletEntity.getOwner()), bulletEntity.damage);
+        result.getEntity().hurt(bulletEntity.getDamageSource(), bulletEntity.damage);
     }
 
     @Override
