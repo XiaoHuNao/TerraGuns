@@ -26,7 +26,7 @@ public class TGItems {
     public static final DeferredItem<BaseGun> THE_UNDERTAKER = GUNS.registerItem("the_undertaker", properties -> new BaseGun(properties, 8, 5.5f, 0.75f, 0.1f, 0.04f, 0, ModRarity.BLUE)); // 夺命枪
     public static final DeferredItem<BaseGun> MUSKET = GUNS.registerItem("musket", properties -> new BaseGun(properties, 14, 11.4f, 1.1f, 0.25f, 0.11f, 0, ModRarity.BLUE)); // 火枪
 
-    public static final DeferredItem<BaseGun> BLOWPIPE = GUNS.registerItem("blowpipe", properties -> new CustomGun(properties, 8, 1.8f, 1.4f, 0.17f, 0.04f, 0, ModRarity.WHITE, 0.08f)); // 吹管
+    public static final DeferredItem<BaseGun> BLOWGUN = GUNS.registerItem("blowgun", properties -> new CustomGun(properties, 8, 1.8f, 1.4f, 0.17f, 0.04f, 0, ModRarity.WHITE, 0.08f)); // 吹管
     public static final DeferredItem<BaseGun> SNOWBALL_CANNON = GUNS.registerItem("snowball_cannon", properties -> new CustomGun(properties, 3, 3, 1.4f, 0.05f, 0.04f, 3.0f, ModRarity.BLUE, 0.05f)); // 雪球炮
 
     public static final DeferredItem<BaseGun> BOOMSTICK = GUNS.registerItem("boomstick", properties -> new Shotgun(properties, 13, 3.1f, 0.66f, 0.28f, 0.04f, 8.0f, ModRarity.GREEN, 3, 4)); // 三发猎枪

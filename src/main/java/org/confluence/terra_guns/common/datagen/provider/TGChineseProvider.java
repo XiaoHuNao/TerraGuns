@@ -4,7 +4,7 @@ import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.confluence.terra_guns.TerraGuns;
 
-import static org.confluence.terra_guns.common.init.TGEntities.*;
+import static org.confluence.terra_guns.common.init.TGEntities.BASE_BULLET_ENTITY;
 import static org.confluence.terra_guns.common.init.TGItems.*;
 
 public class TGChineseProvider extends LanguageProvider {
@@ -25,7 +25,7 @@ public class TGChineseProvider extends LanguageProvider {
         addItem(THE_UNDERTAKER, "夺命枪");
         addItem(MUSKET, "火枪");
         addItem(MINISHARK, "迷你鲨");
-        addItem(BLOWPIPE, "吹管");
+        addItem(BLOWGUN, "吹管");
         addItem(TACTICAL_SHOTGUN, "战术霰弹枪");
         addItem(SNOWBALL_CANNON, "雪球炮");
 

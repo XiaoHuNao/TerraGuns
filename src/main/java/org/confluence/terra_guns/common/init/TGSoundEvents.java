@@ -26,7 +26,7 @@ public class TGSoundEvents {
     public static final Supplier<SoundEvent> SHOTGUN_ALIEN_PROJ = register("shotgun_alien_proj"); // 外星霰弹枪弹药
     public static final Supplier<SoundEvent> SHOTGUN_MULTI = register("shotgun_multi"); // 三发猎枪，四管霰弹枪，星旋机枪，玛瑙爆破枪，霰弹枪
     public static final Supplier<SoundEvent> SHOTGUN_TACTICAL = register("shotgun_tactical"); // 战术霰弹枪
-    public static final Supplier<SoundEvent> BLOWPIPE_SHOT = register("blowpipe_shot"); // 吹管
+    public static final Supplier<SoundEvent> BLOWPIPE_SHOT = register("blowgun_shot"); // 吹管
 
     private static Supplier<SoundEvent> register(String id) {
         return SOUNDS.register(id, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(TerraGuns.MODID, id)));

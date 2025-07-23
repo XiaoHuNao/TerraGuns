@@ -34,7 +34,7 @@ public class TGItemTagsProvider extends ItemTagsProvider {
 
         addAutomatic(MINISHARK);
         addAutomatic(SNOWBALL_CANNON);
-        addAutomatic(BLOWPIPE);
+        addAutomatic(BLOWGUN);
 
         addManual(HAND_GUN);
         addManual(SHOTGUN);

@@ -9,9 +9,9 @@
             "terra_guns:gun_fish"
         ]
     },
-    "blowpipe_shot": {
+    "blowgun_shot": {
         "sounds": [
-            "terra_guns:blowpipe_shot"
+            "terra_guns:blowgun_shot"
         ]
     },
     "gun_space": {

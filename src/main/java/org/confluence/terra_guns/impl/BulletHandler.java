@@ -43,7 +43,7 @@ public class BulletHandler {
      */
     public static boolean isCompatible(Player player, ItemStack ammo, ItemStack gun) {
         boolean selected = ammo.getItem() instanceof BaseBullet;
-        if (gun.is(TGItems.BLOWPIPE)) selected = ammo.is(TGTags.SEED_AMMO);
+        if (gun.is(TGItems.BLOWGUN)) selected = ammo.is(TGTags.SEED_AMMO);
         if (gun.is(TGItems.SNOWBALL_CANNON)) selected = ammo.is(TGTags.SNOW_AMMO);
 
         GunEvent.AmmoSelectionEvent ammoSelectionEvent = new GunEvent.AmmoSelectionEvent(player, (BaseGun) gun.getItem(), ammo, selected);

@@ -22,7 +22,7 @@ public class TGGunSounds {
         putSound(THE_UNDERTAKER);
         putSound(MUSKET);
         putSound(MINISHARK);
-        putSound(BLOWPIPE, BLOWPIPE_SHOT);
+        putSound(BLOWGUN, BLOWPIPE_SHOT);
         putSound(SNOWBALL_CANNON);
         putSound(TACTICAL_SHOTGUN, SHOTGUN_TACTICAL);
     }
