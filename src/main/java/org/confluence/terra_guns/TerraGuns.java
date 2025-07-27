@@ -5,6 +5,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import org.confluence.lib.ConfluenceMagicLib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,6 @@ public class TerraGuns {
 
     public TerraGuns(IEventBus modEventBus, ModContainer modContainer) {
         ATTRIBUTES.register(modEventBus);
-        TABS.register(modEventBus);
         DATA_COMPONENTS.register(modEventBus);
         ENTITY_TYPES.register(modEventBus);
         GUNS.register(modEventBus);
@@ -32,6 +32,9 @@ public class TerraGuns {
         OTHER.register(modEventBus);
         MOB_EFFECTS.register(modEventBus);
         SOUNDS.register(modEventBus);
+        if (!ConfluenceMagicLib.isConfluenceLoaded()) {
+            TABS.register(modEventBus);
+        }
     }
 
     public static ResourceLocation asResource(String path) {

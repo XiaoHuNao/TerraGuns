@@ -64,8 +64,14 @@ neoForge {
 
         configureEach {
             systemProperty 'forge.logging.markers', 'REGISTRIES'
-
             logLevel = org.slf4j.event.Level.DEBUG
+
+            jvmArgument "-XX:+IgnoreUnrecognizedVMOptions"
+            jvmArgument "-XX:+AllowEnhancedClassRedefinition"
+            jvmArgument "-XX:HotswapAgent=fatjar"
+            if (isRunningInIdea()) {
+                systemProperty "terminal.jline", "true"
+            }
         }
     }
 
@@ -84,8 +90,10 @@ dependencies {
     compileOnly "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
     runtimeOnly "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 
-    runtimeOnly "curse.maven:tweakerge-915857:6387063"
-    runtimeOnly "curse.maven:mafglib-910766:6416901"
+//    runtimeOnly "curse.maven:tweakerge-915857:6387063"
+//    runtimeOnly "curse.maven:mafglib-910766:6416901"
+
+    runtimeOnly "curse.maven:freecam-by-zergatul-618947:5591136"
 
     if (dev) {
         implementation project(":Confluence-Magic-Lib")
@@ -128,4 +136,8 @@ publishing {
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+def isRunningInIdea() {
+    return System.getProperty("idea.active") == "true"
 }
