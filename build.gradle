@@ -93,7 +93,7 @@ dependencies {
 //    runtimeOnly "curse.maven:tweakerge-915857:6387063"
 //    runtimeOnly "curse.maven:mafglib-910766:6416901"
 
-    runtimeOnly "curse.maven:freecam-by-zergatul-618947:5591136"
+//    runtimeOnly "curse.maven:freecam-by-zergatul-618947:5591136"
 
     if (dev) {
         implementation project(":Confluence-Magic-Lib")
