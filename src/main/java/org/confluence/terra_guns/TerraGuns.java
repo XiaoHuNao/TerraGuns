@@ -9,13 +9,13 @@ import org.confluence.lib.ConfluenceMagicLib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.confluence.terra_guns.common.init.TGAttributes.*;
-import static org.confluence.terra_guns.common.init.TGDataComponents.*;
-import static org.confluence.terra_guns.common.init.TGEntities.*;
+import static org.confluence.terra_guns.common.init.TGAttributes.ATTRIBUTES;
+import static org.confluence.terra_guns.common.init.TGDataComponents.DATA_COMPONENTS;
+import static org.confluence.terra_guns.common.init.TGEntities.ENTITY_TYPES;
 import static org.confluence.terra_guns.common.init.TGItems.*;
-import static org.confluence.terra_guns.common.init.TGMobEffects.*;
-import static org.confluence.terra_guns.common.init.TGSoundEvents.*;
-import static org.confluence.terra_guns.common.init.TGTabs.*;
+import static org.confluence.terra_guns.common.init.TGMobEffects.MOB_EFFECTS;
+import static org.confluence.terra_guns.common.init.TGSoundEvents.SOUNDS;
+import static org.confluence.terra_guns.common.init.TGTabs.TABS;
 
 @Mod(TerraGuns.MODID)
 public class TerraGuns {
@@ -32,7 +32,7 @@ public class TerraGuns {
         OTHER.register(modEventBus);
         MOB_EFFECTS.register(modEventBus);
         SOUNDS.register(modEventBus);
-        if (!ConfluenceMagicLib.isConfluenceLoaded()) {
+        if (!ConfluenceMagicLib.IS_CONFLUENCE_LOADED.get()) {
             TABS.register(modEventBus);
         }
     }
