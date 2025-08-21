@@ -129,7 +129,9 @@ public class BaseBulletEntity extends AbstractHurtingProjectile {
         super.addAdditionalSaveData(compound);
 
         compound.putString("ColorID", this.getColorID());
-        compound.put("Item", this.getBulletStack().save(this.registryAccess()));
+        if (!getBulletStack().isEmpty()) {
+            compound.put("Item", this.getBulletStack().save(this.registryAccess()));
+        }
         compound.putFloat("Damage", this.damage);
         compound.putFloat("Knockback", this.knockback);
         compound.putInt("Penetrate", this.penetrate);
