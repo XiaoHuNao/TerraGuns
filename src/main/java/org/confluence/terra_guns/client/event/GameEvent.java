@@ -15,10 +15,10 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.client.init.TGKeys;
-import org.confluence.terra_guns.common.init.TGTags;
-import org.confluence.terra_guns.impl.BulletHandler;
 import org.confluence.terra_guns.common.init.TGGunSounds;
+import org.confluence.terra_guns.common.init.TGTags;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
+import org.confluence.terra_guns.impl.BulletHandler;
 import org.confluence.terra_guns.network.c2s.ShootPacketC2S;
 
 @EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)

@@ -5,7 +5,6 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
-import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;

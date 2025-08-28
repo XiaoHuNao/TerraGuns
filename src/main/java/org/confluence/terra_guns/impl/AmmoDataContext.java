@@ -1,6 +1,5 @@
 package org.confluence.terra_guns.impl;
 
-import net.minecraft.util.RandomSource;
 import org.confluence.terra_guns.common.component.BulletPropertyComponent;
 import org.confluence.terra_guns.common.component.GunPropertyComponent;
 

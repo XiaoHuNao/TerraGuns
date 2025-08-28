@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -16,7 +15,6 @@ import net.minecraft.world.phys.Vec3;
 import org.confluence.terra_guns.client.init.TGRenderTypes;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGTrailColors;
-import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 

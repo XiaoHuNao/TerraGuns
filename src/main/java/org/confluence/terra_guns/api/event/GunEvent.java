@@ -1,12 +1,10 @@
 package org.confluence.terra_guns.api.event;
 
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
-import org.confluence.terra_guns.impl.AmmoDataContext;
 
 import java.util.List;
 

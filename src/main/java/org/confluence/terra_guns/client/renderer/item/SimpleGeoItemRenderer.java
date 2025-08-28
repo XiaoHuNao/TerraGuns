@@ -14,7 +14,6 @@ import software.bernie.geckolib.model.DefaultedItemGeoModel;
 import software.bernie.geckolib.model.GeoModel;
 
 import java.util.List;
-import java.util.Optional;
 
 public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IClientItemExtensions {
     private final ResourceLocation model;
