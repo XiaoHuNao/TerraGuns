@@ -279,13 +279,12 @@ public class BaseBulletEntity extends Projectile {
 
     @Override
     protected boolean canHitEntity(Entity target) {
-        return true;
-//        if (!target.canBeHitByProjectile()) {
-//            return false;
-//        } else {
-//            Entity entity = this.getOwner();
-//            return entity == null || !entity.isPassengerOfSameVehicle(target);
-//        }
+        if (!target.canBeHitByProjectile()) {
+            return false;
+        } else {
+            Entity entity = this.getOwner();
+            return entity == null || !entity.isPassengerOfSameVehicle(target);
+        }
     }
 
     @Override
