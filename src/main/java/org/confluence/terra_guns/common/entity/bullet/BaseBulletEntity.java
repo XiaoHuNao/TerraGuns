@@ -23,7 +23,6 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.EventHooks;
 import org.confluence.lib.util.VectorUtils;
 import org.confluence.terra_guns.api.event.BulletEvent;
 import org.confluence.terra_guns.common.init.TGDamageTypes;
@@ -197,27 +196,29 @@ public class BaseBulletEntity extends Projectile {
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Pre(this, this.getBullet()));
         Entity entity = this.getOwner();
         if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition()) && disToOwner() <= 256) {
+            super.tick();
+
             this.getBullet().tick(this);
             this.saveTrailPos();
+
+            HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity, this.getClipType());
+            if (hitresult.getType() == HitResult.Type.BLOCK) {
+                this.onHitBlock((BlockHitResult) hitresult);
+            }
+
 
             this.checkInsideBlocks();
             Vec3 vec3 = this.getDeltaMovement();
             double newX = this.getX() + vec3.x;
             double newY = this.getY() + vec3.y;
             double newZ = this.getZ() + vec3.z;
-            ProjectileUtil.rotateTowardsMovement(this, 0.2F);
+            this.setPos(newX, newY, newZ);
             float inertia = this.getInertia();
             this.setDeltaMovement(vec3.add(vec3.normalize().scale(this.accelerationPower)).scale(inertia));
-            this.setPos(newX, newY, newZ);
-
-            super.tick();
-            HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity, this.getClipType());
-            if (hitresult.getType() == HitResult.Type.BLOCK) {
-                this.onHitBlock((BlockHitResult) hitresult);
-            }
+            ProjectileUtil.rotateTowardsMovement(this, 0.2F);
 
             AABB aabb = new AABB(getX(), getY(), getZ(), xo, yo, zo);
-            List<Entity> entities = this.level().getEntities(null, aabb);
+            List<Entity> entities = this.level().getEntities(this, aabb);
             entities.forEach(hitEntity -> onHitEntity(new EntityHitResult(hitEntity)));
         } else {
             this.discard();
