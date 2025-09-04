@@ -295,8 +295,8 @@ public class BaseBulletEntity extends Projectile {
         Entity hit = result.getEntity();
         Entity shooter = this.getOwner();
 
-        if (hit instanceof LivingEntity target && !hit.is(shooter) && !this.isRemoved()) {
-            BulletEvent.DamageEntityEvent damageEntityEvent = new BulletEvent.DamageEntityEvent(this, this.getBullet(), shooter, target);
+        if (!hit.is(shooter) && !this.isRemoved()) {
+            BulletEvent.DamageEntityEvent damageEntityEvent = new BulletEvent.DamageEntityEvent(this, this.getBullet(), shooter, hit);
             NeoForge.EVENT_BUS.post(damageEntityEvent);
 
             this.getBullet().onHitEntity(this, result);
@@ -304,7 +304,7 @@ public class BaseBulletEntity extends Projectile {
                 BulletEvent.KnockbackEvent knockbackEvent = new BulletEvent.KnockbackEvent(this, this.getBullet(), knockback / 8, 0f);
                 NeoForge.EVENT_BUS.post(knockbackEvent);
 
-                VectorUtils.knockBackA2B(this, target, knockbackEvent.getScale(), knockbackEvent.getMotionY());
+                VectorUtils.knockBackA2B(this, hit, knockbackEvent.getScale(), knockbackEvent.getMotionY());
             }
 
             BulletEvent.PenetrateEvent penetrateEvent = new BulletEvent.PenetrateEvent(this, this.getBullet(), penetrate);
