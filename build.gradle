@@ -1,4 +1,3 @@
-
 plugins {
     id 'java-library'
     id 'idea'
@@ -20,6 +19,9 @@ repositories {
     }
     maven {
         url = "https://www.cursemaven.com"
+    }
+    flatDir {
+        dirs 'libs'
     }
 }
 
@@ -93,12 +95,17 @@ dependencies {
 //    runtimeOnly "curse.maven:tweakerge-915857:6387063"
 //    runtimeOnly "curse.maven:mafglib-910766:6416901"
 
-//    runtimeOnly "curse.maven:freecam-by-zergatul-618947:5591136"
-
-    if (dev) {
-        implementation project(":Confluence-Magic-Lib")
+    if (gradle.rootProject.name == mod_name) {
+        // 单独开发时
+        runtimeOnly "curse.maven:freecam-by-zergatul-618947:5591136"
+        implementation "org.confluence.lib:org.confluence.lib.confluence_magic_lib-0.0.2c-SNAPSHOT"
     } else {
-        implementation jarJar(project(":Confluence-Magic-Lib"))
+        // 作为submodule开发时
+        if (dev) {
+            implementation project(":Confluence-Magic-Lib")
+        } else {
+            implementation jarJar(project(":Confluence-Magic-Lib"))
+        }
     }
 }
 
