@@ -62,6 +62,10 @@ neoForge {
             systemProperty 'forge.logging.markers', 'REGISTRIES'
 
             logLevel = org.slf4j.event.Level.DEBUG
+
+            jvmArgument "-XX:+IgnoreUnrecognizedVMOptions"
+            jvmArgument "-XX:+AllowEnhancedClassRedefinition"
+            jvmArgument "-XX:HotswapAgent=fatjar"
         }
     }
 

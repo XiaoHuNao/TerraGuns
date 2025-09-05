@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import org.confluence.terra_guns.TerraGuns;
-import org.confluence.terra_guns.impl.client.GunRendererHandler;
+import org.confluence.terra_guns.client.renderer.GunRendererHandler;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import software.bernie.geckolib.model.DefaultedItemGeoModel;
 
@@ -15,6 +15,6 @@ public class TGUtil {
     }
 
     public static void registerGunModel(RegisterClientExtensionsEvent event, ResourceLocation resourceLocation, DeferredItem<BaseGun> gunSupplier){
-        event.registerItem(new GunRendererHandler(new DefaultedItemGeoModel<>(resourceLocation)), gunSupplier.get());
+        event.registerItem(new GunRendererHandler<>(resourceLocation), gunSupplier.get());
     }
 }
