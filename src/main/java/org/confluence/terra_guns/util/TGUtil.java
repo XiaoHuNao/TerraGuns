@@ -5,6 +5,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import org.confluence.lib.util.LibUtils;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.client.renderer.item.SimpleGeoItemRenderer;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
@@ -24,10 +25,7 @@ public class TGUtil {
         event.registerItem(new SimpleGeoItemRenderer<BaseGun>(new DefaultedItemGeoModel<>(resourceLocation)), gunSupplier.get());
     }
 
-    public static float criticalDamageTotal(float critical, float damage){
-        if (RandomSource.create().nextFloat() < critical) {
-            return damage * 2;
-        }
-        return damage;
+    public static float criticalDamageTotal(float critical, float damage) {
+        return LibUtils.checkChance(critical, RandomSource.create()) ? damage * 1.5F : damage;
     }
 }
