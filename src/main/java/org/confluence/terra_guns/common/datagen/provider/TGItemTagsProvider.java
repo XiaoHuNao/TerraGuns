@@ -27,6 +27,7 @@ public class TGItemTagsProvider extends ItemTagsProvider {
     protected void addTags(HolderLookup.@NotNull Provider provider) {
         BULLETS.getEntries().forEach(item -> tag(TGTags.BULLET).add(item.get()));
         GUNS.getEntries().forEach(item -> tag(TGTags.GUN).add(item.get()));
+        tag(Tags.Items.RANGED_WEAPON_TOOLS).addTag(TGTags.GUN);
 
         tag(TGTags.SNOW_AMMO).add(Items.SNOWBALL);
         tag(TGTags.SEED_AMMO).addTag(Tags.Items.SEEDS);
