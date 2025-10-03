@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseGun extends Item implements GeoItem {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private final GunPropertyComponent component;
+    protected final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    protected final GunPropertyComponent component;
     protected final ArrayList<Projectile> baseBulletEntities = new ArrayList<>();
     protected final float inaccuracy;
 

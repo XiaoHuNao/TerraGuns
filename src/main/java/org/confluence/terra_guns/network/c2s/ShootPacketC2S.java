@@ -21,29 +21,33 @@ import org.confluence.terra_guns.impl.BulletHandler;
 import java.util.function.Supplier;
 
 
-public record ShootPacketC2S() implements CustomPacketPayload {
+public final class ShootPacketC2S implements CustomPacketPayload {
+    private static final ShootPacketC2S INSTANCE = new ShootPacketC2S();
     public static final Type<ShootPacketC2S> TYPE = new Type<>(TerraGuns.asResource("shoot"));
-    public static final StreamCodec<ByteBuf, ShootPacketC2S> STREAM_CODEC = StreamCodec.unit(new ShootPacketC2S());
+    public static final StreamCodec<ByteBuf, ShootPacketC2S> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+
+    private ShootPacketC2S() {}
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public Type<ShootPacketC2S> type() {
         return TYPE;
     }
 
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            if (context.player() instanceof ServerPlayer serverPlayer) {
-                ItemStack gunStack = serverPlayer.getMainHandItem();
+            if (context.player() instanceof ServerPlayer player) {
+                ItemStack gunStack = player.getMainHandItem();
                 if (gunStack.getItem() instanceof BaseGun baseGun) {
-                    ItemStack ammo = BulletHandler.getAmmo(serverPlayer, gunStack);
+                    ItemStack ammo = BulletHandler.getAmmo(player, gunStack);
                     ammo = ammo.equals(ItemStack.EMPTY) ? TGItems.EMPTY_BULLET.toStack() : ammo;
                     Supplier<DataComponentType<BulletPropertyComponent>> bulletComponent = TGDataComponents.BULLET_PROPERTY_COMPONENT;
 
-                    baseGun.shoot(serverPlayer, ammo, gunStack);
-                    baseGun.fireAnimator(gunStack, serverPlayer);
+                    baseGun.shoot(player, ammo, gunStack);
+                    baseGun.fireAnimator(gunStack, player);
 
-                    boolean infinity = ammo.has(bulletComponent) && ammo.get(bulletComponent).infinity();
-                    GunEvent.ShrinkBulletEvent shrinkBulletEvent = new GunEvent.ShrinkBulletEvent(serverPlayer, baseGun, gunStack, ammo, infinity);
+                    BulletPropertyComponent component = ammo.get(bulletComponent);
+                    boolean infinity = component != null && component.infinity();
+                    GunEvent.ShrinkBulletEvent shrinkBulletEvent = new GunEvent.ShrinkBulletEvent(player, baseGun, gunStack, ammo, infinity);
                     NeoForge.EVENT_BUS.post(shrinkBulletEvent);
 
                     if (!shrinkBulletEvent.isInfinity() && !shrinkBulletEvent.isCanceled()) {
@@ -58,6 +62,6 @@ public record ShootPacketC2S() implements CustomPacketPayload {
     }
 
     public static void sendToServer() {
-        PacketDistributor.sendToServer(new ShootPacketC2S());
+        PacketDistributor.sendToServer(INSTANCE);
     }
 }

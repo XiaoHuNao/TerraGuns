@@ -14,15 +14,19 @@ import org.confluence.terra_guns.common.init.TGItems;
 import org.jetbrains.annotations.NotNull;
 
 public class CustomBulletEntity extends BaseBulletEntity implements ItemSupplier {
-    private static final EntityDataAccessor<ItemStack> GRAVITY_BULLET = SynchedEntityData.defineId(CustomBulletEntity.class, EntityDataSerializers.ITEM_STACK);
-    private float gravity = 0;
+    protected static final EntityDataAccessor<ItemStack> GRAVITY_BULLET = SynchedEntityData.defineId(CustomBulletEntity.class, EntityDataSerializers.ITEM_STACK);
+    protected float gravity = 0;
 
-    public CustomBulletEntity(EntityType<? extends BaseBulletEntity> entityType, Level level) {
-        super(entityType, level);
+    public CustomBulletEntity(EntityType<? extends BaseBulletEntity> type, Level level) {
+        super(type, level);
     }
 
     public CustomBulletEntity(LivingEntity owner, float gravity, ItemStack bullet) {
-        super(TGEntities.GRAVITY_BULLET_ENTITY.get(), owner, TGItems.EMPTY_BULLET.toStack());
+        this(TGEntities.GRAVITY_BULLET_ENTITY.get(), owner, gravity, bullet);
+    }
+
+    public CustomBulletEntity(EntityType<? extends BaseBulletEntity> type, LivingEntity owner, float gravity, ItemStack bullet) {
+        super(type, owner, TGItems.EMPTY_BULLET.toStack());
         this.gravity = gravity;
         this.entityData.set(GRAVITY_BULLET, bullet);
     }
