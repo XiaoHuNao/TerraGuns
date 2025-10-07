@@ -296,7 +296,7 @@ public class BaseBulletEntity extends Projectile {
         Entity hit = result.getEntity();
         Entity shooter = this.getOwner();
 
-        if (!hit.is(shooter) && !this.isRemoved()) {
+        if (!level().isClientSide && !hit.is(shooter) && !this.isRemoved()) {
             BulletEvent.DamageEntityEvent damageEntityEvent = new BulletEvent.DamageEntityEvent(this, this.getBullet(), shooter, hit);
             NeoForge.EVENT_BUS.post(damageEntityEvent);
 
