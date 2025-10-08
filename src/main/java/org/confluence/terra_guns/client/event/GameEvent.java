@@ -69,7 +69,7 @@ public class GameEvent {
         LocalPlayer player = minecraft.player;
         if (player.getItemInHand(event.getHand()).getItem() instanceof BaseGun) {
             event.setSwingHand(false);
-//            event.setCanceled(true);
+            if (event.isAttack()) event.setCanceled(true);
         }
     }
 }
