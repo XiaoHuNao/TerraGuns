@@ -16,7 +16,7 @@ import org.confluence.terra_guns.util.TGUtil;
 import static org.confluence.terra_guns.client.init.TGKeys.AIM;
 import static org.confluence.terra_guns.client.init.TGKeys.SHOOT;
 
-@EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = TerraGuns.MODID, value = Dist.CLIENT)
 public class ModEvent {
     @SubscribeEvent
     public static void registerClientExtensions(RegisterClientExtensionsEvent event) {

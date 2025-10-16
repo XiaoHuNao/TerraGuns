@@ -21,7 +21,7 @@ import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletHandler;
 import org.confluence.terra_guns.network.c2s.ShootPacketC2S;
 
-@EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = TerraGuns.MODID, value = Dist.CLIENT)
 public class GameEvent {
     private static final Minecraft minecraft = Minecraft.getInstance();
 

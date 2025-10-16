@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.confluence.terra_guns.TerraGuns.MODID;
 
-@EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = MODID)
 public class ModDataGenerator {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {

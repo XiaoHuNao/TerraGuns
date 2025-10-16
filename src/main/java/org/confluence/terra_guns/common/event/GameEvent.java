@@ -10,7 +10,7 @@ import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.init.TGDamageTypes;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 
-@EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = TerraGuns.MODID)
 public class GameEvent {
     @SubscribeEvent
     public static void swapGunAnimator(LivingEquipmentChangeEvent event){

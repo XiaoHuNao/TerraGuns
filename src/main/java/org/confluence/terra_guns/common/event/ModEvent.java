@@ -11,7 +11,7 @@ import org.confluence.terra_guns.common.init.TGGunSounds;
 import org.confluence.terra_guns.common.init.TGTrailColors;
 import org.confluence.terra_guns.network.c2s.ShootPacketC2S;
 
-@EventBusSubscriber(modid = TerraGuns.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TerraGuns.MODID)
 public class ModEvent {
     @SubscribeEvent
     public static void registerNetWork(RegisterPayloadHandlersEvent event) {
