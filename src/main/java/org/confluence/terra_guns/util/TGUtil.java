@@ -25,7 +25,7 @@ public class TGUtil {
         event.registerItem(new SimpleGeoItemRenderer<BaseGun>(new DefaultedItemGeoModel<>(resourceLocation)), gunSupplier.get());
     }
 
-    public static float criticalDamageTotal(float critical, float damage) {
-        return LibUtils.checkChance(critical, RandomSource.create()) ? damage * 1.5F : damage;
+    public static float criticalDamageTotal(float critical, float damage, RandomSource random) {
+        return LibUtils.checkChance(critical, random) ? damage * 1.5F : damage;
     }
 }

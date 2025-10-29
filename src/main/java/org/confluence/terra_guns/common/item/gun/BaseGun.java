@@ -63,7 +63,7 @@ public class BaseGun extends Item implements GeoItem {
         GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, gun, ammoDataContext.getDamage(), ammoDataContext.getCritical(), ammoDataContext.getKnockback(), ammoDataContext.getVelocity(), ammoDataContext.getPenetrate(), ammoDataContext.getInaccuracy());
         NeoForge.EVENT_BUS.post(ammoDataEvent);
 
-        float finalDamage = TGUtil.criticalDamageTotal(ammoDataEvent.getCritical(), ammoDataEvent.getDamage());
+        float finalDamage = TGUtil.criticalDamageTotal(ammoDataEvent.getCritical(), ammoDataEvent.getDamage(), player.getRandom());
         prepareBulletEntity(baseBulletEntities, player, bullet, gun, finalDamage, ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate(), ammoDataEvent.getInaccuracy());
         baseBulletEntities.forEach(serverLevel::addFreshEntity);
         baseBulletEntities.clear();
