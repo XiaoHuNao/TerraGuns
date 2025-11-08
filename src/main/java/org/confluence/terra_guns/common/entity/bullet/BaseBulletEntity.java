@@ -218,8 +218,7 @@ public class BaseBulletEntity extends Projectile {
             ProjectileUtil.rotateTowardsMovement(this, 0.2F);
 
             AABB aabb = new AABB(getX(), getY(), getZ(), xo, yo, zo);
-            List<Entity> entities = this.level().getEntities(this, aabb);
-            entities.forEach(hitEntity -> onHitEntity(new EntityHitResult(hitEntity)));
+            this.level().getEntities(this, aabb, this::canHitEntity).forEach(hitEntity -> onHitEntity(new EntityHitResult(hitEntity)));
         } else {
             this.discard();
         }
