@@ -15,7 +15,7 @@ import org.confluence.terra_guns.util.TGUtil;
 public class ModEvent {
     @SubscribeEvent
     public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-        TGItems.ITEMS.getEntries().forEach(holder -> TGUtil.registerGunModel(event, (DeferredItem<BaseGun>) holder));
+        TGItems.ITEMS.getEntries().forEach(holder -> TGUtil.registerGunModel(event, (DeferredItem<?>) holder));
     }
 
     @SubscribeEvent

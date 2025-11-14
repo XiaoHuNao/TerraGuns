@@ -1,31 +1,30 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
+		"default": {
+			"loop": "hold_on_last_frame"
+		},
 		"fire": {
+			"loop": "hold_on_last_frame",
 			"animation_length": 0.5,
 			"bones": {
-				"bone": {
-					"position": {
-						"vector": [0, 0, 0]
-					}
-				},
 				"left_hand": {
 					"rotation": {
 						"0.0": {
-							"vector": [50, 0, 0]
+							"vector": [39.23412, -15.74419, -12.49325]
 						},
-						"0.1667": {
-							"vector": [12.5, 0, 0]
+						"0.25": {
+							"vector": [-42.49853, -6.52739, -16.452]
 						}
 					}
 				},
 				"right_hand": {
 					"rotation": {
 						"0.0": {
-							"vector": [55, 0, 0]
+							"vector": [32.00206, 19.3546, 11.70092]
 						},
-						"0.1667": {
-							"vector": [15, 0, 0]
+						"0.25": {
+							"vector": [-26.96997, 7.60134, 16.08623]
 						}
 					}
 				},
@@ -34,11 +33,8 @@
 						"0.0": {
 							"vector": [0, 0, 0]
 						},
-						"0.375": {
-							"vector": [0, 537.5, 0]
-						},
 						"0.5": {
-							"vector": [90, 362.5, -180]
+							"vector": [360, 180, 0]
 						}
 					}
 				}
