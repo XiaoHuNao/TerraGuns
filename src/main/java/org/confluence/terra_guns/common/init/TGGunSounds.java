@@ -16,6 +16,7 @@ public class TGGunSounds {
     protected static Map<BaseGun, SoundEvent> soundMap = new HashMap<>();
     public static void init() {
         putSound(HAND_GUN, GUN_AUTO);
+        putSound(PHOENIX_BLASTER, GUN_AUTO);
         putSound(SHOTGUN, SHOTGUN_MULTI);
         putSound(FLINTLOCK_PISTOL);
         putSound(BOOMSTICK, SHOTGUN_MULTI);

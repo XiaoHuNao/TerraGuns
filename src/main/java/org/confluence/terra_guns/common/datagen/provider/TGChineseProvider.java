@@ -28,6 +28,7 @@ public class TGChineseProvider extends LanguageProvider {
         addItem(BLOWGUN, "吹管");
         addItem(TACTICAL_SHOTGUN, "战术霰弹枪");
         addItem(SNOWBALL_CANNON, "雪球炮");
+        addItem(PHOENIX_BLASTER, "凤凰爆破枪");
 
         addItem(MUSKET_BULLET, "火枪子弹");
         addItem(METEOR_SHOT, "流星弹");

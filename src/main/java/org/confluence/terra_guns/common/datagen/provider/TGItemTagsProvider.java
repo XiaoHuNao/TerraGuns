@@ -38,6 +38,7 @@ public class TGItemTagsProvider extends ItemTagsProvider {
         addAutomatic(BLOWGUN);
 
         addManual(HAND_GUN);
+        addManual(PHOENIX_BLASTER);
         addManual(SHOTGUN);
         addManual(FLINTLOCK_PISTOL);
         addManual(BOOMSTICK);

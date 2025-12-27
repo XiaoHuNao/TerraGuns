@@ -29,6 +29,7 @@ public class TGItems {
     public static final DeferredItem<BaseGun> MINISHARK = GUNS.registerItem("minishark", properties -> new BaseGun(properties, 3, 3.4f, 1.0f, 0.0f, 0.04f, 5.0f, ModRarity.GREEN)); // 迷你鲨
     public static final DeferredItem<BaseGun> BOOMSTICK = GUNS.registerItem("boomstick", properties -> new Shotgun(properties, 13, 7f, 0.66f, 0.28f, 0.04f, 8.0f, ModRarity.GREEN, 3, 4)); // 三发猎枪
     public static final DeferredItem<BaseGun> HAND_GUN = GUNS.registerItem("hand_gun", properties -> new BaseGun(properties, 5, 13f, 1.25f, 0.15f, 0.04f, 0, ModRarity.GREEN)); // 手枪
+    public static final DeferredItem<BaseGun> PHOENIX_BLASTER = GUNS.registerItem("phoenix_blaster", properties -> new BaseGun(properties, 4, 16f, 2.50f, 0.10f, 0.04f, 0, ModRarity.ORANGE)); // 凤凰爆破枪
     public static final DeferredItem<BaseGun> SHOTGUN = GUNS.registerItem("shotgun", properties -> new Shotgun(properties, 15, 12f, 0.9f, 0.375f, 0.04f, 10.0f, ModRarity.LIGHT_RED, 3, 5)); // 霰弹枪
     public static final DeferredItem<BaseGun> TACTICAL_SHOTGUN = GUNS.registerItem("tactical_shotgun", properties -> new Shotgun(properties, 11, 16f, 0.75f, 0.35f, 0.04f, 12.0f, ModRarity.YELLOW, 6, 6)); // 战术霰弹枪
 
