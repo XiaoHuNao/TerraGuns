@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.confluence.terra_guns.client.model.item.GunModel;
@@ -63,46 +64,77 @@ public class GunRendererHandler<T extends BaseGun> extends GeoItemRenderer<T> im
     }
 
     @Override
-    public void renderRecursively(PoseStack poseStack, T animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
-        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
-    }
+    public void renderRecursively(
+            PoseStack poseStack,
+            T animatable,
+            GeoBone bone,
+            RenderType renderType,
+            MultiBufferSource bufferSource,
+            VertexConsumer buffer,
+            boolean isReRender,
+            float partialTick,
+            int packedLight,
+            int packedOverlay,
+            int colour
+    ) {
+        poseStack.pushPose();
 
-    @Override
-    public void renderCubesOfBone(PoseStack poseStack, GeoBone bone, VertexConsumer buffer, int packedLight, int packedOverlay, int colour) {
-        Minecraft minecraft = Minecraft.getInstance();
-        LocalPlayer player = minecraft.player;
-        MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
-        var handRenderer = minecraft.gameRenderer.itemInHandRenderer;
-        var entityRenderDispatcher = minecraft.getEntityRenderDispatcher();
-        var playerrenderer = (PlayerRenderer) entityRenderDispatcher.getRenderer(player);
+        // GeckoLib 应用当前骨骼矩阵
+        RenderUtil.prepMatrixForBone(poseStack, bone);
 
-        if (Objects.equals(bone.getName(), "right_hand")) {
+        String name = bone.getName();
+
+        // ================
+        //   手部替换方案
+        // ================
+        if (name.equals("right_hand") || name.equals("left_hand")) {
+
+            // 不执行默认 cubes 渲染（跳过）
+            // 但需要渲染手部模型
             poseStack.pushPose();
-            RenderUtil.translateToPivotPoint(poseStack, bone);
-            RenderUtil.rotateMatrixAroundBone(poseStack, bone);
-            RenderUtil.translateAwayFromPivotPoint(poseStack, bone);
 
-            Matrix3f normalisedPoseState = poseStack.last().normal();
-            Matrix4f poseState = new Matrix4f(poseStack.last().pose());
-            poseStack.mulPose(Axis.YP.rotationDegrees(180f));
-            poseStack.mulPose(Axis.XP.rotationDegrees(90f));
+            Minecraft mc = Minecraft.getInstance();
+            var player = mc.player;
+            PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(player);
 
-            PoseStack poseStack1 = new PoseStack();
-            poseStack1.last().pose().mul(poseState);
-            poseStack1.last().pose().normal(normalisedPoseState);
-            playerrenderer.renderRightHand(poseStack, bufferSource, packedLight, player);
+            // 可在此加入额外变换让手模型对齐你的骨骼
+            // poseStack.mulPose(...)
+
+            if (name.equals("right_hand")) {
+                playerRenderer.renderRightHand(poseStack, bufferSource, packedLight, player);
+            } else {
+                playerRenderer.renderLeftHand(poseStack, bufferSource, packedLight, player);
+            }
+
             poseStack.popPose();
-        } else if (Objects.equals(bone.getName(), "left_hand")) {
-            poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(180f));
-            poseStack.mulPose(Axis.XP.rotationDegrees(90f));
 
-            playerrenderer.renderLeftHand(poseStack, bufferSource, packedLight, player);
+            // ✔ 不渲染 cubes
+            // ✔ 但继续渲染子骨骼（可以有手指等）
+            for (GeoBone child : bone.getChildBones()) {
+                renderRecursively(poseStack, animatable, child,
+                        renderType, bufferSource, buffer,
+                        isReRender, partialTick, packedLight, packedOverlay, colour);
+            }
+
             poseStack.popPose();
-        } else {
-//            super.renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, colour);
+            return; // 完整覆盖了默认逻辑，直接 return
         }
+
+        // 默认流程
+        buffer = checkAndRefreshBuffer(isReRender, buffer, bufferSource, renderType);
+        renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, colour);
+
+        if (!isReRender)
+            applyRenderLayersForBone(poseStack, animatable, bone, renderType, bufferSource,
+                    buffer, partialTick, packedLight, packedOverlay);
+
+        // 递归孩子
+        renderChildBones(poseStack, animatable, bone, renderType, bufferSource,
+                buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
+
+        poseStack.popPose();
     }
+
 
     @Override
     public boolean applyForgeHandTransform(@NotNull PoseStack poseStack, @NotNull LocalPlayer player, @NotNull HumanoidArm arm, @NotNull ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
