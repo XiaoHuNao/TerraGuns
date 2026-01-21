@@ -48,12 +48,20 @@ public class BaseBulletEntity extends Projectile {
         super(entityType, level);
     }
 
-    public BaseBulletEntity(EntityType<? extends Projectile> entityType, LivingEntity owner, ItemStack bullet) {
-        super(entityType, owner.level());
-        this.setPos(owner.getX(), owner.getEyeY() - 0.1, owner.getZ());
-        setOwner(owner);
+    public BaseBulletEntity(EntityType<? extends Projectile> entityType, Level level, double x, double y, double z, ItemStack bullet) {
+        super(entityType, level);
+        this.setPos(x, y, z);
         this.entityData.set(BULLET, bullet.is(Items.AIR) || bullet.isEmpty() ? getDefaultItem() : bullet);
         this.accelerationPower = 0.1;
+    }
+
+    public BaseBulletEntity(Level level, double x, double y, double z, ItemStack bullet) {
+        this(TGEntities.BASE_BULLET_ENTITY.get(), level, x, y, z, bullet);
+    }
+
+    public BaseBulletEntity(EntityType<? extends Projectile> entityType, LivingEntity owner, ItemStack bullet) {
+        this(entityType, owner.level(), owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), bullet);
+        setOwner(owner);
     }
 
     public BaseBulletEntity(LivingEntity owner, ItemStack bullet) {
@@ -295,7 +303,7 @@ public class BaseBulletEntity extends Projectile {
         Entity hit = result.getEntity();
         Entity shooter = this.getOwner();
 
-        if (!level().isClientSide && !hit.is(shooter) && !this.isRemoved()) {
+        if (!level().isClientSide && hit != shooter && !this.isRemoved()) {
             BulletEvent.DamageEntityEvent damageEntityEvent = new BulletEvent.DamageEntityEvent(this, this.getBullet(), shooter, hit);
             NeoForge.EVENT_BUS.post(damageEntityEvent);
 
