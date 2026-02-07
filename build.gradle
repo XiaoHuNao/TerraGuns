@@ -98,7 +98,7 @@ dependencies {
     if (gradle.rootProject.name == mod_name) {
         // 单独开发时
         runtimeOnly "curse.maven:freecam-by-zergatul-618947:5591136"
-        implementation "org.confluence.lib:org.confluence.lib.confluence_magic_lib-0.0.3"
+        implementation(jarJar("org.confluence.lib:Confluence-Magic-Lib:${confluence_lib_version}"))
     } else {
         // 作为submodule开发时
         if (dev) {
