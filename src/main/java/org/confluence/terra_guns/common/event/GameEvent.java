@@ -6,6 +6,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import org.confluence.lib.ConfluenceMagicLib;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.init.TGDamageTypes;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
@@ -30,7 +31,7 @@ public class GameEvent {
     @SubscribeEvent
     public static void hurtEvent(LivingIncomingDamageEvent event){
         if (event.getSource().is(TGDamageTypes.BULLET_DAMAGE)) {
-            if (TerraGuns.IS_CONFLUENCE_LOADED) return;
+            if (ConfluenceMagicLib.IS_CONFLUENCE_LOADED.get()) return;
             event.setInvulnerabilityTicks(0);
         }
     }

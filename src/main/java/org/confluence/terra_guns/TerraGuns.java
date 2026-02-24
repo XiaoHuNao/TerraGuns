@@ -3,9 +3,9 @@ package org.confluence.terra_guns;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import org.confluence.lib.ConfluenceMagicLib;
+import org.confluence.lib.util.LibUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,8 @@ import static org.confluence.terra_guns.common.init.TGTabs.TABS;
 public class TerraGuns {
     public static final String MODID = "terra_guns";
     public static final Logger LOGGER = LoggerFactory.getLogger("Terra Guns");
-    public static final boolean IS_CONFLUENCE_LOADED = ModList.get().isLoaded("confluence");
+    @Deprecated
+    public static final boolean IS_CONFLUENCE_LOADED = LibUtils.isModLoaded("confluence");
 
     public TerraGuns(IEventBus modEventBus, ModContainer modContainer) {
         ATTRIBUTES.register(modEventBus);

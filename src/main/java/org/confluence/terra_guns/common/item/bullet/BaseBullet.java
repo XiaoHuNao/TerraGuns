@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import org.confluence.lib.ConfluenceMagicLib;
 import org.confluence.lib.common.component.ModRarity;
-import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.component.BulletPropertyComponent;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.init.TGDataComponents;
@@ -27,7 +27,7 @@ public class BaseBullet extends Item {
         BulletPropertyComponent component = new BulletPropertyComponent(damage, velocity, velocityMultiplier, knockback, penetrate, rarity, infinity);
         properties.component(TGDataComponents.BULLET_PROPERTY_COMPONENT.get(), component);
         DataComponentMap.Builder components = properties.components;
-        if ((Integer) components.map.get(DataComponents.MAX_STACK_SIZE) ==99 && TerraGuns.IS_CONFLUENCE_LOADED) properties.stacksTo(9999);
+        if ((Integer) components.map.get(DataComponents.MAX_STACK_SIZE) ==99 && ConfluenceMagicLib.IS_CONFLUENCE_LOADED.get()) properties.stacksTo(9999);
 
         this.components = Properties.COMPONENT_INTERNER.intern(components.build());
         this.component = component;
