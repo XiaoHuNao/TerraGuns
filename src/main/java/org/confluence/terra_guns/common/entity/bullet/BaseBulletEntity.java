@@ -23,6 +23,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.common.NeoForge;
+import org.confluence.lib.mixed.CriticalDamageSource;
 import org.confluence.lib.util.VectorUtils;
 import org.confluence.terra_guns.api.event.BulletEvent;
 import org.confluence.terra_guns.common.init.TGDamageTypes;
@@ -43,6 +44,7 @@ public class BaseBulletEntity extends Projectile {
     public int penetrate;
     private final List<Vec3> trails = new ArrayList<>();
     public double accelerationPower;
+    public boolean critical;
 
     public BaseBulletEntity(EntityType<? extends BaseBulletEntity> entityType, Level level) {
         super(entityType, level);
@@ -122,7 +124,11 @@ public class BaseBulletEntity extends Projectile {
     }
 
     public DamageSource getDamageSource() {
-        return TGDamageTypes.of(level(), TGDamageTypes.BULLET_DAMAGE, this, getOwner());
+        DamageSource damageSource = TGDamageTypes.of(level(), TGDamageTypes.BULLET_DAMAGE, this, getOwner());
+        if (critical && damageSource instanceof CriticalDamageSource criticalDamageSource) {
+            criticalDamageSource.confluence$setCritical(true);
+        }
+        return damageSource;
     }
 
     @Override

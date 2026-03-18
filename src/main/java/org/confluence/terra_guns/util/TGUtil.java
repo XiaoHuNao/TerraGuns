@@ -11,6 +11,8 @@ import org.confluence.terra_guns.client.renderer.item.SimpleGeoItemRenderer;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import software.bernie.geckolib.model.DefaultedItemGeoModel;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 public class TGUtil {
     public static void registerOtherGunModel(RegisterClientExtensionsEvent event, String modid, DeferredHolder<Item, ? extends Item> gunSupplier) {
@@ -25,7 +27,11 @@ public class TGUtil {
         event.registerItem(new SimpleGeoItemRenderer<BaseGun>(new DefaultedItemGeoModel<>(resourceLocation)), gunSupplier.get());
     }
 
-    public static float criticalDamageTotal(float critical, float damage, RandomSource random) {
-        return LibUtils.checkChance(critical, random) ? damage * 1.5F : damage;
+    public static float criticalDamageTotal(float critical, float damage, RandomSource random, AtomicBoolean crit) {
+        if (LibUtils.checkChance(critical, random)) {
+            crit.set(true);
+            return damage * 1.5F;
+        }
+        return damage;
     }
 }
