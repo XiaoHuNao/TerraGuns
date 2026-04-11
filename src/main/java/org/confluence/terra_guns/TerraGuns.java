@@ -33,7 +33,7 @@ public class TerraGuns {
         OTHER.register(modEventBus);
         MOB_EFFECTS.register(modEventBus);
         SOUNDS.register(modEventBus);
-        if (!ConfluenceMagicLib.IS_CONFLUENCE_LOADED.get()) {
+        if (!ConfluenceMagicLib.IS_CONFLUENCE_LOAD) {
             TABS.register(modEventBus);
         }
     }

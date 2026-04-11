@@ -31,7 +31,7 @@ public class GameEvent {
     @SubscribeEvent
     public static void hurtEvent(LivingIncomingDamageEvent event){
         if (event.getSource().is(TGDamageTypes.BULLET_DAMAGE)) {
-            if (ConfluenceMagicLib.IS_CONFLUENCE_LOADED.get()) return;
+            if (ConfluenceMagicLib.IS_CONFLUENCE_LOAD) return;
             event.setInvulnerabilityTicks(0);
         }
     }
