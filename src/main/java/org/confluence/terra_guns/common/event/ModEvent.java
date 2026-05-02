@@ -5,7 +5,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import org.confluence.lib.event.NameFixRegisterEvent;
+import org.confluence.lib.api.event.NameFixRegisterEvent;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.init.TGGunSounds;
 import org.confluence.terra_guns.common.init.TGTrailColors;
