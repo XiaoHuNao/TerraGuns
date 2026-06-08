@@ -1,15 +1,15 @@
 package org.confluence.terra_guns.common.init;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.registries.DeferredRegister;
 import org.confluence.terra_guns.TerraGuns;
 
 import java.util.function.Supplier;
 
 public class TGSoundEvents {
-    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, TerraGuns.MODID);
+    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, TerraGuns.MODID);
 
     public static final Supplier<SoundEvent> GUN_AUTO = register("gun_auto"); // 凤凰爆破枪，左轮手枪，手枪，维纳斯万能枪，链式机枪，鳄鱼机关枪
     public static final Supplier<SoundEvent> GUN_FISH = register("gun_fish"); // 食人鱼枪，鱼叉枪
@@ -31,6 +31,4 @@ public class TGSoundEvents {
     private static Supplier<SoundEvent> register(String id) {
         return SOUNDS.register(id, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(TerraGuns.MODID, id)));
     }
-
-
 }

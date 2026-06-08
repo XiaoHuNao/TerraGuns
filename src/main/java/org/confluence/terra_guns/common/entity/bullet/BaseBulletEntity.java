@@ -1,5 +1,7 @@
 package org.confluence.terra_guns.common.entity.bullet;
 
+import PortLib.extensions.java.util.List.PortListExtension;
+import PortLib.extensions.net.minecraft.world.entity.projectile.ProjectileUtil.PortProjectileUtilExtension;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -8,7 +10,6 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +23,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
-import net.neoforged.neoforge.common.NeoForge;
+import org.confluence.lib.util.LibUtils;
 import org.confluence.lib.util.VectorUtils;
 import org.confluence.terra_guns.api.event.BulletEvent;
 import org.confluence.terra_guns.common.init.TGDamageTypes;
@@ -30,6 +31,7 @@ import org.confluence.terra_guns.common.init.TGEntities;
 import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.jetbrains.annotations.NotNull;
+import org.mesdag.portlib.event.PortEventHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +124,7 @@ public class BaseBulletEntity extends Projectile {
     }
 
     public DamageSource getDamageSource() {
-        return TGDamageTypes.of(level(), TGDamageTypes.BULLET_DAMAGE, this, getOwner());
+        return LibUtils.damageSource(level(), TGDamageTypes.BULLET_DAMAGE, this, getOwner());
     }
 
     @Override
@@ -131,11 +133,11 @@ public class BaseBulletEntity extends Projectile {
     }
 
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity serverEntity) {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         Entity entity = this.getOwner();
         int i = entity == null ? 0 : entity.getId();
-        Vec3 vec3 = serverEntity.getPositionBase();
-        return new ClientboundAddEntityPacket(this.getId(), this.getUUID(), vec3.x(), vec3.y(), vec3.z(), serverEntity.getLastSentXRot(), serverEntity.getLastSentYRot(), this.getType(), i, serverEntity.getLastSentMovement(), 0.0F);
+        Vec3 vec3 = position();
+        return new ClientboundAddEntityPacket(this.getId(), this.getUUID(), vec3.x(), vec3.y(), vec3.z(), getXRot(), getYRot(), this.getType(), i, getDeltaMovement(), 0.0F);
     }
 
     @Override
@@ -146,9 +148,9 @@ public class BaseBulletEntity extends Projectile {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(COLOR_ID, "");
-        builder.define(BULLET, this.getDefaultItem());
+    protected void defineSynchedData() {
+        entityData.define(COLOR_ID, "");
+        entityData.define(BULLET, this.getDefaultItem());
     }
 
     @Override
@@ -159,7 +161,8 @@ public class BaseBulletEntity extends Projectile {
             this.setColorID(compound.getString("ColorID"));
         }
         if (compound.contains("Item", 10)) {
-            this.setBullet(ItemStack.parse(this.registryAccess(), compound.getCompound("Item")).orElse(this.getDefaultItem()));
+            ItemStack itemStack = ItemStack.of(compound.getCompound("Item"));
+            this.setBullet(itemStack.isEmpty() ? getDefaultItem() : itemStack);
         } else {
             this.setBullet(this.getDefaultItem());
         }
@@ -186,7 +189,7 @@ public class BaseBulletEntity extends Projectile {
 
         compound.putString("ColorID", this.getColorID());
         if (!getBulletStack().isEmpty()) {
-            compound.put("Item", this.getBulletStack().save(this.registryAccess()));
+            compound.put("Item", this.getBulletStack().save(new CompoundTag()));
         }
         compound.putFloat("Damage", this.damage);
         compound.putFloat("Knockback", this.knockback);
@@ -196,12 +199,12 @@ public class BaseBulletEntity extends Projectile {
     }
 
     protected ItemStack getDefaultItem() {
-        return TGItems.EMPTY_BULLET.toStack();
+        return TGItems.EMPTY_BULLET.get().getDefaultInstance();
     }
 
     @Override
     public void tick() {
-        NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Pre(this, this.getBullet()));
+        PortEventHandler.postEvent(new BulletEvent.Tick.Pre(this, this.getBullet()));
         Entity entity = this.getOwner();
         if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition()) && disToOwner() <= 256) {
             super.tick();
@@ -209,7 +212,7 @@ public class BaseBulletEntity extends Projectile {
             this.getBullet().tick(this);
             this.saveTrailPos();
 
-            HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity, this.getClipType());
+            HitResult hitresult = PortProjectileUtilExtension.getHitResultOnMoveVector(this, this::canHitEntity, this.getClipType());
             if (hitresult.getType() == HitResult.Type.BLOCK) {
                 this.onHitBlock((BlockHitResult) hitresult);
             }
@@ -230,7 +233,7 @@ public class BaseBulletEntity extends Projectile {
         } else {
             this.discard();
         }
-        NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, this.getBullet()));
+        PortEventHandler.postEvent(new BulletEvent.Tick.Post(this, this.getBullet()));
     }
 
     protected float getInertia() {
@@ -257,10 +260,10 @@ public class BaseBulletEntity extends Projectile {
             Vec3 currentPos = this.position();
 
             if (trails.isEmpty()) {
-                trails.addLast(currentPos);
+                PortListExtension.addLast(trails, currentPos);
             }
 
-            Vec3 lastPos = trails.getLast();
+            Vec3 lastPos = PortListExtension.getLast(trails);
             double dist = lastPos.distanceTo(currentPos);
 
             double spacing = 0.4;
@@ -268,14 +271,14 @@ public class BaseBulletEntity extends Projectile {
                 int steps = Mth.floor(dist / spacing);
                 Vec3 delta = currentPos.subtract(lastPos).scale(1.0 / steps);
                 for (int i = 1; i <= steps; i++) {
-                    trails.addLast(lastPos.add(delta.scale(i)));
+                    PortListExtension.addLast(trails, lastPos.add(delta.scale(i)));
                 }
             } else {
-                trails.addLast(currentPos);
+                PortListExtension.addLast(trails, currentPos);
             }
 
             while (trails.size() > 20) {
-                trails.removeFirst();
+                PortListExtension.removeFirst(trails);
             }
         }
     }
@@ -297,7 +300,7 @@ public class BaseBulletEntity extends Projectile {
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
-        if (NeoForge.EVENT_BUS.post(new BulletEvent.HitEvent.Entity(this, this.getBullet(), result)).isCanceled())
+        if (PortEventHandler.postEventWithReturn(new BulletEvent.HitEvent.Entity(this, this.getBullet(), result)).isCanceled())
             return;
 
         Entity hit = result.getEntity();
@@ -305,18 +308,18 @@ public class BaseBulletEntity extends Projectile {
 
         if (!level().isClientSide && hit != shooter && !this.isRemoved()) {
             BulletEvent.DamageEntityEvent damageEntityEvent = new BulletEvent.DamageEntityEvent(this, this.getBullet(), shooter, hit);
-            NeoForge.EVENT_BUS.post(damageEntityEvent);
+            PortEventHandler.postEvent(damageEntityEvent);
 
             this.getBullet().onHitEntity(this, result);
             if (this.knockback > 0) {
                 BulletEvent.KnockbackEvent knockbackEvent = new BulletEvent.KnockbackEvent(this, this.getBullet(), knockback / 8, 0f);
-                NeoForge.EVENT_BUS.post(knockbackEvent);
+                PortEventHandler.postEvent(knockbackEvent);
 
                 VectorUtils.knockBackA2B(this, hit, knockbackEvent.getScale(), knockbackEvent.getMotionY());
             }
 
             BulletEvent.PenetrateEvent penetrateEvent = new BulletEvent.PenetrateEvent(this, this.getBullet(), penetrate);
-            NeoForge.EVENT_BUS.post(penetrateEvent);
+            PortEventHandler.postEvent(penetrateEvent);
             int penetrate = penetrateEvent.getPenetrate();
 
             if (penetrate == -1) {
@@ -331,7 +334,7 @@ public class BaseBulletEntity extends Projectile {
 
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
-        if (NeoForge.EVENT_BUS.post(new BulletEvent.HitEvent.Block(this, this.getBullet(), result)).isCanceled())
+        if (PortEventHandler.postEventWithReturn(new BulletEvent.HitEvent.Block(this, this.getBullet(), result)).isCanceled())
             return;
 
         super.onHitBlock(result);

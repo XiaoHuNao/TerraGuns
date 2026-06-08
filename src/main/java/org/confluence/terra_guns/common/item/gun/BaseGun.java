@@ -1,11 +1,12 @@
 package org.confluence.terra_guns.common.item.gun;
 
+import PortLib.extensions.net.minecraft.world.item.Item.PortItemExtension;
+import PortLib.extensions.net.minecraft.world.item.ItemStack.PortItemStackExtension;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -14,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.NeoForge;
 import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.common.component.BulletPropertyComponent;
@@ -24,10 +24,16 @@ import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.impl.AmmoDataContext;
 import org.confluence.terra_guns.util.AnimUtil;
 import org.confluence.terra_guns.util.TGUtil;
+import org.jetbrains.annotations.Nullable;
+import org.mesdag.portlib.event.PortEventHandler;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.Animation;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
@@ -40,14 +46,16 @@ public class BaseGun extends Item implements GeoItem {
     protected final float inaccuracy;
 
     public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, float inaccuracy, ModRarity rarity) {
-        super(properties.stacksTo(1));
-        GunPropertyComponent component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
-        properties.component(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), component);
-
-        this.components = Properties.COMPONENT_INTERNER.intern(properties.components.build());
-        this.component = component;
+        super(setup(properties, cooldown, damage, velocity, knockback, critical, penetrate, inaccuracy, rarity));
+        this.component = PortItemExtension.Properties.getComponent(properties, TGDataComponents.GUN_PROPERTY_COMPONENT);
         this.inaccuracy = inaccuracy;
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
+    }
+
+    private static Properties setup(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, float inaccuracy, ModRarity rarity) {
+        GunPropertyComponent component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
+        PortItemExtension.Properties.component(properties, TGDataComponents.GUN_PROPERTY_COMPONENT, component);
+        return properties.stacksTo(1);
     }
 
     public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, float inaccuracy, ModRarity rarity) {
@@ -56,12 +64,12 @@ public class BaseGun extends Item implements GeoItem {
 
     public void shoot(ServerPlayer player, ItemStack bullet, ItemStack gun) {
         ServerLevel serverLevel = player.serverLevel();
-        BulletPropertyComponent bulletComponent = bullet.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
+        BulletPropertyComponent bulletComponent = PortItemStackExtension.getData(bullet, TGDataComponents.BULLET_PROPERTY_COMPONENT);
         if (bulletComponent == null) bulletComponent = BulletPropertyComponent.EMPTY;
 
         AmmoDataContext ammoDataContext = new AmmoDataContext(this.component, bulletComponent, inaccuracy);
         GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, gun, ammoDataContext.getDamage(), ammoDataContext.getCritical(), ammoDataContext.getKnockback(), ammoDataContext.getVelocity(), ammoDataContext.getPenetrate(), ammoDataContext.getInaccuracy());
-        NeoForge.EVENT_BUS.post(ammoDataEvent);
+        PortEventHandler.postEvent(ammoDataEvent);
 
         float finalDamage = TGUtil.criticalDamageTotal(ammoDataEvent.getCritical(), ammoDataEvent.getDamage(), player.getRandom());
         prepareBulletEntity(baseBulletEntities, player, bullet, gun, finalDamage, ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate(), ammoDataEvent.getInaccuracy());
@@ -90,7 +98,7 @@ public class BaseGun extends Item implements GeoItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         tooltipComponents.add(Component.translatable("tooltip.terra_guns.damage", component.damage()).withStyle(ChatFormatting.GRAY));
         tooltipComponents.add(Component.translatable("tooltip.terra_guns.critical", String.format("%.1f", component.critical() * 100)).withStyle(ChatFormatting.GRAY));
         tooltipComponents.add(Component.translatable("tooltip.terra_guns.knockback", component.knockback()).withStyle(ChatFormatting.GRAY));
@@ -127,7 +135,7 @@ public class BaseGun extends Item implements GeoItem {
     }
 
     @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         return true;
     }
 

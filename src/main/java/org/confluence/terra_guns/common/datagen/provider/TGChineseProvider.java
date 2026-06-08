@@ -1,7 +1,7 @@
 package org.confluence.terra_guns.common.datagen.provider;
 
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.minecraftforge.common.data.LanguageProvider;
 import org.confluence.terra_guns.TerraGuns;
 
 import static org.confluence.terra_guns.common.init.TGEntities.BASE_BULLET_ENTITY;

@@ -3,13 +3,13 @@ package org.confluence.terra_guns.client.renderer.item;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoAnimatable;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.AnimationProcessor;
-import software.bernie.geckolib.animation.AnimationState;
-import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationProcessor;
+import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.DefaultedItemGeoModel;
 import software.bernie.geckolib.model.GeoModel;
 
@@ -58,7 +58,7 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
 
                     List<String> fireBones = List.of("Fire", "Fire1", "Fire2", "Fire3");
                     for (String boneName : fireBones) {
-                        GeoBone bone = getAnimationProcessor().getBone(boneName);
+                        CoreGeoBone bone = getAnimationProcessor().getBone(boneName);
                         if (bone != null) {
                             bone.setHidden(!isFiring);
                         }

@@ -1,5 +1,6 @@
 package org.confluence.terra_guns.client.renderer.entity;
 
+import PortLib.extensions.com.mojang.blaze3d.vertex.VertexConsumer.PortVertexConsumerExtension;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -26,7 +27,7 @@ public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull BaseBulletEntity baseBulletEntity) {
+    public ResourceLocation getTextureLocation(@NotNull BaseBulletEntity baseBulletEntity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 
@@ -85,7 +86,6 @@ public class BulletRenderer extends EntityRenderer<BaseBulletEntity> {
     }
 
     private static void addVertex(VertexConsumer buffer, Matrix4f matrix, Vec3 pos, int argb) {
-        buffer.addVertex(matrix, (float) pos.x, (float) pos.y, (float) pos.z)
-                .setColor(argb);
+        PortVertexConsumerExtension.vertex(buffer, matrix, (float) pos.x, (float) pos.y, (float) pos.z, vertex -> PortVertexConsumerExtension.setColor(vertex, argb));
     }
 }

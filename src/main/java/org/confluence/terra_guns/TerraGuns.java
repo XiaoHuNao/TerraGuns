@@ -1,40 +1,43 @@
 package org.confluence.terra_guns;
 
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.confluence.lib.ConfluenceMagicLib;
 import org.confluence.lib.util.LibUtils;
+import org.confluence.terra_guns.client.event.TGGameClientEvent;
+import org.confluence.terra_guns.client.event.TGModClientEvent;
+import org.confluence.terra_guns.common.event.TGGameEvent;
+import org.confluence.terra_guns.common.event.TGModEvent;
+import org.confluence.terra_guns.common.init.*;
+import org.mesdag.portlib.network.PortNetworkHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.confluence.terra_guns.common.init.TGAttributes.ATTRIBUTES;
-import static org.confluence.terra_guns.common.init.TGDataComponents.DATA_COMPONENTS;
-import static org.confluence.terra_guns.common.init.TGEntities.ENTITY_TYPES;
-import static org.confluence.terra_guns.common.init.TGItems.*;
-import static org.confluence.terra_guns.common.init.TGMobEffects.MOB_EFFECTS;
-import static org.confluence.terra_guns.common.init.TGSoundEvents.SOUNDS;
-import static org.confluence.terra_guns.common.init.TGTabs.TABS;
 
 @Mod(TerraGuns.MODID)
 public class TerraGuns {
     public static final String MODID = "terra_guns";
     public static final Logger LOGGER = LoggerFactory.getLogger("Terra Guns");
-    @Deprecated
-    public static final boolean IS_CONFLUENCE_LOADED = LibUtils.isModLoaded("confluence");
+    public static final PortNetworkHandler NETWORK_HANDLER = new PortNetworkHandler(MODID, "1");
 
-    public TerraGuns(IEventBus modEventBus, ModContainer modContainer) {
-        ATTRIBUTES.register(modEventBus);
-        DATA_COMPONENTS.register(modEventBus);
-        ENTITY_TYPES.register(modEventBus);
-        GUNS.register(modEventBus);
-        BULLETS.register(modEventBus);
-        OTHER.register(modEventBus);
-        MOB_EFFECTS.register(modEventBus);
-        SOUNDS.register(modEventBus);
+    public TerraGuns(FMLJavaModLoadingContext context) {
+        IEventBus eventBus = context.getModEventBus();
+        TGDataComponents.init();
+        TGEntities.ENTITY_TYPES.register(eventBus);
+        TGItems.GUNS.register(eventBus);
+        TGItems.BULLETS.register(eventBus);
+        TGItems.OTHER.register(eventBus);
+        TGSoundEvents.SOUNDS.register(eventBus);
         if (!ConfluenceMagicLib.IS_CONFLUENCE_LOAD) {
-            TABS.register(modEventBus);
+            TGTabs.TABS.register(eventBus);
+        }
+
+        TGModEvent.init();
+        TGGameEvent.init();
+        if (LibUtils.isPhysicalClient()) {
+            TGModClientEvent.init();
+            TGGameClientEvent.init();
         }
     }
 

@@ -2,11 +2,10 @@ package org.confluence.terra_guns.client.init;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 
-import static net.minecraft.client.renderer.RenderStateShard.*;
-
-public class TGRenderTypes {
+public class TGRenderTypes extends RenderStateShard {
     public static RenderType TRAIL_RENDER_TYPE = RenderType.create(
             "trail_render_type",
             DefaultVertexFormat.POSITION_COLOR,
@@ -22,4 +21,8 @@ public class TGRenderTypes {
                     .setOutputState(WEATHER_TARGET)
                     .createCompositeState(false)
     );
+
+    private TGRenderTypes() {
+        super(null, null, null);
+    }
 }

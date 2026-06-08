@@ -4,8 +4,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.ICancellableEvent;
+import net.minecraftforge.eventbus.api.Cancelable;
+import net.minecraftforge.eventbus.api.Event;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 
@@ -44,7 +44,8 @@ public class BulletEvent extends Event {
         }
     }
 
-    public static class HitEvent extends BulletEvent implements ICancellableEvent {
+    @Cancelable
+    public static class HitEvent extends BulletEvent {
         private final HitResult hitResult;
 
         public HitEvent(BaseBulletEntity bulletEntity, BaseBullet bullet, HitResult hitResult) {

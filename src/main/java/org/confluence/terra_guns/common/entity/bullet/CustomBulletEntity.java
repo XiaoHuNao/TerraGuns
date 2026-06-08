@@ -12,8 +12,9 @@ import net.minecraft.world.level.Level;
 import org.confluence.terra_guns.common.init.TGEntities;
 import org.confluence.terra_guns.common.init.TGItems;
 import org.jetbrains.annotations.NotNull;
+import org.mesdag.portlib.wrapper.world.entity.PortEntity;
 
-public class CustomBulletEntity extends BaseBulletEntity implements ItemSupplier {
+public class CustomBulletEntity extends BaseBulletEntity implements ItemSupplier, PortEntity {
     protected static final EntityDataAccessor<ItemStack> GRAVITY_BULLET = SynchedEntityData.defineId(CustomBulletEntity.class, EntityDataSerializers.ITEM_STACK);
     protected float gravity = 0;
 
@@ -26,22 +27,23 @@ public class CustomBulletEntity extends BaseBulletEntity implements ItemSupplier
     }
 
     public CustomBulletEntity(EntityType<? extends BaseBulletEntity> type, LivingEntity owner, float gravity, ItemStack bullet) {
-        super(type, owner, TGItems.EMPTY_BULLET.toStack());
+        super(type, owner, TGItems.EMPTY_BULLET.get().getDefaultInstance());
         this.gravity = gravity;
         this.entityData.set(GRAVITY_BULLET, bullet);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(GRAVITY_BULLET, this.getDefaultItem());
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(GRAVITY_BULLET, this.getDefaultItem());
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("GravityBullet", 10)) {
-            this.setBullet(ItemStack.parse(this.registryAccess(), compound.getCompound("GravityBullet")).orElse(this.getDefaultItem()));
+            ItemStack itemStack = ItemStack.of(compound.getCompound("GravityBullet"));
+            this.setBullet(itemStack.isEmpty() ? getDefaultItem() : itemStack);
         } else {
             this.setBullet(this.getDefaultItem());
         }
@@ -50,7 +52,7 @@ public class CustomBulletEntity extends BaseBulletEntity implements ItemSupplier
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.put("GravityBullet", this.getBulletStack().save(this.registryAccess()));
+        compound.put("GravityBullet", this.getBulletStack().save(new CompoundTag()));
     }
 
     @Override
@@ -60,12 +62,12 @@ public class CustomBulletEntity extends BaseBulletEntity implements ItemSupplier
     }
 
     @Override
-    protected double getDefaultGravity() {
+    public double getDefaultGravity() {
         return gravity;
     }
 
     @Override
-    public @NotNull ItemStack getItem() {
+    public ItemStack getItem() {
         return this.entityData.get(GRAVITY_BULLET);
     }
 }

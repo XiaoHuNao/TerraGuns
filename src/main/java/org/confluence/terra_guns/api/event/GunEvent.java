@@ -1,9 +1,10 @@
 package org.confluence.terra_guns.api.event;
 
+import PortLib.extensions.java.util.List.PortListExtension;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.ICancellableEvent;
+import net.minecraftforge.eventbus.api.Cancelable;
+import net.minecraftforge.eventbus.api.Event;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 
 import java.util.List;
@@ -25,10 +26,9 @@ public class GunEvent extends Event {
         return player;
     }
 
-    /**
-     * 初始化开火事件
-     */
-    public static class UseGunEvent extends GunEvent implements ICancellableEvent {
+    /// 初始化开火事件
+    @Cancelable
+    public static class UseGunEvent extends GunEvent {
         private int cooldowns;
 
         public UseGunEvent(Player player, BaseGun gun, int cooldowns) {
@@ -45,9 +45,7 @@ public class GunEvent extends Event {
         }
     }
 
-    /**
-     * 开火事件
-     */
+    /// 开火事件
     public static class GunFireEvent extends GunEvent {
         private ItemStack bullet;
         private boolean fire;
@@ -75,9 +73,7 @@ public class GunEvent extends Event {
         }
     }
 
-    /**
-     * 初始化开火事件
-     */
+    /// 初始化开火事件
     public static class AmmoSelectionEvent extends GunEvent {
         private final ItemStack ammo;
         private boolean selected;
@@ -101,41 +97,37 @@ public class GunEvent extends Event {
         }
     }
 
-    /**
-     * 初始化开火事件
-     */
+    /// 初始化开火事件
     public static class InventoryExtraEvent extends GunEvent {
         private final List<ItemStack> ammoList;
 
         public InventoryExtraEvent(Player player, BaseGun gun, List<ItemStack> ammoList) {
             super(player, gun);
-            this.ammoList=ammoList;
+            this.ammoList = ammoList;
         }
 
         public List<ItemStack> getAmmoList() {
             return ammoList;
         }
 
-        public void addBulletFirst(ItemStack bullet){
-            this.ammoList.addFirst(bullet);
+        public void addBulletFirst(ItemStack bullet) {
+            PortListExtension.addFirst(ammoList, bullet);
         }
 
-        public void addBulletLast(ItemStack bullet){
-            this.ammoList.addLast(bullet);
+        public void addBulletLast(ItemStack bullet) {
+            PortListExtension.addLast(ammoList, bullet);
         }
 
-        public void addAmmoFirst(List<ItemStack> ammo){
+        public void addAmmoFirst(List<ItemStack> ammo) {
             this.ammoList.addAll(0, ammo);
         }
 
-        public void addAmmoLast(List<ItemStack> ammo){
+        public void addAmmoLast(List<ItemStack> ammo) {
             this.ammoList.addAll(ammo);
         }
     }
 
-    /**
-     * 射击时，子弹数据计算事件
-     */
+    /// 射击时，子弹数据计算事件
     public static class AmmoDataEvent extends GunEvent {
         private float damage;
         private float critical;
@@ -209,10 +201,9 @@ public class GunEvent extends Event {
         }
     }
 
-    /**
-     * 子弹消耗事件
-     */
-    public static class ShrinkBulletEvent extends GunEvent implements ICancellableEvent {
+    /// 子弹消耗事件
+    @Cancelable
+    public static class ShrinkBulletEvent extends GunEvent {
         private int shrink = 1;
         private boolean infinity;
         private ItemStack bullet;

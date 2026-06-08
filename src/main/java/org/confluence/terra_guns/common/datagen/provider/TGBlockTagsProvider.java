@@ -2,8 +2,8 @@ package org.confluence.terra_guns.common.datagen.provider;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.minecraftforge.common.data.BlockTagsProvider;
+import net.minecraftforge.common.data.ExistingFileHelper;
 import org.confluence.terra_guns.TerraGuns;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +15,5 @@ public class TGBlockTagsProvider extends BlockTagsProvider {
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider provider) {
-
-    }
+    protected void addTags(HolderLookup.Provider provider) {}
 }

@@ -5,13 +5,14 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.data.ExistingFileHelper;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.init.TGTags;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mesdag.portlib.wrapper.common.PortTags;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -27,7 +28,7 @@ public class TGItemTagsProvider extends ItemTagsProvider {
     protected void addTags(HolderLookup.@NotNull Provider provider) {
         BULLETS.getEntries().forEach(item -> tag(TGTags.BULLET).add(item.get()));
         GUNS.getEntries().forEach(item -> tag(TGTags.GUN).add(item.get()));
-        tag(Tags.Items.RANGED_WEAPON_TOOLS).addTag(TGTags.GUN);
+        tag(PortTags.Items.RANGED_WEAPON_TOOLS).addTag(TGTags.GUN);
 
         tag(TGTags.SNOW_AMMO).add(Items.SNOWBALL);
         tag(TGTags.SEED_AMMO).addTag(Tags.Items.SEEDS);

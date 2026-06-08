@@ -14,12 +14,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemInHandRenderer.class)
 public class ItemInHandRendererMixin {
-    @Shadow private ItemStack mainHandItem;
+    @Shadow
+    private ItemStack mainHandItem;
 
     @Inject(method = "applyItemArmTransform", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V"), cancellable = true)
-    public void cancelAnim(PoseStack poseStack, HumanoidArm hand, float equippedProg, CallbackInfo ci, @Local int i){
-        if (this.mainHandItem.is(TGTags.GUN)){
-            poseStack.translate((float)i * 0.56F, -0.52F + 0, -0.72F);
+    public void cancelAnim(PoseStack poseStack, HumanoidArm hand, float equippedProg, CallbackInfo ci, @Local int i) {
+        if (this.mainHandItem.is(TGTags.GUN)) {
+            poseStack.translate((float) i * 0.56F, -0.52F + 0, -0.72F);
             ci.cancel();
         }
     }

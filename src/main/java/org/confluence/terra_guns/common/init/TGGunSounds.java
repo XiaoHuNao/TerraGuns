@@ -2,7 +2,7 @@ package org.confluence.terra_guns.common.init;
 
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.registries.DeferredItem;
+import net.minecraftforge.registries.RegistryObject;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import static org.confluence.terra_guns.common.init.TGSoundEvents.*;
 
 public class TGGunSounds {
     protected static Map<BaseGun, SoundEvent> soundMap = new HashMap<>();
+
     public static void init() {
         putSound(HAND_GUN, GUN_AUTO);
         putSound(PHOENIX_BLASTER, GUN_AUTO);
@@ -28,21 +29,22 @@ public class TGGunSounds {
         putSound(TACTICAL_SHOTGUN, SHOTGUN_TACTICAL);
     }
 
-    public static void putSound(DeferredItem<? extends BaseGun> item){
+    public static void putSound(RegistryObject<? extends BaseGun> item) {
         putSound(item, GUN_GENERIC);
     }
 
-    public static void putSound(DeferredItem<? extends BaseGun> item, Supplier<SoundEvent> soundEvent){
+    public static void putSound(RegistryObject<? extends BaseGun> item, Supplier<SoundEvent> soundEvent) {
         putSound(item.get(), soundEvent.get());
     }
 
-    public static void putSound(BaseGun item, SoundEvent soundEvent){
+    public static void putSound(BaseGun item, SoundEvent soundEvent) {
         soundMap.put(item, soundEvent);
     }
 
     public static SoundEvent getSound(ItemStack itemStack) {
         return getSound((BaseGun) itemStack.getItem());
     }
+
     public static SoundEvent getSound(BaseGun item) {
         return soundMap.get(item);
     }

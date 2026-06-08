@@ -1,7 +1,7 @@
 package org.confluence.terra_guns.client.renderer.item;
 
 import net.minecraft.world.item.Item;
-import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
