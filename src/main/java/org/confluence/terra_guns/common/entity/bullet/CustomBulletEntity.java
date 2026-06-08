@@ -12,9 +12,9 @@ import net.minecraft.world.level.Level;
 import org.confluence.terra_guns.common.init.TGEntities;
 import org.confluence.terra_guns.common.init.TGItems;
 import org.jetbrains.annotations.NotNull;
-import org.mesdag.portlib.wrapper.world.entity.PortEntity;
+import org.mesdag.portlib.wrapper.common.extensions.IPortEntityExtension;
 
-public class CustomBulletEntity extends BaseBulletEntity implements ItemSupplier, PortEntity {
+public class CustomBulletEntity extends BaseBulletEntity implements ItemSupplier, IPortEntityExtension {
     protected static final EntityDataAccessor<ItemStack> GRAVITY_BULLET = SynchedEntityData.defineId(CustomBulletEntity.class, EntityDataSerializers.ITEM_STACK);
     protected float gravity = 0;
 
