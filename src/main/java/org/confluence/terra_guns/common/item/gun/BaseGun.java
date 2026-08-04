@@ -3,101 +3,89 @@ package org.confluence.terra_guns.common.item.gun;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.NeoForge;
 import org.confluence.lib.common.component.ModRarity;
-import org.confluence.terra_guns.api.event.GunEvent;
-import org.confluence.terra_guns.common.component.BulletPropertyComponent;
-import org.confluence.terra_guns.common.component.GunPropertyComponent;
-import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
+import org.confluence.terra_guns.common.definition.FireMode;
+import org.confluence.terra_guns.common.definition.GunDefinition;
 import org.confluence.terra_guns.common.init.TGDataComponents;
-import org.confluence.terra_guns.impl.AmmoDataContext;
+import org.confluence.terra_guns.common.init.TGTags;
 import org.confluence.terra_guns.util.AnimUtil;
-import org.confluence.terra_guns.util.TGUtil;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.animation.Animation;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Item-side representation of a gun.
+ *
+ * <p>The item owns its immutable definition, tooltip and client animation
+ * hooks. Server-side firing is handled by the combat services, so projectile
+ * entity creation never leaks into the item class.</p>
+ */
 public class BaseGun extends Item implements GeoItem {
     protected final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    protected final GunPropertyComponent component;
-    protected final ArrayList<Projectile> baseBulletEntities = new ArrayList<>();
-    protected final float inaccuracy;
+    private final GunDefinition definition;
 
-    public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, int penetrate, float inaccuracy, ModRarity rarity) {
-        super(properties.stacksTo(1));
-        GunPropertyComponent component = new GunPropertyComponent(cooldown, damage, velocity, knockback, critical, penetrate, rarity);
-        properties.component(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), component);
-
-        this.components = Properties.COMPONENT_INTERNER.intern(properties.components.build());
-        this.component = component;
-        this.inaccuracy = inaccuracy;
+    public BaseGun(Properties properties, GunDefinition definition) {
+        super(prepareProperties(properties, definition));
+        this.definition = definition;
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
-    public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback, float critical, float inaccuracy, ModRarity rarity) {
+    private static Properties prepareProperties(Properties properties, GunDefinition definition) {
+        properties.stacksTo(1);
+        properties.component(TGDataComponents.GUN_PROPERTY_COMPONENT.get(), definition.component());
+        return properties;
+    }
+
+    public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback,
+                   float critical, int penetrate, float inaccuracy, ModRarity rarity) {
+        this(properties, new GunDefinition(cooldown, damage, velocity, knockback, critical, penetrate,
+                inaccuracy, rarity, FireMode.MANUAL));
+    }
+
+    public BaseGun(Properties properties, int cooldown, float damage, float velocity, float knockback,
+                   float critical, float inaccuracy, ModRarity rarity) {
         this(properties, cooldown, damage, velocity, knockback, critical, 0, inaccuracy, rarity);
     }
 
-    public void shoot(ServerPlayer player, ItemStack bullet, ItemStack gun) {
-        ServerLevel serverLevel = player.serverLevel();
-        BulletPropertyComponent bulletComponent = bullet.get(TGDataComponents.BULLET_PROPERTY_COMPONENT);
-        if (bulletComponent == null) bulletComponent = BulletPropertyComponent.EMPTY;
-
-        AmmoDataContext ammoDataContext = new AmmoDataContext(this.component, bulletComponent, inaccuracy);
-        GunEvent.AmmoDataEvent ammoDataEvent = new GunEvent.AmmoDataEvent(player, this, gun, ammoDataContext.getDamage(), ammoDataContext.getCritical(), ammoDataContext.getKnockback(), ammoDataContext.getVelocity(), ammoDataContext.getPenetrate(), ammoDataContext.getInaccuracy());
-        NeoForge.EVENT_BUS.post(ammoDataEvent);
-
-        float finalDamage = TGUtil.criticalDamageTotal(ammoDataEvent.getCritical(), ammoDataEvent.getDamage(), player.getRandom());
-        prepareBulletEntity(baseBulletEntities, player, bullet, gun, finalDamage, ammoDataEvent.getKnockback(), ammoDataEvent.getVelocity(), ammoDataEvent.getPenetrate(), ammoDataEvent.getInaccuracy());
-        baseBulletEntities.forEach(serverLevel::addFreshEntity);
-        baseBulletEntities.clear();
-    }
-
-    protected BaseBulletEntity createBulletEntity(List<Projectile> baseBulletEntities, ServerPlayer player, ItemStack bullet, ItemStack gun, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
-        return new BaseBulletEntity(player, bullet);
-    }
-
-    protected void prepareBulletEntity(List<Projectile> baseBulletEntities, ServerPlayer player, ItemStack bullet, ItemStack gun, float damage, float knockback, float velocity, int penetrate, float inaccuracy) {
-        BaseBulletEntity baseBulletEntity = createBulletEntity(baseBulletEntities, player, bullet, gun, damage, knockback, velocity, penetrate, inaccuracy);
-
-        baseBulletEntity.setColorID(((BaseGun) gun.getItem()).getColorID());
-        baseBulletEntity.damage = damage;
-        baseBulletEntity.knockback = knockback;
-        baseBulletEntity.penetrate = penetrate;
-        baseBulletEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0f, velocity, inaccuracy);
-
-        baseBulletEntities.add(baseBulletEntity);
-    }
-
-    public String getColorID() {
-        return "";
-    }
-
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("tooltip.terra_guns.damage", component.damage()).withStyle(ChatFormatting.GRAY));
-        tooltipComponents.add(Component.translatable("tooltip.terra_guns.critical", String.format("%.1f", component.critical() * 100)).withStyle(ChatFormatting.GRAY));
-        tooltipComponents.add(Component.translatable("tooltip.terra_guns.knockback", component.knockback()).withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents,
+                                TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("tooltip.terra_guns.damage", definition.damage())
+                .withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.terra_guns.critical",
+                        String.format("%.1f", definition.critical() * 100)).withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.terra_guns.knockback", definition.knockback())
+                .withStyle(ChatFormatting.GRAY));
     }
 
     public int getCooldown() {
-        return component.cooldown();
+        return definition.cooldown();
+    }
+
+    public GunDefinition getDefinition() {
+        return definition;
+    }
+
+    public boolean isAutomatic(ItemStack stack) {
+        return !stack.is(TGTags.MANUAL_GUN)
+                && (definition.fireMode() == FireMode.AUTOMATIC || stack.is(TGTags.AUTOMATIC_GUN));
     }
 
     @Override

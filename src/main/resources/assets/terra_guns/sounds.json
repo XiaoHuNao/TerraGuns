@@ -34,11 +34,6 @@
             "terra_guns:gun_highpower"
         ]
     },
-    "gun_magic": {
-        "sounds": [
-            "terra_guns:gun_magic"
-        ]
-    },
     "gun_nail": {
         "sounds": [
             "terra_guns:gun_nail"

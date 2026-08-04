@@ -20,16 +20,20 @@ public class BulletHandler {
      * 获取玩家背包中第一个兼容该枪的子弹
      */
     public static ItemStack getAmmo(Player player, ItemStack gun) {
+        if (!(gun.getItem() instanceof BaseGun baseGun)) {
+            return ItemStack.EMPTY;
+        }
+
         Inventory inventory = player.getInventory();
         ItemStack ammo = ItemStack.EMPTY;
         NonNullList<ItemStack> stackNonNullList = inventory.items;
         List<ItemStack> copyList = new ArrayList<>(stackNonNullList);
 
-        GunEvent.InventoryExtraEvent inventoryExtraEvent = new GunEvent.InventoryExtraEvent(player, (BaseGun) gun.getItem(), copyList);
+        GunEvent.InventoryExtraEvent inventoryExtraEvent = new GunEvent.InventoryExtraEvent(player, baseGun, copyList);
         NeoForge.EVENT_BUS.post(inventoryExtraEvent);
 
         for (ItemStack item : inventoryExtraEvent.getAmmoList()) {
-            if (item == null || item.is(Items.AIR)) continue;
+            if (item == null || item.isEmpty() || item.is(Items.AIR)) continue;
             if (item.is(TGTags.AMMO) && isCompatible(player, item, gun)) {
                 ammo = item;
                 break;
@@ -42,11 +46,15 @@ public class BulletHandler {
      * 判断某个子弹是否与枪兼容
      */
     public static boolean isCompatible(Player player, ItemStack ammo, ItemStack gun) {
+        if (ammo.isEmpty() || !(gun.getItem() instanceof BaseGun baseGun)) {
+            return false;
+        }
+
         boolean selected = ammo.getItem() instanceof BaseBullet;
         if (gun.is(TGItems.BLOWGUN)) selected = ammo.is(TGTags.SEED_AMMO);
         if (gun.is(TGItems.SNOWBALL_CANNON)) selected = ammo.is(TGTags.SNOW_AMMO);
 
-        GunEvent.AmmoSelectionEvent ammoSelectionEvent = new GunEvent.AmmoSelectionEvent(player, (BaseGun) gun.getItem(), ammo, selected);
+        GunEvent.AmmoSelectionEvent ammoSelectionEvent = new GunEvent.AmmoSelectionEvent(player, baseGun, ammo, selected);
         NeoForge.EVENT_BUS.post(ammoSelectionEvent);
         return ammoSelectionEvent.isSelected();
     }
@@ -55,8 +63,12 @@ public class BulletHandler {
      * 是否可以开枪
      */
     public static boolean canShoot(Player player, ItemStack gun) {
+        if (!(gun.getItem() instanceof BaseGun baseGun)) {
+            return false;
+        }
+
         ItemStack ammo = getAmmo(player, gun);
-        GunEvent.GunFireEvent gunFireEvent = new GunEvent.GunFireEvent(player, (BaseGun) gun.getItem(), ammo, !ammo.isEmpty());
+        GunEvent.GunFireEvent gunFireEvent = new GunEvent.GunFireEvent(player, baseGun, ammo, !ammo.isEmpty());
         NeoForge.EVENT_BUS.post(gunFireEvent);
 
         return gunFireEvent.isFire();

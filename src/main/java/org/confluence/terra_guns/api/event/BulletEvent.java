@@ -4,10 +4,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
+import org.confluence.terra_guns.common.definition.BulletImpactEffect;
 
 public class BulletEvent extends Event {
     private final BaseBulletEntity bulletEntity;
@@ -113,7 +115,7 @@ public class BulletEvent extends Event {
         }
     }
 
-    public static class DamageEntityEvent extends BulletEvent {
+    public static class DamageEntityEvent extends BulletEvent implements ICancellableEvent {
         private final Entity shooter;
         private final Entity target;
 
@@ -129,6 +131,24 @@ public class BulletEvent extends Event {
 
         public Entity getShooter() {
             return shooter;
+        }
+    }
+
+    public static class ImpactEffectEvent extends Event {
+        private final Vec3 position;
+        private final BulletImpactEffect effect;
+
+        public ImpactEffectEvent(Vec3 position, BulletImpactEffect effect) {
+            this.position = position;
+            this.effect = effect;
+        }
+
+        public Vec3 getPosition() {
+            return position;
+        }
+
+        public BulletImpactEffect getEffect() {
+            return effect;
         }
     }
 }

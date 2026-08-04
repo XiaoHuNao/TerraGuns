@@ -36,14 +36,15 @@ public class TGItemTagsProvider extends ItemTagsProvider {
         addAutomatic(MINISHARK);
         addAutomatic(SNOWBALL_CANNON);
         addAutomatic(BLOWGUN);
+        addAutomatic(TACTICAL_SHOTGUN);
 
         addManual(HAND_GUN);
-        addManual(PHOENIX_BLASTER);
         addManual(SHOTGUN);
         addManual(FLINTLOCK_PISTOL);
         addManual(BOOMSTICK);
         addManual(THE_UNDERTAKER);
         addManual(MUSKET);
+        addManual(PHOENIX_BLASTER);
     }
 
     protected void addAutomatic(Supplier<BaseGun> gunSupplier) {

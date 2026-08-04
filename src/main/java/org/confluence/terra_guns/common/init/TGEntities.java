@@ -12,6 +12,22 @@ import java.util.function.Supplier;
 
 public class TGEntities {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, TerraGuns.MODID);
-    public static final Supplier<EntityType<BaseBulletEntity>> BASE_BULLET_ENTITY = ENTITY_TYPES.register("base_bullet", () -> EntityType.Builder.<BaseBulletEntity>of(BaseBulletEntity::new, MobCategory.MISC).sized(0.1f,0.1f).build(TerraGuns.asResourceString("base_bullet")));
-    public static final Supplier<EntityType<CustomBulletEntity>> GRAVITY_BULLET_ENTITY = ENTITY_TYPES.register("gravity_bullet", () -> EntityType.Builder.<CustomBulletEntity>of(CustomBulletEntity::new, MobCategory.MISC).sized(0.1f,0.1f).build(TerraGuns.asResourceString("gravity_bullet")));
+    public static final Supplier<EntityType<BaseBulletEntity>> BASE_BULLET_ENTITY = ENTITY_TYPES.register(
+            "base_bullet",
+                    () -> EntityType.Builder.<BaseBulletEntity>of(BaseBulletEntity::new, MobCategory.MISC)
+                    .sized(0.1f, 0.1f)
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .setShouldReceiveVelocityUpdates(false)
+                    .build(TerraGuns.asResourceString("base_bullet"))
+    );
+    public static final Supplier<EntityType<CustomBulletEntity>> GRAVITY_BULLET_ENTITY = ENTITY_TYPES.register(
+            "gravity_bullet",
+                    () -> EntityType.Builder.<CustomBulletEntity>of(CustomBulletEntity::new, MobCategory.MISC)
+                    .sized(0.1f, 0.1f)
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .setShouldReceiveVelocityUpdates(false)
+                    .build(TerraGuns.asResourceString("gravity_bullet"))
+    );
 }

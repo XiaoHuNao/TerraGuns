@@ -41,9 +41,9 @@ public class TGGunSounds {
     }
 
     public static SoundEvent getSound(ItemStack itemStack) {
-        return getSound((BaseGun) itemStack.getItem());
+        return itemStack.getItem() instanceof BaseGun gun ? getSound(gun) : GUN_GENERIC.get();
     }
     public static SoundEvent getSound(BaseGun item) {
-        return soundMap.get(item);
+        return soundMap.getOrDefault(item, GUN_GENERIC.get());
     }
 }

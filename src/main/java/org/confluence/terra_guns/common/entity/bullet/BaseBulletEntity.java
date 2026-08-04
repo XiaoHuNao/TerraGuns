@@ -9,7 +9,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
-import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -32,27 +31,49 @@ import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import org.joml.Vector3f;
 
 public class BaseBulletEntity extends Projectile {
+    private static final int MAX_LIFETIME = 200;
+    private static final double MAX_OWNER_DISTANCE = 256.0D;
+    private static final double MAX_RENDER_DISTANCE = 256.0D;
+    private static final int MAX_ENTITY_COLLISIONS_PER_TICK = 32;
+    private static final int MAX_TRAIL_POINTS = 64;
+    private static final int CHLOROPHYTE_TRAIL_POINTS = 256;
+    private static final double COLLISION_EPSILON = 0.08D;
+    private static final double ENTITY_SWEEP_MARGIN = 0.10D;
+    private static final double TRAIL_POINT_SPACING = 0.25D;
+    private static final double TRAIL_POINT_EPSILON = 1.0E-6D;
     private static final EntityDataAccessor<String> COLOR_ID = SynchedEntityData.defineId(BaseBulletEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<ItemStack> BULLET = SynchedEntityData.defineId(BaseBulletEntity.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Integer> HOMING_TARGET_ID = SynchedEntityData.defineId(BaseBulletEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> EFFECT_STATE = SynchedEntityData.defineId(BaseBulletEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> IGNORE_BLOCK_COLLISION = SynchedEntityData.defineId(BaseBulletEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Vector3f> INITIAL_VELOCITY = SynchedEntityData.defineId(BaseBulletEntity.class, EntityDataSerializers.VECTOR3);
+    private static final EntityDataAccessor<Boolean> HAS_INITIAL_VELOCITY = SynchedEntityData.defineId(BaseBulletEntity.class, EntityDataSerializers.BOOLEAN);
     public float damage;
     public float knockback;
     public int hitBlockTimes;
     public int penetrate;
+    private final Set<UUID> hitEntityIds = new HashSet<>();
     private final List<Vec3> trails = new ArrayList<>();
+    private boolean appliedInitialVelocity;
     public double accelerationPower;
 
     public BaseBulletEntity(EntityType<? extends BaseBulletEntity> entityType, Level level) {
         super(entityType, level);
+        this.accelerationPower = 0.1;
     }
 
     public BaseBulletEntity(EntityType<? extends Projectile> entityType, Level level, double x, double y, double z, ItemStack bullet) {
         super(entityType, level);
         this.setPos(x, y, z);
-        this.entityData.set(BULLET, bullet.is(Items.AIR) || bullet.isEmpty() ? getDefaultItem() : bullet);
-        this.accelerationPower = 0.1;
+        this.setBullet(bullet);
     }
 
     public BaseBulletEntity(Level level, double x, double y, double z, ItemStack bullet) {
@@ -70,13 +91,11 @@ public class BaseBulletEntity extends Projectile {
 
     @Override
     public boolean shouldRenderAtSqrDistance(double distance) {
-        double d0 = this.getBoundingBox().getSize() * 4.0D;
-        if (Double.isNaN(d0)) {
-            d0 = 4.0D;
-        }
-
-        d0 *= 64.0D;
-        return distance < d0 * d0;
+        // A bullet is only 0.1 blocks wide. Scaling the render distance from
+        // that size makes it disappear after roughly 51 blocks even though
+        // the server keeps simulating it. Use the projectile range instead so
+        // a distant shot remains visible until its server-side range expires.
+        return distance < MAX_RENDER_DISTANCE * MAX_RENDER_DISTANCE;
     }
 
     protected ClipContext.Block getClipType() {
@@ -94,7 +113,7 @@ public class BaseBulletEntity extends Projectile {
         } else if (!this.getBullet().colorID().isEmpty()) {
             return this.getBullet().colorID();
         }
-        return BuiltInRegistries.ITEM.getKey(this.getBullet()).getPath();
+        return BuiltInRegistries.ITEM.getKey(this.getBulletStack().getItem()).getPath();
     }
 
     public void setColorID(String colorID) {
@@ -102,7 +121,7 @@ public class BaseBulletEntity extends Projectile {
     }
 
     public void setBullet(ItemStack stack) {
-        if (stack.isEmpty()) {
+        if (stack == null || stack.isEmpty() || stack.is(Items.AIR)) {
             this.getEntityData().set(BULLET, this.getDefaultItem());
         } else {
             this.getEntityData().set(BULLET, stack.copyWithCount(1));
@@ -121,6 +140,128 @@ public class BaseBulletEntity extends Projectile {
         return (BaseBullet) getDefaultItem().getItem();
     }
 
+    public float getDamage() {
+        return damage;
+    }
+
+    public void setDamage(float damage) {
+        this.damage = Math.max(0.0F, damage);
+    }
+
+    public float getKnockback() {
+        return knockback;
+    }
+
+    public void setKnockback(float knockback) {
+        this.knockback = Math.max(0.0F, knockback);
+    }
+
+    public int getPenetrate() {
+        return penetrate;
+    }
+
+    public void setPenetrate(int penetrate) {
+        this.penetrate = penetrate;
+    }
+
+    /**
+     * Sets the projectile velocity and synchronizes the unquantized value to
+     * the client. Add-entity packets clamp velocity components to 3.9, which
+     * is too slow for high-velocity Terraria ammunition.
+     */
+    public void setInitialVelocity(Vec3 velocity) {
+        this.setDeltaMovement(velocity);
+        // Projectile.shoot() marks the entity as having an impulse. That flag
+        // makes ServerEntity send another vanilla motion packet, which has
+        // the same 3.9-per-axis limit as the add-entity packet.
+        this.hasImpulse = false;
+        if (!this.level().isClientSide) {
+            this.entityData.set(INITIAL_VELOCITY, new Vector3f(
+                    (float) velocity.x,
+                    (float) velocity.y,
+                    (float) velocity.z
+            ));
+            this.entityData.set(HAS_INITIAL_VELOCITY, true);
+        }
+    }
+
+    public int getEffectState() {
+        return this.entityData.get(EFFECT_STATE);
+    }
+
+    public void setEffectState(int effectState) {
+        this.entityData.set(EFFECT_STATE, Math.max(0, effectState));
+    }
+
+    public boolean ignoresBlockCollision() {
+        return this.entityData.get(IGNORE_BLOCK_COLLISION);
+    }
+
+    public void setIgnoresBlockCollision(boolean ignoresBlockCollision) {
+        this.entityData.set(IGNORE_BLOCK_COLLISION, ignoresBlockCollision);
+    }
+
+    public LivingEntity getHomingTarget() {
+        int targetId = this.entityData.get(HOMING_TARGET_ID);
+        if (targetId < 0) {
+            return null;
+        }
+        Entity target = level().getEntity(targetId);
+        return target instanceof LivingEntity living ? living : null;
+    }
+
+    public void setHomingTarget(LivingEntity target) {
+        this.entityData.set(HOMING_TARGET_ID, target == null ? -1 : target.getId());
+    }
+
+    public void clearHomingTarget() {
+        this.entityData.set(HOMING_TARGET_ID, -1);
+    }
+
+    public boolean canHitTarget(Entity target) {
+        return canHitEntity(target);
+    }
+
+    @SuppressWarnings("unchecked")
+    public BaseBulletEntity createChild(Vec3 velocity, float damageMultiplier, int effectState) {
+        return createChild(velocity, damageMultiplier, effectState, Vec3.ZERO);
+    }
+
+    @SuppressWarnings("unchecked")
+    public BaseBulletEntity createChild(Vec3 velocity, float damageMultiplier, int effectState, Vec3 spawnOffset) {
+        EntityType<? extends BaseBulletEntity> type = (EntityType<? extends BaseBulletEntity>) this.getType();
+        BaseBulletEntity child;
+        if (this instanceof CustomBulletEntity customBullet) {
+            child = new CustomBulletEntity(
+                    type,
+                    this.level(),
+                    this.getX() + spawnOffset.x,
+                    this.getY() + spawnOffset.y,
+                    this.getZ() + spawnOffset.z,
+                    this.getBulletStack(),
+                    customBullet.getBulletGravity()
+            );
+        } else {
+            child = new BaseBulletEntity(
+                    type,
+                    this.level(),
+                    this.getX() + spawnOffset.x,
+                    this.getY() + spawnOffset.y,
+                    this.getZ() + spawnOffset.z,
+                    this.getBulletStack()
+            );
+        }
+        child.setOwner(this.getOwner());
+        child.setColorID(this.getColorID());
+        child.setDamage(this.damage * Math.max(0.0F, damageMultiplier));
+        child.setKnockback(this.knockback);
+        child.setPenetrate(this.penetrate);
+        child.setEffectState(effectState);
+        child.accelerationPower = this.accelerationPower;
+        child.setInitialVelocity(velocity);
+        return child;
+    }
+
     public DamageSource getDamageSource() {
         return TGDamageTypes.of(level(), TGDamageTypes.BULLET_DAMAGE, this, getOwner());
     }
@@ -134,21 +275,28 @@ public class BaseBulletEntity extends Projectile {
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity serverEntity) {
         Entity entity = this.getOwner();
         int i = entity == null ? 0 : entity.getId();
-        Vec3 vec3 = serverEntity.getPositionBase();
-        return new ClientboundAddEntityPacket(this.getId(), this.getUUID(), vec3.x(), vec3.y(), vec3.z(), serverEntity.getLastSentXRot(), serverEntity.getLastSentYRot(), this.getType(), i, serverEntity.getLastSentMovement(), 0.0F);
+        return new ClientboundAddEntityPacket(this, serverEntity, i);
     }
 
     @Override
     public void recreateFromPacket(@NotNull ClientboundAddEntityPacket packet) {
         super.recreateFromPacket(packet);
-        Vec3 vec3 = new Vec3(packet.getXa(), packet.getYa(), packet.getZa());
-        this.setDeltaMovement(vec3);
+        // The velocity in the add-entity packet is quantized and capped at
+        // 3.9 per axis. The exact value arrives through synced entity data
+        // and is applied before the first client tick.
+        this.setDeltaMovement(Vec3.ZERO);
+        this.appliedInitialVelocity = false;
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(COLOR_ID, "");
         builder.define(BULLET, this.getDefaultItem());
+        builder.define(HOMING_TARGET_ID, -1);
+        builder.define(EFFECT_STATE, 0);
+        builder.define(IGNORE_BLOCK_COLLISION, false);
+        builder.define(INITIAL_VELOCITY, new Vector3f());
+        builder.define(HAS_INITIAL_VELOCITY, false);
     }
 
     @Override
@@ -172,11 +320,20 @@ public class BaseBulletEntity extends Projectile {
         if (compound.contains("Penetrate", CompoundTag.TAG_INT)) {
             this.penetrate = compound.getInt("Penetrate");
         }
+        if (compound.contains("EffectState", CompoundTag.TAG_INT)) {
+            this.setEffectState(compound.getInt("EffectState"));
+        }
+        if (compound.contains("IgnoreBlockCollision", CompoundTag.TAG_BYTE)) {
+            this.setIgnoresBlockCollision(compound.getBoolean("IgnoreBlockCollision"));
+        }
         if (compound.contains("HitBlockTime", CompoundTag.TAG_INT)) {
             this.hitBlockTimes = compound.getInt("HitBlockTime");
         }
         if (compound.contains("acceleration_power", CompoundTag.TAG_DOUBLE)) {
             this.accelerationPower = compound.getDouble("acceleration_power");
+        }
+        if (compound.contains("Lifetime", CompoundTag.TAG_INT)) {
+            this.tickCount = compound.getInt("Lifetime");
         }
     }
 
@@ -191,8 +348,11 @@ public class BaseBulletEntity extends Projectile {
         compound.putFloat("Damage", this.damage);
         compound.putFloat("Knockback", this.knockback);
         compound.putInt("Penetrate", this.penetrate);
+        compound.putInt("EffectState", this.getEffectState());
+        compound.putBoolean("IgnoreBlockCollision", this.ignoresBlockCollision());
         compound.putInt("HitBlockTime", this.hitBlockTimes);
         compound.putDouble("acceleration_power", this.accelerationPower);
+        compound.putInt("Lifetime", this.tickCount);
     }
 
     protected ItemStack getDefaultItem() {
@@ -202,35 +362,189 @@ public class BaseBulletEntity extends Projectile {
     @Override
     public void tick() {
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Pre(this, this.getBullet()));
-        Entity entity = this.getOwner();
-        if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition()) && disToOwner() <= 256) {
-            super.tick();
+        this.applyInitialVelocity();
+        super.tick();
 
-            this.getBullet().tick(this);
-            this.saveTrailPos();
+        if (shouldDiscard()) {
+            this.discard();
+            NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, this.getBullet()));
+            return;
+        }
 
-            HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity, this.getClipType());
-            if (hitresult.getType() == HitResult.Type.BLOCK) {
-                this.onHitBlock((BlockHitResult) hitresult);
+        this.getBullet().getBehavior().tick(this);
+        this.saveTrailPos();
+        this.checkInsideBlocks();
+        this.applyForces();
+
+        // Sweep the complete movement segment with an explicit line test. A
+        // fast projectile can cross several entities in one tick, so a
+        // per-position check is not enough and stopping after the first
+        // entity makes penetration appear to be broken.
+        Vec3 velocity = this.getDeltaMovement();
+        Vec3 movement = velocity;
+        int entityCollisions = 0;
+        while (!this.isRemoved() && movement.lengthSqr() > 1.0E-7D) {
+            this.setDeltaMovement(movement);
+            Vec3 segmentStart = this.position();
+            Vec3 segmentEnd = segmentStart.add(movement);
+            HitResult hitResult = findHitResult(segmentStart, segmentEnd);
+
+            if (hitResult == null) {
+                this.setPos(segmentEnd.x, segmentEnd.y, segmentEnd.z);
+                break;
             }
 
+            if (hitResult.getType() == HitResult.Type.BLOCK) {
+                Vec3 hitPosition = hitResult.getLocation();
+                // Move to the exact swept collision point before posting the
+                // hit event so effects use the entity's actual position.
+                this.setPos(hitPosition.x, hitPosition.y, hitPosition.z);
+                this.onHitBlock((BlockHitResult) hitResult);
+                if (this.isRemoved()) {
+                    NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, this.getBullet()));
+                    return;
+                }
+                // Block behaviors such as ricochet already place the projectile
+                // on the safe side of the surface. Continue next tick so a
+                // reflected projectile does not make a second turn immediately.
+                NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, this.getBullet()));
+                return;
+            }
 
-            this.checkInsideBlocks();
-            Vec3 vec3 = this.getDeltaMovement();
-            double newX = this.getX() + vec3.x;
-            double newY = this.getY() + vec3.y;
-            double newZ = this.getZ() + vec3.z;
-            this.setPos(newX, newY, newZ);
-            float inertia = this.getInertia();
-            this.setDeltaMovement(vec3.add(vec3.normalize().scale(this.accelerationPower)).scale(inertia));
-            ProjectileUtil.rotateTowardsMovement(this, 0.2F);
+            if (hitResult.getType() != HitResult.Type.ENTITY) {
+                this.setPos(segmentEnd.x, segmentEnd.y, segmentEnd.z);
+                break;
+            }
 
-            AABB aabb = new AABB(getX(), getY(), getZ(), xo, yo, zo);
-            this.level().getEntities(this, aabb, this::canHitEntity).forEach(hitEntity -> onHitEntity(new EntityHitResult(hitEntity)));
-        } else {
-            this.discard();
+            Vec3 hitPosition = hitResult.getLocation();
+            this.setPos(hitPosition.x, hitPosition.y, hitPosition.z);
+            this.onHitEntity((EntityHitResult) hitResult);
+            if (this.isRemoved()) {
+                NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, this.getBullet()));
+                return;
+            }
+
+            entityCollisions++;
+            Vec3 remaining = segmentEnd.subtract(hitPosition);
+            if (remaining.lengthSqr() <= 1.0E-7D || entityCollisions >= MAX_ENTITY_COLLISIONS_PER_TICK) {
+                this.setPos(hitPosition.x, hitPosition.y, hitPosition.z);
+                movement = Vec3.ZERO;
+                break;
+            }
+
+            Vec3 continuation = remaining.normalize();
+            double offset = Math.min(COLLISION_EPSILON, remaining.length() * 0.5D);
+            this.setPos(
+                    hitPosition.x + continuation.x * offset,
+                    hitPosition.y + continuation.y * offset,
+                    hitPosition.z + continuation.z * offset
+            );
+            movement = segmentEnd.subtract(this.position());
         }
+
+        // The temporary movement above is only the unprocessed part of this
+        // tick. Preserve the projectile's actual velocity before applying
+        // inertia, otherwise the next tick would lose speed after a hit.
+        this.setDeltaMovement(velocity);
+        float inertia = this.getInertia();
+        Vec3 acceleration = velocity.lengthSqr() > 1.0E-7D
+                ? velocity.normalize().scale(this.accelerationPower)
+                : Vec3.ZERO;
+        this.setDeltaMovement(velocity.add(acceleration).scale(inertia));
+        ProjectileUtil.rotateTowardsMovement(this, 0.2F);
+
         NeoForge.EVENT_BUS.post(new BulletEvent.Tick.Post(this, this.getBullet()));
+    }
+
+    /**
+     * Finds the first collision on the whole movement segment for this tick.
+     * The block ray and entity sweep are evaluated independently, then the
+     * closest result wins. This prevents a fast bullet from skipping an
+     * entity between two sampled positions and also preserves block ordering.
+     */
+    private HitResult findHitResult(Vec3 start, Vec3 end) {
+        EntityHitResult entityHit = findEntityHit(start, end);
+        BlockHitResult blockHit = ignoresBlockCollision() ? null : findBlockHit(start, end);
+        if (entityHit == null) return blockHit;
+        if (blockHit == null) return entityHit;
+
+        double entityDistance = start.distanceToSqr(entityHit.getLocation());
+        double blockDistance = start.distanceToSqr(blockHit.getLocation());
+        return entityDistance <= blockDistance ? entityHit : blockHit;
+    }
+
+    private BlockHitResult findBlockHit(Vec3 start, Vec3 end) {
+        BlockHitResult result = this.level().clip(new ClipContext(
+                start,
+                end,
+                this.getClipType(),
+                ClipContext.Fluid.NONE,
+                this
+        ));
+        return result.getType() == HitResult.Type.BLOCK ? result : null;
+    }
+
+    private EntityHitResult findEntityHit(Vec3 start, Vec3 end) {
+        Vec3 movement = end.subtract(start);
+        AABB searchBox = this.getBoundingBox().expandTowards(movement).inflate(ENTITY_SWEEP_MARGIN);
+        List<Entity> candidates = this.level().getEntities(this, searchBox, this::canHitEntity);
+        EntityHitResult closest = null;
+        double closestDistance = Double.POSITIVE_INFINITY;
+        double horizontalExtent = this.getBbWidth() * 0.5D;
+        double verticalExtent = this.getBbHeight() * 0.5D;
+
+        for (Entity candidate : candidates) {
+            AABB collisionBox = candidate.getBoundingBox().inflate(horizontalExtent, verticalExtent, horizontalExtent);
+            Optional<Vec3> hitPosition = collisionBox.clip(start, end);
+            if (hitPosition.isEmpty()) {
+                continue;
+            }
+
+            Vec3 location = hitPosition.get();
+            double distance = start.distanceToSqr(location);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closest = new EntityHitResult(candidate, location);
+            }
+        }
+        return closest;
+    }
+
+    private void applyInitialVelocity() {
+        if (!this.level().isClientSide || this.appliedInitialVelocity || !this.entityData.get(HAS_INITIAL_VELOCITY)) {
+            return;
+        }
+
+        Vector3f velocity = this.entityData.get(INITIAL_VELOCITY);
+        this.setDeltaMovement(new Vec3(velocity.x(), velocity.y(), velocity.z()));
+        this.appliedInitialVelocity = true;
+    }
+
+    private boolean shouldDiscard() {
+        if (this.tickCount >= MAX_LIFETIME) {
+            return true;
+        }
+        if (this.level().isClientSide) {
+            return false;
+        }
+
+        Entity owner = this.getOwner();
+        if (!this.level().hasChunkAt(this.blockPosition())) {
+            return true;
+        }
+        if (owner == null) {
+            return false;
+        }
+        if (owner.isRemoved() || disToOwner() > MAX_OWNER_DISTANCE) {
+            return true;
+        }
+
+        Vec3 nextPosition = this.position().add(this.getDeltaMovement());
+        return nextPosition.distanceTo(owner.position()) > MAX_OWNER_DISTANCE;
+    }
+
+    /** Hook for projectile variants that need to apply gravity or other forces. */
+    protected void applyForces() {
     }
 
     protected float getInertia() {
@@ -248,7 +562,7 @@ public class BaseBulletEntity extends Projectile {
     }
 
     public double disToOwner() {
-        if (getOwner() == null) return 256;
+        if (getOwner() == null) return MAX_OWNER_DISTANCE;
         return this.position().distanceTo(getOwner().position());
     }
 
@@ -258,14 +572,17 @@ public class BaseBulletEntity extends Projectile {
 
             if (trails.isEmpty()) {
                 trails.addLast(currentPos);
+                return;
             }
 
             Vec3 lastPos = trails.getLast();
             double dist = lastPos.distanceTo(currentPos);
 
-            double spacing = 0.4;
-            if (dist > spacing) {
-                int steps = Mth.floor(dist / spacing);
+            if (dist <= TRAIL_POINT_EPSILON) {
+                return;
+            }
+            if (dist > TRAIL_POINT_SPACING) {
+                int steps = (int) Math.ceil(dist / TRAIL_POINT_SPACING);
                 Vec3 delta = currentPos.subtract(lastPos).scale(1.0 / steps);
                 for (int i = 1; i <= steps; i++) {
                     trails.addLast(lastPos.add(delta.scale(i)));
@@ -274,7 +591,10 @@ public class BaseBulletEntity extends Projectile {
                 trails.addLast(currentPos);
             }
 
-            while (trails.size() > 20) {
+            int maxTrailPoints = "chlorophyte_bullet".equals(this.getColorID())
+                    ? CHLOROPHYTE_TRAIL_POINTS
+                    : MAX_TRAIL_POINTS;
+            while (trails.size() > maxTrailPoints) {
                 trails.removeFirst();
             }
         }
@@ -291,23 +611,32 @@ public class BaseBulletEntity extends Projectile {
             return false;
         } else {
             Entity entity = this.getOwner();
-            return entity == null || !entity.isPassengerOfSameVehicle(target);
+            return target != entity
+                    && !hitEntityIds.contains(target.getUUID())
+                    && (entity == null || !entity.isPassengerOfSameVehicle(target));
         }
     }
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
+        Entity hit = result.getEntity();
+        // Mark the entity before posting events. If an event is canceled, the
+        // projectile must still move past that entity instead of repeatedly
+        // resolving the same collision in the penetration sweep.
+        hitEntityIds.add(hit.getUUID());
         if (NeoForge.EVENT_BUS.post(new BulletEvent.HitEvent.Entity(this, this.getBullet(), result)).isCanceled())
             return;
 
-        Entity hit = result.getEntity();
         Entity shooter = this.getOwner();
 
         if (!level().isClientSide && hit != shooter && !this.isRemoved()) {
-            BulletEvent.DamageEntityEvent damageEntityEvent = new BulletEvent.DamageEntityEvent(this, this.getBullet(), shooter, hit);
-            NeoForge.EVENT_BUS.post(damageEntityEvent);
+            BulletEvent.DamageEntityEvent damageEvent = new BulletEvent.DamageEntityEvent(this, this.getBullet(), shooter, hit);
+            if (NeoForge.EVENT_BUS.post(damageEvent).isCanceled()) {
+                return;
+            }
 
-            this.getBullet().onHitEntity(this, result);
+            hit.hurt(this.getDamageSource(), this.getDamage());
+            this.getBullet().getBehavior().onHitEntity(this, result);
             if (this.knockback > 0) {
                 BulletEvent.KnockbackEvent knockbackEvent = new BulletEvent.KnockbackEvent(this, this.getBullet(), knockback / 8, 0f);
                 NeoForge.EVENT_BUS.post(knockbackEvent);
@@ -315,17 +644,17 @@ public class BaseBulletEntity extends Projectile {
                 VectorUtils.knockBackA2B(this, hit, knockbackEvent.getScale(), knockbackEvent.getMotionY());
             }
 
-            BulletEvent.PenetrateEvent penetrateEvent = new BulletEvent.PenetrateEvent(this, this.getBullet(), penetrate);
+            BulletEvent.PenetrateEvent penetrateEvent = new BulletEvent.PenetrateEvent(this, this.getBullet(), this.penetrate);
             NeoForge.EVENT_BUS.post(penetrateEvent);
-            int penetrate = penetrateEvent.getPenetrate();
+            int remaining = penetrateEvent.getPenetrate();
 
-            if (penetrate == -1) {
+            if (remaining < 0) {
                 return;
-            } else if (penetrate == 0) {
+            } else if (remaining <= 1) {
                 this.discard();
                 return;
             }
-            this.penetrate--;
+            this.penetrate = remaining - 1;
         }
     }
 
@@ -335,7 +664,9 @@ public class BaseBulletEntity extends Projectile {
             return;
 
         super.onHitBlock(result);
-        this.getBullet().onHitBlock(this, result);
+        if (!this.getBullet().getBehavior().onHitBlock(this, result)) {
+            this.discard();
+        }
 
         this.hitBlockTimes++;
     }

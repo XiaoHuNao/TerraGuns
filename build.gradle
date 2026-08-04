@@ -23,6 +23,14 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    maven {
+        name = "org.confluenceReleases"
+        url = "https://maven.confluence.ink/releases"
+    }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
 }
 
 base {
@@ -89,6 +97,9 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 boolean dev = true
 
 dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
     compileOnly "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
     runtimeOnly "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 
@@ -99,6 +110,8 @@ dependencies {
         // 单独开发时
         runtimeOnly "curse.maven:freecam-by-zergatul-618947:5591136"
         implementation(jarJar("org.confluence.lib:Confluence-Magic-Lib:${confluence_lib_version}"))
+        runtimeOnly "maven.modrinth:mmmmmmmmmmmm:1.21-2.0.11-neoforge"
+        runtimeOnly "maven.modrinth:moonlight:1.21-2.29.10-neoforge"
     } else {
         // 作为submodule开发时
         if (dev) {
@@ -146,4 +159,37 @@ tasks.withType(JavaCompile) {
 
 def isRunningInIdea() {
     return System.getProperty("idea.active") == "true"
+}
+
+tasks.named('test').configure {
+    useJUnitPlatform()
+}
+
+tasks.register('generateData') {
+    group = 'terra guns'
+    description = 'Generates TerraGuns data and client resources.'
+    dependsOn(tasks.named('runData'))
+}
+
+tasks.register('verifyGeneratedResources') {
+    group = 'verification'
+    description = 'Checks that generated resources are present before packaging.'
+
+    doLast {
+        def generated = file('src/generated/resources')
+        def required = [
+                'assets/terra_guns/lang/en_us.json',
+                'assets/terra_guns/lang/zh_cn.json',
+                'assets/terra_guns/models/item/musket_bullet.json',
+                'data/terra_guns/tags/item/ammo.json'
+        ]
+        def missing = required.findAll { !file("${generated}/${it}").exists() }
+        if (!missing.isEmpty()) {
+            throw new GradleException("Generated resources are missing: ${missing}. Run 'gradlew generateData' first.")
+        }
+    }
+}
+
+tasks.named('processResources').configure {
+    dependsOn(tasks.named('verifyGeneratedResources'))
 }

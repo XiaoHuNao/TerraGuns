@@ -45,6 +45,19 @@ public class GunEvent extends Event {
         }
     }
 
+    /** Posted on the client after the server has accepted and spawned a shot. */
+    public static class ShotConfirmedEvent extends Event {
+        private final Player player;
+
+        public ShotConfirmedEvent(Player player) {
+            this.player = player;
+        }
+
+        public Player getPlayer() {
+            return player;
+        }
+    }
+
     /**
      * 开火事件
      */

@@ -17,21 +17,23 @@ public class TGTrailColors {
     protected static Map<String, Integer> colorMap = new HashMap<>();
 
     public static void init() {
-        putColor(MUSKET_BULLET, 0xFFFD3E03);
-        putColor(METEOR_SHOT, 0xFFFD034A);
-        putColor(SILVER_BULLET, 0xFFFFAF8B);
-        putColor(CRYSTAL_BULLET, 0x2FF04058);
-        putColor(CURSED_BULLET, 0xFF60F802);
-        putColor(CHLOROPHYTE_BULLET, 0xFF01EB0F);
-        putColor(HIGH_VELOCITY_BULLET, 0xFFFFDD17);
-        putColor(ICHOR_BULLET, 0xFFFFEA01);
-        putColor(VENOM_BULLET, 0xFF974FA2);
-        putColor(PARTY_BULLET, 0xFFF0009E);
-        putColor(NANO_BULLET, 0xFF00A7F0);
-        putColor(EXPLODING_BULLET, 0xFFF03E00);
-        putColor(GOLDEN_BULLET, 0xFFB9A417);
-        putColor(LUMINITE_BULLET, 0xFF53FFC3);
-        putColor(TUNGSTEN_BULLET, 0xFFFD3E03);
+        // Colors are sampled from the corresponding item textures. Keep the
+        // alpha opaque because the trail/head renderer applies its own fade.
+        putColor(MUSKET_BULLET, 0xFF9A8E87);
+        putColor(METEOR_SHOT, 0xFFD65A4B);
+        putColor(SILVER_BULLET, 0xFFB4CDD8);
+        putColor(CRYSTAL_BULLET, 0xFF9E68FF);
+        putColor(CURSED_BULLET, 0xFFD8F53E);
+        putColor(CHLOROPHYTE_BULLET, 0xFF65D64D);
+        putColor(HIGH_VELOCITY_BULLET, 0xFFEAC76A);
+        putColor(ICHOR_BULLET, 0xFFF4B951);
+        putColor(VENOM_BULLET, 0xFFB277E0);
+        putColor(PARTY_BULLET, 0xFF58D98B);
+        putColor(NANO_BULLET, 0xFF14D5F0);
+        putColor(EXPLODING_BULLET, 0xFFE34C42);
+        putColor(GOLDEN_BULLET, 0xFFF0C86B);
+        putColor(LUMINITE_BULLET, 0xFF5CE6C2);
+        putColor(TUNGSTEN_BULLET, 0xFF85AA73);
     }
 
     public static void putColor(String item) {
