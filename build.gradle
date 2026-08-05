@@ -160,36 +160,3 @@ tasks.withType(JavaCompile) {
 def isRunningInIdea() {
     return System.getProperty("idea.active") == "true"
 }
-
-tasks.named('test').configure {
-    useJUnitPlatform()
-}
-
-tasks.register('generateData') {
-    group = 'terra guns'
-    description = 'Generates TerraGuns data and client resources.'
-    dependsOn(tasks.named('runData'))
-}
-
-tasks.register('verifyGeneratedResources') {
-    group = 'verification'
-    description = 'Checks that generated resources are present before packaging.'
-
-    doLast {
-        def generated = file('src/generated/resources')
-        def required = [
-                'assets/terra_guns/lang/en_us.json',
-                'assets/terra_guns/lang/zh_cn.json',
-                'assets/terra_guns/models/item/musket_bullet.json',
-                'data/terra_guns/tags/item/ammo.json'
-        ]
-        def missing = required.findAll { !file("${generated}/${it}").exists() }
-        if (!missing.isEmpty()) {
-            throw new GradleException("Generated resources are missing: ${missing}. Run 'gradlew generateData' first.")
-        }
-    }
-}
-
-tasks.named('processResources').configure {
-    dependsOn(tasks.named('verifyGeneratedResources'))
-}

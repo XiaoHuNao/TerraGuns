@@ -124,3 +124,4 @@ bin/
 
 src/generated/resources/.cache/
 /bin/
+/src/generated/resources/

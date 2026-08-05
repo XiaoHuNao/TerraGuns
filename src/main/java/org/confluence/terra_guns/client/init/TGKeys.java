@@ -22,4 +22,12 @@ public class TGKeys {
             GLFW.GLFW_MOUSE_BUTTON_RIGHT,
             "key.categories.gameplay"
     ));
+
+    public static final Lazy<KeyMapping> INSPECT = Lazy.of(() -> new KeyMapping(
+            "key.terra_guns.inspect",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_R,
+            "key.categories.gameplay"
+    ));
 }

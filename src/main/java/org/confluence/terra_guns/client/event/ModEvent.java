@@ -14,6 +14,7 @@ import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.util.TGUtil;
 
 import static org.confluence.terra_guns.client.init.TGKeys.AIM;
+import static org.confluence.terra_guns.client.init.TGKeys.INSPECT;
 import static org.confluence.terra_guns.client.init.TGKeys.SHOOT;
 
 @EventBusSubscriber(modid = TerraGuns.MODID, value = Dist.CLIENT)
@@ -33,5 +34,6 @@ public class ModEvent {
     public static void keyBinding(RegisterKeyMappingsEvent event) {
         event.register(SHOOT.get());
         event.register(AIM.get());
+        event.register(INSPECT.get());
     }
 }

@@ -9,6 +9,7 @@ import org.confluence.lib.api.event.NameFixRegisterEvent;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.common.init.TGGunSounds;
 import org.confluence.terra_guns.common.init.TGTrailColors;
+import org.confluence.terra_guns.network.c2s.InspectPacketC2S;
 import org.confluence.terra_guns.network.c2s.ShootPacketC2S;
 import org.confluence.terra_guns.network.s2c.BulletImpactPacketS2C;
 import org.confluence.terra_guns.network.s2c.ShotFeedbackPacketS2C;
@@ -19,6 +20,7 @@ public class ModEvent {
     public static void registerNetWork(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
         registrar.playToServer(ShootPacketC2S.TYPE, ShootPacketC2S.STREAM_CODEC, ShootPacketC2S::handle);
+        registrar.playToServer(InspectPacketC2S.TYPE, InspectPacketC2S.STREAM_CODEC, InspectPacketC2S::handle);
         registrar.playToClient(BulletImpactPacketS2C.TYPE, BulletImpactPacketS2C.STREAM_CODEC, BulletImpactPacketS2C::handle);
         registrar.playToClient(ShotFeedbackPacketS2C.TYPE, ShotFeedbackPacketS2C.STREAM_CODEC, ShotFeedbackPacketS2C::handle);
     }

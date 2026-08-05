@@ -4,6 +4,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.confluence.lib.common.component.ModRarity;
 import org.confluence.terra_guns.TerraGuns;
+import org.confluence.terra_guns.api.client.animation.HandAnimationProfile;
 import org.confluence.terra_guns.common.definition.BulletDefinition;
 import org.confluence.terra_guns.common.definition.BulletBehavior;
 import org.confluence.terra_guns.common.definition.BulletImpactEffect;
@@ -31,7 +32,7 @@ public class TGItems {
     public static final DeferredItem<BaseGun> MUSKET = GUNS.registerItem("musket", properties -> new BaseGun(properties, GunDefinition.manual(14, 16f, 1.1f, 0.25f, 0.12f, 0, 0f, ModRarity.BLUE))); // 火枪
     public static final DeferredItem<BaseGun> MINISHARK = GUNS.registerItem("minishark", properties -> new BaseGun(properties, GunDefinition.automatic(3, 3.4f, 1.0f, 0.0f, 0.04f, 0, 5.0f, ModRarity.GREEN))); // 迷你鲨
     public static final DeferredItem<BaseGun> BOOMSTICK = GUNS.registerItem("boomstick", properties -> new BaseGun(properties, GunDefinition.manual(13, 7f, 0.66f, 0.28f, 0.04f, 0, 8.0f, ModRarity.GREEN).withShotgunPattern(3, 4))); // 三发猎枪
-    public static final DeferredItem<BaseGun> HAND_GUN = GUNS.registerItem("hand_gun", properties -> new BaseGun(properties, GunDefinition.manual(5, 13f, 1.25f, 0.15f, 0.04f, 0, 0f, ModRarity.GREEN))); // 手枪
+    public static final DeferredItem<BaseGun> HAND_GUN = GUNS.registerItem("hand_gun", properties -> new BaseGun(properties, GunDefinition.manual(5, 13f, 1.25f, 0.15f, 0.04f, 0, 0f, ModRarity.GREEN), HandAnimationProfile.handgun())); // 手枪
     public static final DeferredItem<BaseGun> PHOENIX_BLASTER = GUNS.registerItem("phoenix_blaster", properties -> new BaseGun(properties, GunDefinition.manual(4, 16f, 2.50f, 0.10f, 0.04f, 0, 2.50f, ModRarity.ORANGE))); // 凤凰爆破枪
     public static final DeferredItem<BaseGun> SHOTGUN = GUNS.registerItem("shotgun", properties -> new BaseGun(properties, GunDefinition.manual(15, 12f, 0.9f, 0.375f, 0.04f, 0, 10.0f, ModRarity.LIGHT_RED).withShotgunPattern(3, 5))); // 霰弹枪
     public static final DeferredItem<BaseGun> TACTICAL_SHOTGUN = GUNS.registerItem("tactical_shotgun", properties -> new BaseGun(properties, GunDefinition.manual(11, 18f, 0.75f, 0.35f, 0.04f, 0, 12.0f, ModRarity.YELLOW).withShotgunPattern(6, 6))); // 战术霰弹枪

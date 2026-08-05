@@ -30,6 +30,9 @@ public class GameEvent {
     @SubscribeEvent
     public static void swapGunAnimator(LivingEquipmentChangeEvent event){
         if (event.getEntity() instanceof ServerPlayer serverPlayer){
+            if (event.getSlot() == EquipmentSlot.MAINHAND && event.getFrom().getItem() instanceof BaseGun baseGun) {
+                baseGun.putAwayAnimator(event.getFrom(), serverPlayer);
+            }
             if (event.getSlot() == EquipmentSlot.MAINHAND && event.getTo().getItem() instanceof BaseGun baseGun) {
                 // 切枪
                 baseGun.pickAnimator(event.getTo(), serverPlayer);

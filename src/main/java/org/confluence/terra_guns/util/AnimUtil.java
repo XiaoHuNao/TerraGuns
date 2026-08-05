@@ -7,7 +7,6 @@ import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.AnimationProcessor;
 
 public class AnimUtil {
     public static void stopAndPlayAnim(GeoItem geoItem, ItemStack itemStack, ServerPlayer serverPlayer, String controllerName, @Nullable String animName){
@@ -15,9 +14,9 @@ public class AnimUtil {
         long orAssignId = GeoItem.getOrAssignId(itemStack, serverPlayer.serverLevel());
         AnimatableManager<GeoAnimatable> animatableManager = geoItem.getAnimatableInstanceCache().getManagerForId(orAssignId);
         AnimationController<GeoAnimatable> gunController = animatableManager.getAnimationControllers().get(controllerName);
-        AnimationProcessor.QueuedAnimation currentAnimation = gunController.getCurrentAnimation();
+        if (gunController == null) return;
 
-        if (currentAnimation != null){
+        if (gunController.isPlayingTriggeredAnimation()) {
             geoItem.stopTriggeredAnim(serverPlayer, orAssignId, controllerName, animName);
         }
         geoItem.triggerAnim(serverPlayer, orAssignId, controllerName, animName);

@@ -13,19 +13,21 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.confluence.lib.common.component.ModRarity;
+import org.confluence.terra_guns.api.client.animation.HandAnimationAction;
+import org.confluence.terra_guns.api.client.animation.HandAnimationApi;
+import org.confluence.terra_guns.api.client.animation.HandAnimationChannel;
+import org.confluence.terra_guns.api.client.animation.HandAnimationProfile;
 import org.confluence.terra_guns.common.definition.FireMode;
 import org.confluence.terra_guns.common.definition.GunDefinition;
 import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.init.TGTags;
-import org.confluence.terra_guns.util.AnimUtil;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.Animation;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.animation.PlayState;
-import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
@@ -40,10 +42,16 @@ import java.util.List;
 public class BaseGun extends Item implements GeoItem {
     protected final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final GunDefinition definition;
+    private final HandAnimationProfile animationProfile;
 
     public BaseGun(Properties properties, GunDefinition definition) {
+        this(properties, definition, HandAnimationProfile.legacy());
+    }
+
+    public BaseGun(Properties properties, GunDefinition definition, HandAnimationProfile animationProfile) {
         super(prepareProperties(properties, definition));
         this.definition = definition;
+        this.animationProfile = animationProfile;
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
@@ -83,6 +91,10 @@ public class BaseGun extends Item implements GeoItem {
         return definition;
     }
 
+    public HandAnimationProfile getAnimationProfile() {
+        return animationProfile;
+    }
+
     public boolean isAutomatic(ItemStack stack) {
         return !stack.is(TGTags.MANUAL_GUN)
                 && (definition.fireMode() == FireMode.AUTOMATIC || stack.is(TGTags.AUTOMATIC_GUN));
@@ -90,23 +102,54 @@ public class BaseGun extends Item implements GeoItem {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        AnimationController<BaseGun> gun = new AnimationController<>(this, "gun", state -> PlayState.CONTINUE);
-        gun.triggerableAnim("gun_fire", RawAnimation.begin().then("fire", Animation.LoopType.DEFAULT));
-        gun.triggerableAnim("gun_pick", RawAnimation.begin().then("pick up", Animation.LoopType.DEFAULT));
-        gun.triggerableAnim("gun_reload", RawAnimation.begin().then("reloading", Animation.LoopType.DEFAULT));
-        controllers.add(gun);
+        for (HandAnimationChannel channel : animationProfile.channels()) {
+            AnimationController<BaseGun> controller = new AnimationController<>(this, channel.name(), state -> {
+                if (!state.getController().isPlayingTriggeredAnimation()) {
+                    channel.idle().ifPresent(idle -> state.getController().setAnimation(idle.rawAnimation()));
+                }
+                return PlayState.CONTINUE;
+            });
+            channel.animations().forEach((action, clip) ->
+                    controller.triggerableAnim(action.id(), clip.rawAnimation()));
+            controllers.add(controller);
+        }
     }
 
     public void fireAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
-        AnimUtil.stopAndPlayAnim(this, itemStack, serverPlayer, "gun", "gun_fire");
+        // Shooting has priority over inspection. Inspection and shooting may
+        // live on different animation channels, so triggering "shoot" alone
+        // would leave the inspection channel playing underneath it.
+        HandAnimationApi.stop(this, itemStack, serverPlayer, animationProfile, HandAnimationAction.INSPECT);
+        playAnimator(itemStack, serverPlayer, HandAnimationAction.SHOOT);
     }
 
     public void pickAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
-        AnimUtil.stopAndPlayAnim(this, itemStack, serverPlayer, "gun", "gun_pick");
+        playAnimator(itemStack, serverPlayer, HandAnimationAction.DRAW);
     }
 
     public void reloadAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
-        AnimUtil.stopAndPlayAnim(this, itemStack, serverPlayer, "gun", "gun_reload");
+        playAnimator(itemStack, serverPlayer, HandAnimationAction.RELOAD);
+    }
+
+    public void putAwayAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
+        playAnimator(itemStack, serverPlayer, HandAnimationAction.PUT_AWAY);
+    }
+
+    public void inspectAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
+        playAnimator(itemStack, serverPlayer, HandAnimationAction.INSPECT);
+    }
+
+    public boolean playAnimator(ItemStack itemStack, ServerPlayer serverPlayer, HandAnimationAction action) {
+        return HandAnimationApi.play(this, itemStack, serverPlayer, animationProfile, action);
+    }
+
+    public boolean isAnimationPlaying(long instanceId, HandAnimationAction action) {
+        return cache.getManagerForId(instanceId).getAnimationControllers().values().stream()
+                .filter(AnimationController::isPlayingTriggeredAnimation)
+                .map(AnimationController::getCurrentAnimation)
+                .filter(animation -> animation != null)
+                .map(AnimationProcessor.QueuedAnimation::animation)
+                .anyMatch(animation -> animationProfile.isAnimation(action, animation.name()));
     }
 
     @Override
