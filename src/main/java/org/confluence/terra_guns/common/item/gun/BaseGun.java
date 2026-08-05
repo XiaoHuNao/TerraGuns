@@ -110,7 +110,7 @@ public class BaseGun extends Item implements GeoItem {
                 return PlayState.CONTINUE;
             });
             channel.animations().forEach((action, clip) ->
-                    controller.triggerableAnim(action.id(), clip.rawAnimation()));
+                    controller.triggerableAnim(action.id(), channel.triggeredAnimation(action)));
             controllers.add(controller);
         }
     }

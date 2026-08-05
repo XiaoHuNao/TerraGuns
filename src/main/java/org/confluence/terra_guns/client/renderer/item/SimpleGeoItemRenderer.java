@@ -96,7 +96,18 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
                 @Override
                 public void setCustomAnimations(T animatable, long instanceId, AnimationState<T> animationState) {
                     super.setCustomAnimations(animatable, instanceId, animationState);
-                    boolean isFiring = this.isFiring(animatable, instanceId, animationState);
+                    boolean firstPerson = isFirstPersonPerspective();
+
+                    // The same GeoModel instance is used by every display
+                    // context.  A triggered first-person animation can
+                    // therefore still be active while the stack is rendered
+                    // in a GUI slot or as a dropped item.  Do not let that
+                    // shared animation state move the item-display model.
+                    if (!firstPerson) {
+                        resetToStaticPose();
+                    }
+
+                    boolean isFiring = firstPerson && this.isFiring(animatable, instanceId, animationState);
 
                     List<String> fireBones = List.of("Fire", "Fire1", "Fire2", "Fire3");
                     for (String boneName : fireBones) {
@@ -126,10 +137,34 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
                         }
                     }
 
-                    if (isFirstPersonPerspective() && controlsCamera(animatable, animationState)) {
+                    if (firstPerson && controlsCamera(animatable, animationState)) {
                         GunCameraAnimation.capture(getAnimationProcessor().getBone("camera"));
                     }
 
+                }
+
+                private void resetToStaticPose() {
+                    for (GeoBone bone : getAnimationProcessor().getRegisteredBones()) {
+                        var snapshot = bone.getInitialSnapshot();
+                        if (snapshot == null) {
+                            continue;
+                        }
+
+                        bone.setPosX(snapshot.getOffsetX());
+                        bone.setPosY(snapshot.getOffsetY());
+                        bone.setPosZ(snapshot.getOffsetZ());
+                        bone.setRotX(snapshot.getRotX());
+                        bone.setRotY(snapshot.getRotY());
+                        bone.setRotZ(snapshot.getRotZ());
+                        bone.setScaleX(snapshot.getScaleX());
+                        bone.setScaleY(snapshot.getScaleY());
+                        bone.setScaleZ(snapshot.getScaleZ());
+                        // This is a display-context render override, not an
+                        // animation write. Do not leave GeckoLib's changed
+                        // flags set and make the next first-person tick skip
+                        // its normal reset/animation bookkeeping.
+                        bone.resetStateChanges();
+                    }
                 }
 
                 private boolean isFirstPersonPerspective() {

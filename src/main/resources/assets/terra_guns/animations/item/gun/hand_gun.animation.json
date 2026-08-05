@@ -127,7 +127,7 @@
 			}
 		},
 		"put_away": {
-			"animation_length": 0.4333,
+			"animation_length": 0.3,
 			"bones": {
 				"root": {
 					"rotation": {

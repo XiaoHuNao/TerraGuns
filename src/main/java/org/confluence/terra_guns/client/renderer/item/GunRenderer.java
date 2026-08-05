@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.animation.state.BoneSnapshot;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
@@ -25,7 +26,9 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.RenderUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer<T> {
     // The TACZ positioning nodes define the camera pose, while this small
@@ -33,9 +36,9 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
     // placement. It keeps a GeoItemRenderer model away from the near clip
     // plane and places it in the lower-right hand area after the custom hook
     // has skipped vanilla's per-item transform.
-    private static final float FIRST_PERSON_X = 0.56F;
-    private static final float FIRST_PERSON_Y = -0.20F;
-    private static final float FIRST_PERSON_Z = -0.72F;
+    private static final float FIRST_PERSON_X = 0.54F;
+    private static final float FIRST_PERSON_Y = -0.10F;
+    private static final float FIRST_PERSON_Z = -0.24F;
 
     // Arms are queued while the model is traversed and rendered after the
     // complete gun. Rendering them at the marker immediately would let later
@@ -44,6 +47,24 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
     private Matrix3f queuedLeftArmNormal;
     private Matrix4f queuedRightArmPose;
     private Matrix3f queuedRightArmNormal;
+    // Hidden marker bones are not traversed by every GeckoLib render path.
+    // Keep the last valid marker transform as a local pose so the one-tick
+    // reset between a play-once animation and its idle animation cannot make
+    // the real player arms jump to the model's raw/default bone pose.
+    private Matrix4f lastLeftArmLocalPose;
+    private Matrix3f lastLeftArmLocalNormal;
+    private Matrix4f lastRightArmLocalPose;
+    private Matrix3f lastRightArmLocalNormal;
+    private ItemDisplayContext lastRenderedPerspective;
+    // GeckoLib can reset every animated bone to its initial snapshot for one
+    // render before the channel's looped idle animation is installed. Keep a
+    // complete bone-value snapshot as well as the hand matrices: otherwise
+    // the gun root or one of its visible parent bones can still jump while
+    // the separately rendered arms stay in place.
+    private final Map<String, BonePose> lastModelPose = new HashMap<>();
+    private final Map<String, BonePose> modelPoseBeforeOverride = new HashMap<>();
+    private boolean modelPosePrepared;
+    private boolean modelPoseOverridden;
     private Matrix4f firstPersonBasePose;
     private Matrix3f firstPersonBaseNormal;
     private int firstPersonArmLight;
@@ -67,7 +88,15 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
                 : null;
         boolean applyDisplayPosition = displayPosition != null;
 
+        if (bone.getParent() == null) {
+            if (lastRenderedPerspective != null && lastRenderedPerspective != renderPerspective) {
+                clearLastArmPoses();
+            }
+            lastRenderedPerspective = renderPerspective;
+        }
+
         if (applyFirstPersonView) {
+            prepareModelPoseForFrame();
             poseStack.pushPose();
 
             // ItemRenderer has already translated the custom-renderer stack
@@ -139,9 +168,13 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
         // a marker callback that was skipped by the model traversal.
         if (isFirstPersonPerspective() && firstPersonBasePose != null) {
             queueMissingModelHands();
+            rememberArmPose(HumanoidArm.LEFT, queuedLeftArmPose, queuedLeftArmNormal);
+            rememberArmPose(HumanoidArm.RIGHT, queuedRightArmPose, queuedRightArmNormal);
             renderQueuedArm(bufferSource, firstPersonArmLight, queuedLeftArmPose, queuedLeftArmNormal, HumanoidArm.LEFT);
             renderQueuedArm(bufferSource, firstPersonArmLight, queuedRightArmPose, queuedRightArmNormal, HumanoidArm.RIGHT);
         }
+
+        finishModelPoseFrame();
 
         clearQueuedArms();
         firstPersonBasePose = null;
@@ -169,6 +202,17 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
     }
 
     private void queuePlayerArm(PoseStack poseStack, GeoBone handPosition, HumanoidArm arm) {
+        // Hidden bones still enter GeckoLib's recursion. When a play-once
+        // controller finishes, the hand parent can be temporarily restored to
+        // its initial snapshot before the idle clip is installed. That
+        // produces a perfectly valid-looking matrix, so checking for null in
+        // renderFinal cannot catch it. Keep the previous pose for this exact
+        // reset state and let the current camera base be rebuilt below.
+        if (isInitialHandPose(handPosition) && hasLastArmPose(arm)) {
+            reuseLastArmPose(arm);
+            return;
+        }
+
         // This callback runs while GeckoLib is walking the marker's parents.
         // Copy that live pose instead of rebuilding the hierarchy from scratch:
         // it already contains the current root/hand animation, view transform,
@@ -193,6 +237,101 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
         }
     }
 
+    private void prepareModelPoseForFrame() {
+        if (modelPosePrepared) {
+            return;
+        }
+        modelPosePrepared = true;
+        modelPoseOverridden = false;
+
+        if (!isTransientModelResetPose() || lastModelPose.isEmpty()) {
+            return;
+        }
+
+        modelPoseBeforeOverride.clear();
+        for (GeoBone bone : getGeoModel().getAnimationProcessor().getRegisteredBones()) {
+            BonePose cachedPose = lastModelPose.get(bone.getName());
+            if (cachedPose == null) {
+                continue;
+            }
+
+            modelPoseBeforeOverride.put(bone.getName(), BonePose.capture(bone));
+            cachedPose.applyTo(bone);
+        }
+        modelPoseOverridden = !modelPoseBeforeOverride.isEmpty();
+    }
+
+    private boolean isTransientModelResetPose() {
+        boolean foundMarker = false;
+        boolean allHandsAreInitial = true;
+        for (String markerName : List.of("lefthand_pos", "righthand_pos")) {
+            GeoBone marker = findModelBone(markerName);
+            if (marker == null) {
+                continue;
+            }
+
+            foundMarker = true;
+            allHandsAreInitial &= isInitialHandPose(marker);
+        }
+        return foundMarker && allHandsAreInitial;
+    }
+
+    private void finishModelPoseFrame() {
+        if (!modelPosePrepared) {
+            return;
+        }
+
+        if (modelPoseOverridden) {
+            for (GeoBone bone : getGeoModel().getAnimationProcessor().getRegisteredBones()) {
+                BonePose originalPose = modelPoseBeforeOverride.get(bone.getName());
+                if (originalPose != null) {
+                    originalPose.applyTo(bone);
+                }
+                // Applying the render-only pose marks bones as changed. Clear
+                // those markers so the next GeckoLib tick sees the same state
+                // it would have seen without this render guard.
+                bone.resetStateChanges();
+            }
+            modelPoseBeforeOverride.clear();
+        } else if (isFirstPersonPerspective()) {
+            lastModelPose.clear();
+            for (GeoBone bone : getGeoModel().getAnimationProcessor().getRegisteredBones()) {
+                lastModelPose.put(bone.getName(), BonePose.capture(bone));
+            }
+        }
+
+        modelPosePrepared = false;
+        modelPoseOverridden = false;
+    }
+
+    private boolean isInitialHandPose(GeoBone marker) {
+        GeoBone hand = marker.getParent();
+        BoneSnapshot initial = hand == null ? null : hand.getInitialSnapshot();
+        if (initial == null) {
+            return false;
+        }
+
+        return isClose(hand.getPosX(), initial.getOffsetX())
+                && isClose(hand.getPosY(), initial.getOffsetY())
+                && isClose(hand.getPosZ(), initial.getOffsetZ())
+                && isClose(hand.getRotX(), initial.getRotX())
+                && isClose(hand.getRotY(), initial.getRotY())
+                && isClose(hand.getRotZ(), initial.getRotZ())
+                && isClose(hand.getScaleX(), initial.getScaleX())
+                && isClose(hand.getScaleY(), initial.getScaleY())
+                && isClose(hand.getScaleZ(), initial.getScaleZ());
+    }
+
+    private boolean hasLastArmPose(HumanoidArm arm) {
+        return arm == HumanoidArm.RIGHT
+                ? lastRightArmLocalPose != null && lastRightArmLocalNormal != null
+                : lastLeftArmLocalPose != null && lastLeftArmLocalNormal != null;
+    }
+
+    private static boolean isClose(float actual, float expected) {
+        return Math.abs(actual - expected) < 0.0001F;
+    }
+
     /**
      * The arm marker is intentionally hidden and some GeckoLib model paths do
      * not invoke this renderer override for hidden marker bones. Rebuild the
@@ -201,15 +340,23 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
      */
     private void queueMissingModelHands() {
         if (queuedLeftArmPose == null || queuedLeftArmNormal == null) {
-            GeoBone marker = findModelBone("lefthand_pos");
-            if (marker != null) {
-                queuePlayerArmFromModel(marker, HumanoidArm.LEFT);
+            if (lastLeftArmLocalPose != null && lastLeftArmLocalNormal != null) {
+                reuseLastArmPose(HumanoidArm.LEFT);
+            } else {
+                GeoBone marker = findModelBone("lefthand_pos");
+                if (marker != null) {
+                    queuePlayerArmFromModel(marker, HumanoidArm.LEFT);
+                }
             }
         }
         if (queuedRightArmPose == null || queuedRightArmNormal == null) {
-            GeoBone marker = findModelBone("righthand_pos");
-            if (marker != null) {
-                queuePlayerArmFromModel(marker, HumanoidArm.RIGHT);
+            if (lastRightArmLocalPose != null && lastRightArmLocalNormal != null) {
+                reuseLastArmPose(HumanoidArm.RIGHT);
+            } else {
+                GeoBone marker = findModelBone("righthand_pos");
+                if (marker != null) {
+                    queuePlayerArmFromModel(marker, HumanoidArm.RIGHT);
+                }
             }
         }
     }
@@ -247,6 +394,36 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
         }
     }
 
+    private void reuseLastArmPose(HumanoidArm arm) {
+        if (firstPersonBasePose == null || firstPersonBaseNormal == null) {
+            return;
+        }
+
+        if (arm == HumanoidArm.RIGHT) {
+            queuedRightArmPose = new Matrix4f(firstPersonBasePose).mul(lastRightArmLocalPose);
+            queuedRightArmNormal = new Matrix3f(firstPersonBaseNormal).mul(lastRightArmLocalNormal);
+        } else {
+            queuedLeftArmPose = new Matrix4f(firstPersonBasePose).mul(lastLeftArmLocalPose);
+            queuedLeftArmNormal = new Matrix3f(firstPersonBaseNormal).mul(lastLeftArmLocalNormal);
+        }
+    }
+
+    private void rememberArmPose(HumanoidArm arm, Matrix4f pose, Matrix3f normal) {
+        if (pose == null || normal == null || firstPersonBasePose == null || firstPersonBaseNormal == null) {
+            return;
+        }
+
+        Matrix4f basePoseInverse = new Matrix4f(firstPersonBasePose).invert();
+        Matrix3f baseNormalInverse = new Matrix3f(firstPersonBaseNormal).invert();
+        if (arm == HumanoidArm.RIGHT) {
+            lastRightArmLocalPose = basePoseInverse.mul(new Matrix4f(pose));
+            lastRightArmLocalNormal = baseNormalInverse.mul(new Matrix3f(normal));
+        } else {
+            lastLeftArmLocalPose = basePoseInverse.mul(new Matrix4f(pose));
+            lastLeftArmLocalNormal = baseNormalInverse.mul(new Matrix3f(normal));
+        }
+    }
+
     private void renderQueuedArm(MultiBufferSource bufferSource, int packedLight, Matrix4f pose, Matrix3f normal, HumanoidArm arm) {
         if (pose == null || normal == null) {
             return;
@@ -263,10 +440,6 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
         }
 
         PoseStack handPose = new PoseStack();
-
-        Matrix4f visiblePose = new Matrix4f()
-                .translation(0.0F, 0.0F, -2F)
-                .mul(pose);
         handPose.last().pose().set(pose);
         handPose.last().normal().set(normal);
         // Use the game's shared first-person buffer. The buffer passed through
@@ -319,5 +492,36 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
         queuedLeftArmNormal = null;
         queuedRightArmPose = null;
         queuedRightArmNormal = null;
+    }
+
+    private void clearLastArmPoses() {
+        lastLeftArmLocalPose = null;
+        lastLeftArmLocalNormal = null;
+        lastRightArmLocalPose = null;
+        lastRightArmLocalNormal = null;
+        lastModelPose.clear();
+        modelPoseBeforeOverride.clear();
+    }
+
+    private record BonePose(float posX, float posY, float posZ,
+                            float rotX, float rotY, float rotZ,
+                            float scaleX, float scaleY, float scaleZ) {
+        private static BonePose capture(GeoBone bone) {
+            return new BonePose(bone.getPosX(), bone.getPosY(), bone.getPosZ(),
+                    bone.getRotX(), bone.getRotY(), bone.getRotZ(),
+                    bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
+        }
+
+        private void applyTo(GeoBone bone) {
+            bone.setPosX(posX);
+            bone.setPosY(posY);
+            bone.setPosZ(posZ);
+            bone.setRotX(rotX);
+            bone.setRotY(rotY);
+            bone.setRotZ(rotZ);
+            bone.setScaleX(scaleX);
+            bone.setScaleY(scaleY);
+            bone.setScaleZ(scaleZ);
+        }
     }
 }
