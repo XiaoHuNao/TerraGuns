@@ -13,8 +13,8 @@ import static net.minecraft.client.renderer.RenderStateShard.*;
 
 public final class TGRenderTypes {
     private static final Map<String, RenderType> TRAILS = new ConcurrentHashMap<>();
-    private static final RenderType CONFETTI = RenderType.create(
-            "terra_guns_confetti",
+    private static final RenderType COLORED_TRANSLUCENT = RenderType.create(
+            "terra_guns_colored_translucent",
             DefaultVertexFormat.POSITION_COLOR,
             VertexFormat.Mode.QUADS,
             1536,
@@ -56,6 +56,10 @@ public final class TGRenderTypes {
     }
 
     public static RenderType confetti() {
-        return CONFETTI;
+        return COLORED_TRANSLUCENT;
+    }
+
+    public static RenderType coloredTrail() {
+        return COLORED_TRANSLUCENT;
     }
 }

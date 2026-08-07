@@ -49,6 +49,10 @@ neoForge {
     }
     accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
 
+    unitTest {
+        enable()
+    }
+
     runs {
         client {
             client()

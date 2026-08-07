@@ -44,7 +44,7 @@ public class GameEvent {
         ItemStack mainHandItem = player.getMainHandItem();
         ItemCooldowns cooldowns = player.getCooldowns();
         if (mainHandItem.getItem() instanceof BaseGun baseGun && !cooldowns.isOnCooldown(baseGun)) {
-            if (BulletHandler.getAmmo(player, mainHandItem).isEmpty()) return;
+            if (!BulletHandler.canShoot(player, mainHandItem)) return;
             if (!baseGun.isAutomatic(mainHandItem) && !shoot.consumeClick()) return;
 
             GunEvent.UseGunEvent useGunEvent = new GunEvent.UseGunEvent(player, baseGun, baseGun.getCooldown());

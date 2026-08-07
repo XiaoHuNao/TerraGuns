@@ -1,12 +1,17 @@
 package org.confluence.terra_guns.api.event;
 
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import org.confluence.terra_guns.common.combat.ShotContext;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class GunEvent extends Event {
     private final Player player;
@@ -219,6 +224,41 @@ public class GunEvent extends Event {
 
         public void setInaccuracy(float inaccuracy) {
             this.inaccuracy = inaccuracy;
+        }
+    }
+
+    /**
+     * Posted after the default projectiles are selected and before their
+     * common launch data is applied.
+     *
+     * <p>Listeners may replace the list with arbitrary projectile entities.
+     * This supports guns whose projectiles are entities rather than registered
+     * {@code BaseBullet} items while keeping spawning server-authoritative.</p>
+     */
+    public static class ProjectileCreationEvent extends GunEvent {
+        private final ShotContext context;
+        private final List<Projectile> projectiles;
+
+        public ProjectileCreationEvent(BaseGun gun, ShotContext context,
+                                       Collection<? extends Projectile> projectiles) {
+            super(context.shooter(), gun);
+            this.context = context;
+            this.projectiles = new ArrayList<>(projectiles);
+        }
+
+        public ShotContext getContext() {
+            return context;
+        }
+
+        public List<Projectile> getProjectiles() {
+            return projectiles;
+        }
+
+        public void setProjectiles(Collection<? extends Projectile> projectiles) {
+            List<Projectile> replacements = new ArrayList<>(Objects.requireNonNull(projectiles, "projectiles"));
+            replacements.removeIf(Objects::isNull);
+            this.projectiles.clear();
+            this.projectiles.addAll(replacements);
         }
     }
 

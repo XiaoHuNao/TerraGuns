@@ -23,7 +23,7 @@ public final class GunFiringService {
     }
 
     public static int fire(ServerPlayer player, BaseGun gun, ItemStack gunStack, ItemStack ammo) {
-        if (ammo == null || ammo.isEmpty()) {
+        if (ammo == null) {
             return 0;
         }
 
