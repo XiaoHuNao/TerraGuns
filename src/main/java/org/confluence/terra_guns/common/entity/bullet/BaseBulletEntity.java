@@ -22,21 +22,16 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.common.NeoForge;
+import org.confluence.lib.common.LibDamageTypes;
 import org.confluence.lib.util.VectorUtils;
 import org.confluence.terra_guns.api.event.BulletEvent;
-import org.confluence.terra_guns.common.init.TGDamageTypes;
 import org.confluence.terra_guns.common.init.TGEntities;
 import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import org.joml.Vector3f;
+
+import java.util.*;
 
 public class BaseBulletEntity extends Projectile {
     private static final int MAX_LIFETIME = 200;
@@ -263,7 +258,7 @@ public class BaseBulletEntity extends Projectile {
     }
 
     public DamageSource getDamageSource() {
-        return TGDamageTypes.of(level(), TGDamageTypes.BULLET_DAMAGE, this, getOwner());
+        return LibDamageTypes.of(level(), LibDamageTypes.GUN_BULLET, this, getOwner());
     }
 
     @Override
@@ -543,7 +538,9 @@ public class BaseBulletEntity extends Projectile {
         return nextPosition.distanceTo(owner.position()) > MAX_OWNER_DISTANCE;
     }
 
-    /** Hook for projectile variants that need to apply gravity or other forces. */
+    /**
+     * Hook for projectile variants that need to apply gravity or other forces.
+     */
     protected void applyForces() {
     }
 

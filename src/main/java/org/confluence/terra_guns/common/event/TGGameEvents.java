@@ -5,18 +5,15 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
-import org.confluence.lib.ConfluenceMagicLib;
 import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.event.BulletEvent;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
-import org.confluence.terra_guns.common.init.TGDamageTypes;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.network.s2c.BulletImpactPacketS2C;
 
 @EventBusSubscriber(modid = TerraGuns.MODID)
-public class GameEvent {
+public class TGGameEvents {
     @SubscribeEvent
     public static void bulletImpact(BulletEvent.HitEvent event) {
         if (!event.getBulletEntity().level().isClientSide) {
@@ -28,8 +25,8 @@ public class GameEvent {
     }
 
     @SubscribeEvent
-    public static void swapGunAnimator(LivingEquipmentChangeEvent event){
-        if (event.getEntity() instanceof ServerPlayer serverPlayer){
+    public static void swapGunAnimator(LivingEquipmentChangeEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             if (event.getSlot() == EquipmentSlot.MAINHAND && event.getFrom().getItem() instanceof BaseGun baseGun) {
                 baseGun.putAwayAnimator(event.getFrom(), serverPlayer);
             }
@@ -42,14 +39,6 @@ public class GameEvent {
                 // 收枪
 //            TerraGuns.LOGGER.info(event.getFrom().toString());
             }
-        }
-    }
-
-    @SubscribeEvent
-    public static void hurtEvent(LivingIncomingDamageEvent event){
-        if (event.getSource().is(TGDamageTypes.BULLET_DAMAGE)) {
-            if (ConfluenceMagicLib.IS_CONFLUENCE_LOAD) return;
-            event.setInvulnerabilityTicks(0);
         }
     }
 

@@ -15,7 +15,7 @@ import org.confluence.terra_guns.network.s2c.BulletImpactPacketS2C;
 import org.confluence.terra_guns.network.s2c.ShotFeedbackPacketS2C;
 
 @EventBusSubscriber(modid = TerraGuns.MODID)
-public class ModEvent {
+public class TGModEvents {
     @SubscribeEvent
     public static void registerNetWork(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");

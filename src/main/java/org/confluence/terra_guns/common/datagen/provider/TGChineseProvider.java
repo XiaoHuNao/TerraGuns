@@ -71,6 +71,5 @@ public class TGChineseProvider extends LanguageProvider {
         add("key.terra_guns.inspect", "检视");
 
         add("creative_tab.terra_guns.gun_tab", "泰拉枪械");
-        add("death.attack.bullet_damage", "%1$s 被 %2$s 枪击");
     }
 }
