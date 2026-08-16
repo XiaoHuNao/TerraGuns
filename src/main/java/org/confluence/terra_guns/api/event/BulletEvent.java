@@ -7,9 +7,9 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import org.confluence.terra_guns.common.definition.BulletImpactEffect;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
-import org.confluence.terra_guns.common.definition.BulletImpactEffect;
 
 public class BulletEvent extends Event {
     private final BaseBulletEntity bulletEntity;

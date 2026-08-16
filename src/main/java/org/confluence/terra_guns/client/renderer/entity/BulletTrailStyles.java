@@ -1,6 +1,5 @@
 package org.confluence.terra_guns.client.renderer.entity;
 
-import net.minecraft.resources.ResourceLocation;
 import org.confluence.terra_guns.TerraGuns;
 
 import java.util.Map;

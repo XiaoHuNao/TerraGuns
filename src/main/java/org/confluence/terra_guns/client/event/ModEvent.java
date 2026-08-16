@@ -13,9 +13,7 @@ import org.confluence.terra_guns.common.init.TGEntities;
 import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.util.TGUtil;
 
-import static org.confluence.terra_guns.client.init.TGKeys.AIM;
-import static org.confluence.terra_guns.client.init.TGKeys.INSPECT;
-import static org.confluence.terra_guns.client.init.TGKeys.SHOOT;
+import static org.confluence.terra_guns.client.init.TGKeys.*;
 
 @EventBusSubscriber(modid = TerraGuns.MODID, value = Dist.CLIENT)
 public class ModEvent {
