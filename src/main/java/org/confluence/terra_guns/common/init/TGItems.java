@@ -15,7 +15,7 @@ import org.confluence.terra_guns.common.item.gun.BaseGun;
 /**
  * tr2mc数值转换
  * 时间 三分之一
- * 伤害 二分之一，然后适当偏下0.5f-1f的范围
+ * 伤害 二分之一，然后适当偏下0.5f-1f的范围（子弹26%然后向下取0.5）
  * 速度 八分之一
  * 击退 二十分之一
  */
@@ -45,13 +45,13 @@ public class TGItems {
 
     public static final DeferredItem<BaseBullet> CRYSTAL_BULLET = BULLETS.registerItem("crystal_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(2.5f, 0.62f, 2f, 0.05f, 0, ModRarity.ORANGE, false).withBehavior(BulletBehavior.CRYSTAL_SPLIT).withImpactEffect(BulletImpactEffect.CRYSTAL_IMPACT)));
     public static final DeferredItem<BaseBullet> ICHOR_BULLET = BULLETS.registerItem("ichor_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(4.5f, 0.65f, 3f, 0.2f, 0, ModRarity.ORANGE, false).withBehavior(BulletBehavior.ICHOR_DEBUFF)));
-    public static final DeferredItem<BaseBullet> CURSED_BULLET = BULLETS.registerItem("cursed_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(4f, 0.62f, 3f, 0.2f, 0, ModRarity.ORANGE, false).withBehavior(BulletBehavior.CURSED_DEBUFF)));
+    public static final DeferredItem<BaseBullet> CURSED_BULLET = BULLETS.registerItem("cursed_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(4.5f, 0.62f, 3f, 0.2f, 0, ModRarity.ORANGE, false).withBehavior(BulletBehavior.CURSED_DEBUFF)));
     public static final DeferredItem<BaseBullet> CHLOROPHYTE_BULLET = BULLETS.registerItem("chlorophyte_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(2.5f, 0.62f, 3f, 0.22f, 0, ModRarity.LIME, false).withBehavior(BulletBehavior.CHLOROPHYTE_HOMING).withImpactEffect(BulletImpactEffect.CHLOROPHYTE_IMPACT)));
     public static final DeferredItem<BaseBullet> HIGH_VELOCITY_BULLET = BULLETS.registerItem("high_velocity_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(3.5f, 0.5f, 8f, 0.2f, 3, ModRarity.ORANGE, false).withBehavior(BulletBehavior.HIGH_VELOCITY_DAMAGE_DECAY)));
     public static final DeferredItem<BaseBullet> EXPLODING_BULLET = BULLETS.registerItem("exploding_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(3f, 0.58f, 3f, 0.33f, 0, ModRarity.ORANGE, false).withBehavior(BulletBehavior.EXPLOSIVE)));
     public static final DeferredItem<BaseBullet> GOLDEN_BULLET = BULLETS.registerItem("golden_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(3f, 0.57f, 3f, 0.18f, 0, ModRarity.ORANGE, false)));
     public static final DeferredItem<BaseBullet> VENOM_BULLET = BULLETS.registerItem("venom_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(5.5f, 0.66f, 3f, 0.21f, 0, ModRarity.ORANGE, false).withBehavior(BulletBehavior.VENOM_DEBUFF)));
-    public static final DeferredItem<BaseBullet> NANO_BULLET = BULLETS.registerItem("nano_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(5.5f, 0.57f, 3f, 0.18f, 0, ModRarity.ORANGE, false).withBehavior(BulletBehavior.NANO_RICOCHET)));
+    public static final DeferredItem<BaseBullet> NANO_BULLET = BULLETS.registerItem("nano_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(5.0f, 0.57f, 3f, 0.18f, 0, ModRarity.ORANGE, false).withBehavior(BulletBehavior.NANO_RICOCHET)));
     public static final DeferredItem<BaseBullet> ENDLESS_MUSKET_POUCH = BULLETS.registerItem("endless_musket_pouch", properties -> new BaseBullet(properties.stacksTo(1), new BulletDefinition(1.5f, 0.5f, 2f, 0.1f, 0, ModRarity.GREEN, true)));
     public static final DeferredItem<BaseBullet> LUMINITE_BULLET = BULLETS.registerItem("luminite_bullet", properties -> new BaseBullet(properties.stacksTo(99), new BulletDefinition(6f, 0.25f, 6f, 0.15f, -1, ModRarity.CYAN, false).withBehavior(BulletBehavior.LUMINITE_DAMAGE_DECAY).withImpactEffect(BulletImpactEffect.LUMINITE_IMPACT)));
 
