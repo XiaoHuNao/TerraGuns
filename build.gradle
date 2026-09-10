@@ -107,6 +107,8 @@ dependencies {
 
     compileOnly "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
     runtimeOnly "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    runtimeOnly "maven.modrinth:mmmmmmmmmmmm:1.21-2.0.11-neoforge"
+    runtimeOnly "maven.modrinth:moonlight:1.21-2.29.10-neoforge"
 
 //    runtimeOnly "curse.maven:tweakerge-915857:6387063"
 //    runtimeOnly "curse.maven:mafglib-910766:6416901"
@@ -115,8 +117,6 @@ dependencies {
         // 单独开发时
         runtimeOnly "curse.maven:freecam-by-zergatul-618947:5591136"
         implementation(jarJar("org.confluence.lib:Confluence-Magic-Lib:${confluence_lib_version}"))
-        runtimeOnly "maven.modrinth:mmmmmmmmmmmm:1.21-2.0.11-neoforge"
-        runtimeOnly "maven.modrinth:moonlight:1.21-2.29.10-neoforge"
     } else {
         // 作为submodule开发时
         if (dev) {
