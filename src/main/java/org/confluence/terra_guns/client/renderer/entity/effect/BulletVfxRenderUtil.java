@@ -31,7 +31,10 @@ public final class BulletVfxRenderUtil {
         Vec3 upOffset = up.scale(halfSize);
         Vec3 relativeCenter = worldPosition.subtract(cameraPosition);
         Matrix4f matrix = poseStack.last().pose();
-        VertexConsumer buffer = bufferSource.getBuffer(TGRenderTypes.trail(texture, true));
+        // Impact sprites use real alpha gradients now; standard translucent
+        // blending preserves their semitransparent pixels instead of treating
+        // them like the old opaque black-background additive masks.
+        VertexConsumer buffer = bufferSource.getBuffer(TGRenderTypes.trail(texture, false));
         texturedVertex(buffer, matrix, relativeCenter.subtract(rightOffset).subtract(upOffset), color, 0.0F, 1.0F);
         texturedVertex(buffer, matrix, relativeCenter.add(rightOffset).subtract(upOffset), color, 1.0F, 1.0F);
         texturedVertex(buffer, matrix, relativeCenter.add(rightOffset).add(upOffset), color, 1.0F, 0.0F);

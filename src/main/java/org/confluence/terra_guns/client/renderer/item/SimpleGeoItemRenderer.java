@@ -117,27 +117,35 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
                         }
                     }
 
-                    // Shell bones are animated out of the weapon during the
-                    // shot. Once GeckoLib finishes the triggered animation it
-                    // restores unkeyed bones to their default transform; that
-                    // would make the same shell visibly snap back into the
-                    // chamber. Keep it hidden outside the firing clip so the
-                    // reset pose can never render a second copy.
+                    // Shell visibility is an animation concern, not a firing
+                    // flash concern.  The Shell bone is now parented by Root
+                    // and is also keyed by inspect.  Binding it to isFiring
+                    // made the hand_pose controller hide it every frame while
+                    // inspecting, and made automatic fire flicker it when
+                    // the two controllers changed state.
                     for (String boneName : List.of("Shell", "shell", "Shell1", "shell1")) {
                         GeoBone bone = getAnimationProcessor().getBone(boneName);
                         if (bone != null) {
-                            bone.setHidden(!isFiring);
+                            bone.setHidden(!firstPerson || !this.isShellAnimationActive(animatable, instanceId, animationState));
                         }
                     }
 
-                    for (String boneName : List.of("lefthand_pos", "righthand_pos")) {
+                    for (String boneName : List.of("lefthand_pos", "righthand_pos", "constraint")) {
                         GeoBone bone = getAnimationProcessor().getBone(boneName);
                         if (bone != null) {
                             bone.setHidden(true);
                         }
                     }
 
-                    if (firstPerson && controlsCamera(animatable, animationState)) {
+                    // setCustomAnimations is called once per controller.  Do
+                    // not clear the shared camera state merely because the
+                    // current controller is shell_action and has no camera
+                    // track; another controller may have just written the
+                    // recoil camera bone in this same render pass.
+                    // Clearing is owned by GameEvent's client tick, so GUI,
+                    // ground, or third-person item renders cannot overwrite
+                    // the camera state used by the world render.
+                    if (firstPerson && controlsCamera(animatable, instanceId, animationState)) {
                         GunCameraAnimation.capture(getAnimationProcessor().getBone("camera"));
                     }
 
@@ -173,25 +181,31 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
                             || perspective == ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
                 }
 
-                private boolean controlsCamera(T animatable, AnimationState<T> animationState) {
+                private boolean controlsCamera(T animatable, long instanceId, AnimationState<T> animationState) {
                     if (!(animatable instanceof BaseGun baseGun)) {
-                        return false;
+                        AnimationController<T> controller = animationState.getController();
+                        if (controller.getAnimationState() == AnimationController.State.STOPPED) {
+                            return false;
+                        }
+                        AnimationProcessor.QueuedAnimation currentAnimation = controller.getCurrentAnimation();
+                        if (currentAnimation == null) {
+                            return false;
+                        }
+                        String animationName = currentAnimation.animation().name();
+                        return "draw".equals(animationName)
+                                || "put_away".equals(animationName)
+                                || "inspect".equals(animationName)
+                                || "fire".equals(animationName)
+                                || "shoot".equals(animationName);
                     }
 
-                    AnimationController<T> controller = animationState.getController();
-                    if (controller.getAnimationState() == AnimationController.State.STOPPED) {
-                        return false;
-                    }
-                    AnimationProcessor.QueuedAnimation currentAnimation = controller.getCurrentAnimation();
-                    if (currentAnimation == null) {
-                        return false;
-                    }
-
-                    String animationName = currentAnimation.animation().name();
-                    return baseGun.getAnimationProfile().isAnimation(HandAnimationAction.DRAW, animationName)
-                            || baseGun.getAnimationProfile().isAnimation(HandAnimationAction.PUT_AWAY, animationName)
-                            || baseGun.getAnimationProfile().isAnimation(HandAnimationAction.INSPECT, animationName)
-                            || baseGun.getAnimationProfile().isAnimation(HandAnimationAction.SHOOT, animationName);
+                    // Camera ownership is profile-wide rather than
+                    // controller-local.  This remains true when a profile
+                    // adds independent action channels such as shell_action.
+                    return baseGun.isAnimationPlaying(instanceId, HandAnimationAction.DRAW)
+                            || baseGun.isAnimationPlaying(instanceId, HandAnimationAction.PUT_AWAY)
+                            || baseGun.isAnimationPlaying(instanceId, HandAnimationAction.INSPECT)
+                            || baseGun.isAnimationPlaying(instanceId, HandAnimationAction.SHOOT);
                 }
 
                 private boolean isFiring(T animatable, long instanceId, AnimationState<T> animationState) {
@@ -217,6 +231,30 @@ public class SimpleGeoItemRenderer<T extends Item & GeoAnimatable> implements IC
                     }
                     return "fire".equals(currentAnimation.animation().name())
                             || "shoot".equals(currentAnimation.animation().name());
+                }
+
+                private boolean isShellAnimationActive(T animatable, long instanceId, AnimationState<T> animationState) {
+                    if (animatable instanceof BaseGun baseGun) {
+                        // SHOOT keeps the casing visible during the hand-off
+                        // between the recoil controller and shell_action.
+                        // INSPECT is the owner of Shell in the inspect clip.
+                        return baseGun.isAnimationPlaying(instanceId, HandAnimationAction.EJECT_SHELL)
+                                || baseGun.isAnimationPlaying(instanceId, HandAnimationAction.SHOOT)
+                                || baseGun.isAnimationPlaying(instanceId, HandAnimationAction.INSPECT);
+                    }
+
+                    AnimationController<T> controller = animationState.getController();
+                    if (controller.getAnimationState() == AnimationController.State.STOPPED) {
+                        return false;
+                    }
+                    AnimationProcessor.QueuedAnimation currentAnimation = controller.getCurrentAnimation();
+                    if (currentAnimation == null) {
+                        return false;
+                    }
+                    String animationName = currentAnimation.animation().name();
+                    return "shoot".equals(animationName)
+                            || "shell_eject".equals(animationName)
+                            || "inspect".equals(animationName);
                 }
             });
         }

@@ -23,7 +23,7 @@ final class TaczFirstPersonTransform {
     }
 
     static void applyIdleViewInverse(PoseStack poseStack, GeoBone idleView) {
-        applyPositioningInverse(poseStack, idleView);
+        applyPositioningInverse(poseStack, idleView, true);
     }
 
     /**
@@ -32,6 +32,10 @@ final class TaczFirstPersonTransform {
      * ground/third-person/fixed display locators.
      */
     static void applyPositioningInverse(PoseStack poseStack, GeoBone locator) {
+        applyPositioningInverse(poseStack, locator, false);
+    }
+
+    private static void applyPositioningInverse(PoseStack poseStack, GeoBone locator, boolean useInitialTransform) {
         if (locator == null) {
             return;
         }
@@ -44,9 +48,18 @@ final class TaczFirstPersonTransform {
         // GeckoLib renders a bone as Z -> Y -> X. The inverse therefore
         // walks X -> Y -> Z, then removes the bone's baked Geo-space pivot.
         for (GeoBone bone : path) {
-            poseStack.mulPose(Axis.XP.rotation(-bone.getRotX()));
-            poseStack.mulPose(Axis.YP.rotation(-bone.getRotY()));
-            poseStack.mulPose(Axis.ZN.rotation(bone.getRotZ()));
+            float rotX = bone.getRotX();
+            float rotY = bone.getRotY();
+            float rotZ = bone.getRotZ();
+            if (useInitialTransform && bone.getInitialSnapshot() != null) {
+                rotX = bone.getInitialSnapshot().getRotX();
+                rotY = bone.getInitialSnapshot().getRotY();
+                rotZ = bone.getInitialSnapshot().getRotZ();
+            }
+
+            poseStack.mulPose(Axis.XP.rotation(-rotX));
+            poseStack.mulPose(Axis.YP.rotation(-rotY));
+            poseStack.mulPose(Axis.ZN.rotation(rotZ));
 
             GeoBone parent = bone.getParent();
             float partX = bone.getPivotX();

@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.confluence.terra_guns.client.init.TGKeys;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animation.state.BoneSnapshot;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
@@ -36,9 +37,9 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
     // placement. It keeps a GeoItemRenderer model away from the near clip
     // plane and places it in the lower-right hand area after the custom hook
     // has skipped vanilla's per-item transform.
-    private static final float FIRST_PERSON_X = 0.54F;
-    private static final float FIRST_PERSON_Y = -0.10F;
-    private static final float FIRST_PERSON_Z = -0.24F;
+    private static final float FIRST_PERSON_X = 0.56F;
+    private static final float FIRST_PERSON_Y = -0.20F;
+    private static final float FIRST_PERSON_Z = -0.72F;
 
     // Arms are queued while the model is traversed and rendered after the
     // complete gun. Rendering them at the marker immediately would let later
@@ -99,11 +100,13 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
             prepareModelPoseForFrame();
             poseStack.pushPose();
 
-            // ItemRenderer has already translated the custom-renderer stack
-            // by (-0.5, -0.5, -0.5), and GeoItemRenderer adds
-            // (+0.5, +0.51, +0.5) in preRender. Their net result is only a
-            // +0.01 Y residual. Do not subtract another half-block here:
-            // that would move the whole gun to the left and into the camera.
+            // ItemRenderer always centres a custom item renderer with
+            // (-0.5, -0.5, -0.5), even when applyForgeHandTransform returns
+            // true.  GeoItemRenderer.preRender then adds (+0.5, +0.51,
+            // +0.5).  Their net result is only the known +0.01 Y residual;
+            // do not subtract another half-block here or the gun will be
+            // pushed into the upper-left corner and appear at the wrong
+            // camera depth.
             poseStack.translate(0.0F, -0.01F, 0.0F);
 
             // This translation is deliberately before the view-node inverse,
@@ -112,14 +115,30 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
             float side = renderPerspective == ItemDisplayContext.FIRST_PERSON_LEFT_HAND ? -1.0F : 1.0F;
             poseStack.translate(side * FIRST_PERSON_X, FIRST_PERSON_Y, FIRST_PERSON_Z);
 
+            // TACZ's constraint point is evaluated after GeckoLib has ticked
+            // the animation but before the root bone is rendered. Applying it
+            // here keeps both the gun and the hand markers on the same
+            // corrected transform.
+            // The project does not have an interpolated ADS progress yet.
+            // TACZ applies ICA with that progress, not as a permanent
+            // correction.  Applying it at weight 1 during inspect makes a
+            // rotating Root move the whole weapon around the sight point,
+            // which is the source of the huge upper-left jump.
+            float constraintWeight = TGKeys.AIM.get().isDown() ? 1.0F : 0.0F;
+            TaczAnimationConstraint.apply(poseStack, findModelBone("constraint"), constraintWeight);
+
             // GeckoLib's Bedrock loader has already baked the TACZ model
             // axes into GeoBone/GeoCube coordinates. Applying TACZ's
             // render-origin Z180 here a second time flips the pistol over.
-            GeoBone idleView = getGeoModel().getAnimationProcessor().getBone("idle_view");
-            if (idleView == null) {
-                idleView = getGeoModel().getBone("idle_view").orElse(null);
+            GeoBone firstPersonLocator = findModelBone("idle_view");
+            if (firstPersonLocator == null) {
+                // The replacement handgun geo keeps the old idle_view pivot
+                // on the camera bone. Its rotation is animated for view kick,
+                // so apply only the static locator transform here; otherwise
+                // the camera animation is inverted into the gun a second time.
+                firstPersonLocator = findModelBone("camera");
             }
-            TaczFirstPersonTransform.applyIdleViewInverse(poseStack, idleView);
+            TaczFirstPersonTransform.applyIdleViewInverse(poseStack, firstPersonLocator);
 
             // Keep the camera-space stack before GeckoLib applies the current
             // top-level bone. The model may have several top-level bones, so
@@ -161,6 +180,30 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
     }
 
     @Override
+    public void actuallyRender(PoseStack poseStack, T animatable, BakedGeoModel model, RenderType renderType,
+                               MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender,
+                               float partialTick, int packedLight, int packedOverlay, int packedColor) {
+        // GeoModel.handleAnimations can skip setCustomAnimations when the
+        // same item instance was already rendered at this tick. A GUI,
+        // dropped-item, or third-person render can therefore arrive here with
+        // the first-person hand animation still applied to the shared model.
+        // Non-first-person renders must not run GeckoLib's animation update.
+        // The same GeoModel is shared by every display context; allowing the
+        // hand animation to update it here makes the resulting pose leak into
+        // GUI, ground, and third-person renders.  In GeckoLib's renderer,
+        // isReRender=true is the render-only path and skips handleAnimations.
+        if (!isFirstPersonPerspective()) {
+            resetModelForDisplayContext();
+            super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer,
+                    true, partialTick, packedLight, packedOverlay, packedColor);
+            return;
+        }
+
+        super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer,
+                isReRender, partialTick, packedLight, packedOverlay, packedColor);
+    }
+
+    @Override
     public void renderFinal(PoseStack poseStack, T animatable, BakedGeoModel model, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay, int colour) {
         // Render the arms only after every top-level gun bone has finished.
         // This prevents the gun's later sibling bones from depth-occluding
@@ -199,6 +242,39 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
 
         GeoBone bone = getGeoModel().getAnimationProcessor().getBone(boneName);
         return bone != null ? bone : getGeoModel().getBone(boneName).orElse(null);
+    }
+
+    private void resetModelForDisplayContext() {
+        for (GeoBone bone : getGeoModel().getAnimationProcessor().getRegisteredBones()) {
+            BoneSnapshot snapshot = bone.getInitialSnapshot();
+            if (snapshot == null) {
+                continue;
+            }
+
+            bone.setPosX(snapshot.getOffsetX());
+            bone.setPosY(snapshot.getOffsetY());
+            bone.setPosZ(snapshot.getOffsetZ());
+            bone.setRotX(snapshot.getRotX());
+            bone.setRotY(snapshot.getRotY());
+            bone.setRotZ(snapshot.getRotZ());
+            bone.setScaleX(snapshot.getScaleX());
+            bone.setScaleY(snapshot.getScaleY());
+            bone.setScaleZ(snapshot.getScaleZ());
+            bone.resetStateChanges();
+        }
+
+        // These bones are only meaningful in first-person rendering. Reset
+        // their visibility too, because GeckoLib may skip the animation hook
+        // that normally applies these hidden flags for display contexts.
+        for (String boneName : List.of(
+                "Fire", "Fire1", "Fire2", "Fire3",
+                "Shell", "shell", "Shell1", "shell1",
+                "lefthand_pos", "righthand_pos", "constraint")) {
+            GeoBone bone = findModelBone(boneName);
+            if (bone != null) {
+                bone.setHidden(true);
+            }
+        }
     }
 
     private void queuePlayerArm(PoseStack poseStack, GeoBone handPosition, HumanoidArm arm) {
@@ -499,8 +575,11 @@ public class GunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer
         lastLeftArmLocalNormal = null;
         lastRightArmLocalPose = null;
         lastRightArmLocalNormal = null;
-        lastModelPose.clear();
-        modelPoseBeforeOverride.clear();
+        // The hotbar/GUI is rendered between two first-person frames and
+        // deliberately resets the shared GeoModel to its static display
+        // pose.  Do not discard the first-person model snapshot here: that
+        // snapshot is exactly what protects the next frame from GeckoLib's
+        // one-tick reset while a play-once animation hands off to idle.
     }
 
     private record BonePose(float posX, float posY, float posZ,

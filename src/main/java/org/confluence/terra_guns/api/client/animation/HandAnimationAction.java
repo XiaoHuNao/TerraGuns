@@ -5,6 +5,7 @@ public enum HandAnimationAction {
     DRAW("draw"),
     PUT_AWAY("put_away"),
     SHOOT("shoot"),
+    EJECT_SHELL("eject_shell"),
     RELOAD("reload"),
     INSPECT("inspect");
 

@@ -46,13 +46,22 @@ public final class HandAnimationProfile {
     public static HandAnimationProfile handgun() {
         return builder()
                 .channel(HandAnimationChannel.builder("hand_pose")
-                        .idle("static_idle")
+                        .idle("idle")
                         .animation(HandAnimationAction.DRAW, "draw", Animation.LoopType.PLAY_ONCE)
                         .animation(HandAnimationAction.PUT_AWAY, "put_away", Animation.LoopType.PLAY_ONCE)
                         .animation(HandAnimationAction.INSPECT, "inspect", Animation.LoopType.PLAY_ONCE)
                         .build())
                 .channel(HandAnimationChannel.builder("weapon_action")
                         .animation(HandAnimationAction.SHOOT, "shoot", Animation.LoopType.PLAY_ONCE)
+                        .build())
+                // The casing is a separate visual state.  Keeping it out of
+                // the recoil controller prevents a new shot from rewinding a
+                // casing that is still travelling through the ejection arc.
+                // This channel intentionally has no idle animation: the
+                // renderer hides the casing after the one-shot clip ends,
+                // while inspect continues to own the Shell bone itself.
+                .channel(HandAnimationChannel.builder("shell_action")
+                        .animation(HandAnimationAction.EJECT_SHELL, "shell_eject", Animation.LoopType.PLAY_ONCE)
                         .build())
                 .build();
     }

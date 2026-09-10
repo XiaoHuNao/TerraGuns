@@ -121,6 +121,16 @@ public class BaseGun extends Item implements GeoItem {
         // would leave the inspection channel playing underneath it.
         HandAnimationApi.stop(this, itemStack, serverPlayer, animationProfile, HandAnimationAction.INSPECT);
         playAnimator(itemStack, serverPlayer, HandAnimationAction.SHOOT);
+
+        // Shell is deliberately independent from the recoil animation.  This
+        // gun model has one Shell bone, so restarting it before the previous
+        // ejection has finished would visibly teleport the casing back to the
+        // chamber on every automatic shot.  Let the current casing finish;
+        // the next shot will start a new one once the bone is available.
+        long instanceId = GeoItem.getOrAssignId(itemStack, serverPlayer.serverLevel());
+        if (!isAnimationPlaying(instanceId, HandAnimationAction.EJECT_SHELL)) {
+            playAnimator(itemStack, serverPlayer, HandAnimationAction.EJECT_SHELL);
+        }
     }
 
     public void pickAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
@@ -132,10 +142,14 @@ public class BaseGun extends Item implements GeoItem {
     }
 
     public void putAwayAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
+        HandAnimationApi.stop(this, itemStack, serverPlayer, animationProfile, HandAnimationAction.EJECT_SHELL);
         playAnimator(itemStack, serverPlayer, HandAnimationAction.PUT_AWAY);
     }
 
     public void inspectAnimator(ItemStack itemStack, ServerPlayer serverPlayer) {
+        // Inspect owns the Shell track in hand_gun.animation.json.  Stop a
+        // previous firing ejection before handing that bone back to inspect.
+        HandAnimationApi.stop(this, itemStack, serverPlayer, animationProfile, HandAnimationAction.EJECT_SHELL);
         playAnimator(itemStack, serverPlayer, HandAnimationAction.INSPECT);
     }
 
