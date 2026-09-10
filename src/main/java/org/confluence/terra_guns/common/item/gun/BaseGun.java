@@ -19,7 +19,9 @@ import org.confluence.terra_guns.api.client.animation.HandAnimationChannel;
 import org.confluence.terra_guns.api.client.animation.HandAnimationProfile;
 import org.confluence.terra_guns.common.definition.FireMode;
 import org.confluence.terra_guns.common.definition.GunDefinition;
+import org.confluence.terra_guns.common.enchantment.GunEnchantmentService;
 import org.confluence.terra_guns.common.init.TGDataComponents;
+import org.confluence.terra_guns.common.init.TGEnchantments;
 import org.confluence.terra_guns.common.init.TGTags;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
@@ -81,6 +83,22 @@ public class BaseGun extends Item implements GeoItem {
                         String.format("%.1f", definition.critical() * 100)).withStyle(ChatFormatting.GRAY));
         tooltipComponents.add(Component.translatable("tooltip.terra_guns.knockback", definition.knockback())
                 .withStyle(ChatFormatting.GRAY));
+
+        if (GunEnchantmentService.getLevel(stack, TGEnchantments.EMERGENCY_MELEE) > 0) {
+            int remainingTicks = context.level() == null
+                    ? 0
+                    : GunEnchantmentService.getEmergencyMeleeCooldownRemaining(stack, context.level());
+            if (remainingTicks > 0) {
+                tooltipComponents.add(Component.translatable(
+                        "tooltip.terra_guns.emergency_melee.cooldown",
+                        (remainingTicks + 19) / 20
+                ).withStyle(ChatFormatting.GRAY));
+            } else {
+                tooltipComponents.add(Component.translatable(
+                        "tooltip.terra_guns.emergency_melee.cooldown.ready"
+                ).withStyle(ChatFormatting.GRAY));
+            }
+        }
     }
 
     public int getCooldown() {

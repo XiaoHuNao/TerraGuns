@@ -25,6 +25,8 @@ public class TGEnglishProvider extends LanguageProvider {
         add("tooltip.terra_guns.damage", "Ranged Damage: %s");
         add("tooltip.terra_guns.critical", "Critical Strike Chance: %s%%");
         add("tooltip.terra_guns.knockback", "Knockback: %s");
+        add("tooltip.terra_guns.emergency_melee.cooldown", "Emergency Melee Cooldown: %s seconds");
+        add("tooltip.terra_guns.emergency_melee.cooldown.ready", "Emergency Melee Cooldown: Ready");
         add("tooltip.terra_guns.ability.silver_particles", "Special Effect: Emits white particles in flight and a cross-shaped flash on impact");
         add("tooltip.terra_guns.ability.party_confetti", "Special Effect: Releases confetti when hitting an enemy or block");
         add("tooltip.terra_guns.ability.crystal_split", "Special Effect: Splits backward into 2 shards at 50% damage; shards pass through blocks");
@@ -37,6 +39,9 @@ public class TGEnglishProvider extends LanguageProvider {
         add("tooltip.terra_guns.ability.cursed_debuff", "Special Effect: Applies Wither");
         add("tooltip.terra_guns.ability.venom_debuff", "Special Effect: Applies Poison");
         add("tooltip.terra_guns.ability.luminite_damage_decay", "Special Effect: Damage drops by 4% after each hit, down to 0");
+        add("enchantment.terra_guns.emergency_melee", "Emergency Melee");
+        add("enchantment.terra_guns.temporary_reserve", "Temporary Reserve");
+        add("enchantment.terra_guns.compressed_tactics", "Compressed Tactics");
         TGItems.GUNS.getEntries().forEach(itemAction);
         TGItems.BULLETS.getEntries().forEach(itemAction);
         TGEntities.ENTITY_TYPES.getEntries().forEach(entityAction);

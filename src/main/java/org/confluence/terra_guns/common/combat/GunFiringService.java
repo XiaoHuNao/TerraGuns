@@ -7,6 +7,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.confluence.terra_guns.api.event.GunEvent;
 import org.confluence.terra_guns.common.component.BulletPropertyComponent;
 import org.confluence.terra_guns.common.component.GunPropertyComponent;
+import org.confluence.terra_guns.common.enchantment.GunEnchantmentService;
 import org.confluence.terra_guns.common.init.TGDataComponents;
 import org.confluence.terra_guns.common.item.bullet.BaseBullet;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
@@ -26,6 +27,22 @@ public final class GunFiringService {
         if (ammo == null || ammo.isEmpty()) {
             return 0;
         }
+
+        ShotContext context = resolve(player, gun, gunStack, ammo);
+        return GunProjectileFactory.spawn(context, gun.getDefinition().projectilePattern());
+    }
+
+    /** Fires a fixed radial burst without consuming the selected ammunition. */
+    public static int fireRadial(ServerPlayer player, BaseGun gun, ItemStack gunStack, ItemStack ammo, int directions) {
+        if (ammo == null || ammo.isEmpty()) {
+            return 0;
+        }
+
+        ShotContext context = resolve(player, gun, gunStack, ammo);
+        return GunProjectileFactory.spawnRadial(context, gun.getDefinition().projectilePattern(), directions);
+    }
+
+    private static ShotContext resolve(ServerPlayer player, BaseGun gun, ItemStack gunStack, ItemStack ammo) {
 
         GunPropertyComponent gunProperties = gunStack.get(TGDataComponents.GUN_PROPERTY_COMPONENT);
         if (gunProperties == null) {
@@ -75,7 +92,8 @@ public final class GunFiringService {
         NeoForge.EVENT_BUS.post(ammoDataEvent);
 
         float finalDamage = TGUtil.criticalDamageTotal(ammoDataEvent.getCritical(), ammoDataEvent.getDamage(), player.getRandom());
-        ShotContext context = new ShotContext(
+        finalDamage *= GunEnchantmentService.getCompressedDamageMultiplier(player, gunStack);
+        return new ShotContext(
                 player,
                 gunStack,
                 ammo,
@@ -85,7 +103,6 @@ public final class GunFiringService {
                 ammoDataEvent.getPenetrate(),
                 ammoDataEvent.getInaccuracy()
         );
-        return GunProjectileFactory.spawn(context, gun.getDefinition().projectilePattern());
     }
 
     public static boolean isInfinite(ItemStack ammo) {

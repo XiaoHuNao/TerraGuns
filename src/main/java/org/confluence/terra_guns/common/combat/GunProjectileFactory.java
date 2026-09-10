@@ -3,6 +3,7 @@ package org.confluence.terra_guns.common.combat;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.terra_guns.common.enchantment.GunEnchantmentService;
 import org.confluence.terra_guns.common.definition.GunProjectilePattern;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 import org.confluence.terra_guns.common.entity.bullet.CustomBulletEntity;
@@ -26,6 +27,16 @@ public final class GunProjectileFactory {
         return projectiles.size();
     }
 
+    public static int spawnRadial(ShotContext context, GunProjectilePattern pattern, int directions) {
+        int count = Math.max(1, directions);
+        for (int index = 0; index < count; index++) {
+            double angle = Math.PI * 2.0D * index / count;
+            Vec3 direction = new Vec3(Math.cos(angle), 0.0D, Math.sin(angle));
+            context.level().addFreshEntity(createProjectile(context, pattern, direction));
+        }
+        return count;
+    }
+
     public static List<BaseBulletEntity> create(ShotContext context, GunProjectilePattern pattern) {
         int count = pattern.type() == GunProjectilePattern.Type.SHOTGUN
                 ? pattern.sampleProjectileCount(context.shooter().getRandom())
@@ -39,6 +50,11 @@ public final class GunProjectileFactory {
 
     private static BaseBulletEntity createProjectile(ShotContext context, GunProjectilePattern pattern) {
         ServerPlayer shooter = context.shooter();
+        return createProjectile(context, pattern, shooter.getViewVector(1.0F));
+    }
+
+    private static BaseBulletEntity createProjectile(ShotContext context, GunProjectilePattern pattern, Vec3 direction) {
+        ServerPlayer shooter = context.shooter();
         ItemStack ammo = context.ammo();
         BaseBulletEntity entity = pattern.type() == GunProjectilePattern.Type.GRAVITY
                 ? new CustomBulletEntity(shooter, pattern.gravity(), ammo)
@@ -47,7 +63,9 @@ public final class GunProjectileFactory {
         entity.setDamage(context.damage());
         entity.setKnockback(context.knockback());
         entity.setPenetrate(context.penetrate());
-        Vec3 direction = shooter.getViewVector(1.0F);
+        entity.setTemporaryReserveLevel(
+                GunEnchantmentService.getTemporaryReserveLevel(shooter, context.gun())
+        );
         float speed = Math.max(0.0F, context.velocity());
         entity.shoot(
                 direction.x,

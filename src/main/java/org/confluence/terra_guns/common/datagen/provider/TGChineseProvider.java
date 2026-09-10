@@ -21,6 +21,8 @@ public class TGChineseProvider extends LanguageProvider {
         add("tooltip.terra_guns.damage", "远程伤害：%s");
         add("tooltip.terra_guns.critical", "暴击率：%s%%");
         add("tooltip.terra_guns.knockback", "击退力：%s");
+        add("tooltip.terra_guns.emergency_melee.cooldown", "紧急近战冷却：%s秒");
+        add("tooltip.terra_guns.emergency_melee.cooldown.ready", "紧急近战冷却：就绪");
         add("tooltip.terra_guns.ability.silver_particles", "特殊效果：飞行时产生白色粒子，碰撞后产生十字闪光");
         add("tooltip.terra_guns.ability.party_confetti", "特殊效果：命中敌怪或方块时释放彩纸");
         add("tooltip.terra_guns.ability.crystal_split", "特殊效果：命中后向后分裂为 2 枚碎片，伤害为原弹 50%，可穿过方块");
@@ -33,6 +35,9 @@ public class TGChineseProvider extends LanguageProvider {
         add("tooltip.terra_guns.ability.cursed_debuff", "特殊效果：施加凋零");
         add("tooltip.terra_guns.ability.venom_debuff", "特殊效果：施加中毒");
         add("tooltip.terra_guns.ability.luminite_damage_decay", "特殊效果：每次命中后伤害降低 4%，最低降至 0");
+        add("enchantment.terra_guns.emergency_melee", "紧急近战");
+        add("enchantment.terra_guns.temporary_reserve", "临时战备");
+        add("enchantment.terra_guns.compressed_tactics", "压缩战法");
 
         addItem(HAND_GUN, "手枪");
         addItem(SHOTGUN, "霰弹枪");

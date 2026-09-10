@@ -4,6 +4,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.NeoForge;
 import org.confluence.terra_guns.api.event.GunEvent;
+import org.confluence.terra_guns.common.enchantment.GunEnchantmentService;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletHandler;
 
@@ -33,7 +34,7 @@ public final class ShootingService {
             return false;
         }
 
-        ItemStack ammo = BulletHandler.getAmmo(player, gunStack);
+        ItemStack ammo = BulletHandler.getAmmoForShot(player, gunStack);
         GunEvent.GunFireEvent fireEvent = new GunEvent.GunFireEvent(player, gun, ammo, !ammo.isEmpty());
         NeoForge.EVENT_BUS.post(fireEvent);
         if (!fireEvent.isFire()) {
@@ -42,6 +43,12 @@ public final class ShootingService {
 
         ItemStack selectedAmmo = fireEvent.getAmmo();
         if (selectedAmmo == null || selectedAmmo.isEmpty()) {
+            return false;
+        }
+
+        int ammoUse = GunEnchantmentService.getCompressedAmmoUse(player, gunStack);
+        if (!GunFiringService.isInfinite(selectedAmmo)
+                && !BulletHandler.hasEnoughAmmo(player, gunStack, selectedAmmo, ammoUse)) {
             return false;
         }
 
@@ -66,9 +73,12 @@ public final class ShootingService {
         NeoForge.EVENT_BUS.post(shrinkEvent);
 
         ItemStack bulletStack = shrinkEvent.getBulletStack();
-        int shrink = Math.max(0, shrinkEvent.getShrink());
+        int shrink = Math.max(
+                GunEnchantmentService.getCompressedAmmoUse(player, gunStack),
+                Math.max(0, shrinkEvent.getShrink())
+        );
         if (!shrinkEvent.isInfinity() && !shrinkEvent.isCanceled() && bulletStack != null && shrink > 0) {
-            bulletStack.shrink(shrink);
+            BulletHandler.consumeAmmo(player, bulletStack, shrink);
         }
     }
 }

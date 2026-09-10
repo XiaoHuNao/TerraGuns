@@ -40,7 +40,8 @@ import org.joml.Vector3f;
 
 public class BaseBulletEntity extends Projectile {
     private static final int MAX_LIFETIME = 200;
-    private static final double MAX_OWNER_DISTANCE = 256.0D;
+    private static final double MAX_OWNER_HORIZONTAL_DISTANCE = 256.0D;
+    private static final double MAX_OWNER_VERTICAL_DISTANCE = 512.0D;
     private static final double MAX_RENDER_DISTANCE = 256.0D;
     private static final int MAX_ENTITY_COLLISIONS_PER_TICK = 32;
     private static final int MAX_TRAIL_POINTS = 64;
@@ -64,6 +65,7 @@ public class BaseBulletEntity extends Projectile {
     private final List<Vec3> trails = new ArrayList<>();
     private boolean appliedInitialVelocity;
     public double accelerationPower;
+    private int temporaryReserveLevel;
 
     public BaseBulletEntity(EntityType<? extends BaseBulletEntity> entityType, Level level) {
         super(entityType, level);
@@ -164,6 +166,14 @@ public class BaseBulletEntity extends Projectile {
         this.penetrate = penetrate;
     }
 
+    public int getTemporaryReserveLevel() {
+        return temporaryReserveLevel;
+    }
+
+    public void setTemporaryReserveLevel(int level) {
+        this.temporaryReserveLevel = Math.max(0, level);
+    }
+
     /**
      * Sets the projectile velocity and synchronizes the unquantized value to
      * the client. Add-entity packets clamp velocity components to 3.9, which
@@ -256,6 +266,7 @@ public class BaseBulletEntity extends Projectile {
         child.setDamage(this.damage * Math.max(0.0F, damageMultiplier));
         child.setKnockback(this.knockback);
         child.setPenetrate(this.penetrate);
+        child.setTemporaryReserveLevel(this.temporaryReserveLevel);
         child.setEffectState(effectState);
         child.accelerationPower = this.accelerationPower;
         child.setInitialVelocity(velocity);
@@ -320,6 +331,9 @@ public class BaseBulletEntity extends Projectile {
         if (compound.contains("Penetrate", CompoundTag.TAG_INT)) {
             this.penetrate = compound.getInt("Penetrate");
         }
+        if (compound.contains("TemporaryReserveLevel", CompoundTag.TAG_INT)) {
+            this.temporaryReserveLevel = compound.getInt("TemporaryReserveLevel");
+        }
         if (compound.contains("EffectState", CompoundTag.TAG_INT)) {
             this.setEffectState(compound.getInt("EffectState"));
         }
@@ -348,6 +362,7 @@ public class BaseBulletEntity extends Projectile {
         compound.putFloat("Damage", this.damage);
         compound.putFloat("Knockback", this.knockback);
         compound.putInt("Penetrate", this.penetrate);
+        compound.putInt("TemporaryReserveLevel", this.temporaryReserveLevel);
         compound.putInt("EffectState", this.getEffectState());
         compound.putBoolean("IgnoreBlockCollision", this.ignoresBlockCollision());
         compound.putInt("HitBlockTime", this.hitBlockTimes);
@@ -535,12 +550,26 @@ public class BaseBulletEntity extends Projectile {
         if (owner == null) {
             return false;
         }
-        if (owner.isRemoved() || disToOwner() > MAX_OWNER_DISTANCE) {
+        if (owner.isRemoved() || isOutsideOwnerRange(this.position())) {
             return true;
         }
 
         Vec3 nextPosition = this.position().add(this.getDeltaMovement());
-        return nextPosition.distanceTo(owner.position()) > MAX_OWNER_DISTANCE;
+        return isOutsideOwnerRange(nextPosition);
+    }
+
+    private boolean isOutsideOwnerRange(Vec3 position) {
+        Entity owner = this.getOwner();
+        if (owner == null) {
+            return false;
+        }
+
+        double horizontalX = position.x - owner.getX();
+        double horizontalZ = position.z - owner.getZ();
+        double horizontalDistanceSqr = horizontalX * horizontalX + horizontalZ * horizontalZ;
+        double verticalDistance = Math.abs(position.y - owner.getY());
+        return horizontalDistanceSqr > MAX_OWNER_HORIZONTAL_DISTANCE * MAX_OWNER_HORIZONTAL_DISTANCE
+                || verticalDistance > MAX_OWNER_VERTICAL_DISTANCE;
     }
 
     /** Hook for projectile variants that need to apply gravity or other forces. */
@@ -562,7 +591,7 @@ public class BaseBulletEntity extends Projectile {
     }
 
     public double disToOwner() {
-        if (getOwner() == null) return MAX_OWNER_DISTANCE;
+        if (getOwner() == null) return MAX_OWNER_HORIZONTAL_DISTANCE;
         return this.position().distanceTo(getOwner().position());
     }
 
