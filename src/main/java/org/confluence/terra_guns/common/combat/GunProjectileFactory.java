@@ -44,7 +44,9 @@ public final class GunProjectileFactory {
         for (int index = 0; index < count; index++) {
             double angle = Math.PI * 2.0D * index / count;
             Vec3 direction = new Vec3(Math.cos(angle), 0.0D, Math.sin(angle));
-            context.level().addFreshEntity(createProjectile(context, pattern, direction));
+            BaseBulletEntity projectile = createProjectile(context, pattern);
+            configureBaseProjectile(context, projectile, direction);
+            context.level().addFreshEntity(projectile);
         }
         return count;
     }
@@ -67,11 +69,10 @@ public final class GunProjectileFactory {
     }
 
     private static BaseBulletEntity createDefaultProjectile(ShotContext context, GunProjectilePattern pattern) {
-        ServerPlayer shooter = context.shooter();
-        return createProjectile(context, pattern, shooter.getViewVector(1.0F));
+        return createProjectile(context, pattern);
     }
 
-    private static BaseBulletEntity createProjectile(ShotContext context, GunProjectilePattern pattern, Vec3 direction) {
+    private static BaseBulletEntity createProjectile(ShotContext context, GunProjectilePattern pattern) {
         ServerPlayer shooter = context.shooter();
         ItemStack ammo = context.ammo();
         return pattern.type() == GunProjectilePattern.Type.GRAVITY
@@ -91,14 +92,19 @@ public final class GunProjectileFactory {
             return;
         }
 
+        configureBaseProjectile(context, entity, shooter.getViewVector(1.0F));
+    }
+
+    private static void configureBaseProjectile(ShotContext context, BaseBulletEntity entity, Vec3 direction) {
+        ServerPlayer shooter = context.shooter();
+        float speed = Math.max(0.0F, context.velocity());
+        float inaccuracy = Math.max(0.0F, context.inaccuracy());
         entity.setDamage(context.damage());
         entity.setKnockback(context.knockback());
         entity.setPenetrate(context.penetrate());
         entity.setTemporaryReserveLevel(
                 GunEnchantmentService.getTemporaryReserveLevel(shooter, context.gun())
         );
-        float speed = Math.max(0.0F, context.velocity());
-        Vec3 direction = shooter.getViewVector(1.0F);
         entity.shoot(
                 direction.x,
                 direction.y,

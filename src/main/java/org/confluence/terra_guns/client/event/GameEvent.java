@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -23,6 +24,7 @@ import org.confluence.terra_guns.client.renderer.entity.BulletVfxManager;
 import org.confluence.terra_guns.common.init.TGGunSounds;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.impl.BulletHandler;
+import org.confluence.terra_guns.network.c2s.EmergencyMeleePacketC2S;
 import org.confluence.terra_guns.network.c2s.InspectPacketC2S;
 import org.confluence.terra_guns.network.c2s.ShootPacketC2S;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -56,6 +58,20 @@ public class GameEvent {
             player.playSound(TGGunSounds.getSound(mainHandItem), 1f, 1f);
             ShootPacketC2S.sendToServer();
             cooldowns.addCooldown(baseGun, Math.max(0, useGunEvent.getCooldowns()));
+        }
+    }
+
+    @SubscribeEvent
+    public static void emergencyMelee(ClientTickEvent.Post event) {
+        LocalPlayer player = minecraft.player;
+        if (player == null || player.isSpectator() || !TGKeys.AIM.get().consumeClick()) {
+            return;
+        }
+        if (!(player.getMainHandItem().getItem() instanceof BaseGun)) {
+            return;
+        }
+        if (minecraft.hitResult instanceof EntityHitResult hitResult) {
+            EmergencyMeleePacketC2S.sendToServer(hitResult.getEntity().getId());
         }
     }
 

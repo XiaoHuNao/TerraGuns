@@ -14,7 +14,6 @@ import org.confluence.terra_guns.TerraGuns;
 import org.confluence.terra_guns.api.event.BulletEvent;
 import org.confluence.terra_guns.common.enchantment.GunEnchantmentService;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
-import org.confluence.terra_guns.common.init.TGDamageTypes;
 import org.confluence.terra_guns.common.init.TGItems;
 import org.confluence.terra_guns.common.item.gun.BaseGun;
 import org.confluence.terra_guns.network.s2c.BulletImpactPacketS2C;
