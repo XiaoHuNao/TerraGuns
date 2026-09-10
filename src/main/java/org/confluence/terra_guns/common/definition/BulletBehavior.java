@@ -2,19 +2,7 @@ package org.confluence.terra_guns.common.definition;
 
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import org.confluence.terra_guns.common.definition.behavior.ChlorophyteHomingBehavior;
-import org.confluence.terra_guns.common.definition.behavior.CrystalSplitBehavior;
-import org.confluence.terra_guns.common.definition.behavior.CursedDebuffBehavior;
-import org.confluence.terra_guns.common.definition.behavior.ExplosiveBulletBehavior;
-import org.confluence.terra_guns.common.definition.behavior.HighVelocityDamageDecayBehavior;
-import org.confluence.terra_guns.common.definition.behavior.IchorDebuffBehavior;
-import org.confluence.terra_guns.common.definition.behavior.LuminiteDamageDecayBehavior;
-import org.confluence.terra_guns.common.definition.behavior.MeteorRicochetBehavior;
-import org.confluence.terra_guns.common.definition.behavior.NanoRicochetBehavior;
-import org.confluence.terra_guns.common.definition.behavior.NormalBulletBehavior;
-import org.confluence.terra_guns.common.definition.behavior.PartyBulletBehavior;
-import org.confluence.terra_guns.common.definition.behavior.SilverBulletBehavior;
-import org.confluence.terra_guns.common.definition.behavior.VenomDebuffBehavior;
+import org.confluence.terra_guns.common.definition.behavior.*;
 import org.confluence.terra_guns.common.entity.bullet.BaseBulletEntity;
 
 public interface BulletBehavior {

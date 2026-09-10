@@ -6,13 +6,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import org.confluence.terra_guns.client.renderer.entity.effect.ActiveBulletVfx;
-import org.confluence.terra_guns.client.renderer.entity.effect.BulletImpactVfx;
-import org.confluence.terra_guns.client.renderer.entity.effect.ChlorophyteImpactVfx;
-import org.confluence.terra_guns.client.renderer.entity.effect.CrystalImpactVfx;
-import org.confluence.terra_guns.client.renderer.entity.effect.LuminiteImpactVfx;
-import org.confluence.terra_guns.client.renderer.entity.effect.PartyConfettiVfx;
-import org.confluence.terra_guns.client.renderer.entity.effect.SilverImpactVfx;
+import org.confluence.terra_guns.client.renderer.entity.effect.*;
 import org.confluence.terra_guns.common.definition.BulletImpactEffect;
 
 import java.util.ArrayList;

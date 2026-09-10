@@ -42,7 +42,7 @@ public final class ShootingService {
         }
 
         ItemStack selectedAmmo = fireEvent.getAmmo();
-        if (selectedAmmo == null || selectedAmmo.isEmpty()) {
+        if (selectedAmmo == null) {
             return false;
         }
 
@@ -67,6 +67,9 @@ public final class ShootingService {
     }
 
     private static void consumeAmmo(ServerPlayer player, BaseGun gun, ItemStack gunStack, ItemStack ammo) {
+        if (ammo.isEmpty()) {
+            return;
+        }
         boolean infinity = GunFiringService.isInfinite(ammo);
 
         GunEvent.ShrinkBulletEvent shrinkEvent = new GunEvent.ShrinkBulletEvent(player, gun, gunStack, ammo, infinity);

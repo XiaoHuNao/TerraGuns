@@ -5,7 +5,7 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.140'
 }
 
-version = "${minecraft_version}-${mod_version}"
+version = mod_version + "+" + minecraft_version
 group = mod_group_id
 
 repositories {
@@ -35,7 +35,7 @@ repositories {
 }
 
 base {
-    archivesName = mod_id
+    archivesName = "TerraGuns-neoforge"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -48,6 +48,10 @@ neoForge {
         minecraftVersion = project.parchment_minecraft_version
     }
     accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+
+    unitTest {
+        enable()
+    }
 
     runs {
         client {
